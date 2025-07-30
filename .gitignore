@@ -1,0 +1,7 @@
+*.exe
+*.dsym
+main
+build
+.vscode
+.vs
+out
