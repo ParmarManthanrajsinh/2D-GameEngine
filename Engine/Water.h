@@ -322,11 +322,11 @@ void Water::Update(float dt)
 			if (b_ColorTransition)
 			{
 				float t = 1.0f - (p.life / p.max_life);
-				p.color.r = Clamp(start_color.r * (1.0f - t) + end_color.r * t, 0, 255);
-				p.color.g = Clamp(start_color.g * (1.0f - t) + end_color.g * t, 0, 255);
-				p.color.b = Clamp(start_color.b * (1.0f - t) + end_color.b * t, 0, 255);
+				p.color.r = (unsigned char)Clamp(start_color.r * (1.0f - t) + end_color.r * t, 0, 255);
+				p.color.g = (unsigned char)Clamp(start_color.g * (1.0f - t) + end_color.g * t, 0, 255);
+				p.color.b = (unsigned char)Clamp(start_color.b * (1.0f - t) + end_color.b * t, 0, 255);
 			}
-			p.color.a = Clamp(255.0f * (p.life / p.max_life), 0, 255);
+			p.color.a = (unsigned char)Clamp(255.0f * (p.life / p.max_life), 0, 255);
 			++i;
 		}
 	}
@@ -500,5 +500,5 @@ void Water::Clear()
 
 int Water::GetParticleCount() const
 {
-	return particles.size();
+	return static_cast<int>(particles.size());
 }

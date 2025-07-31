@@ -2,11 +2,11 @@
 #include "background.h"
 #include "water.h"
 
-int main() {
+int main() 
+{
 	// Initialization
 	GameEditorInit(900, 900, "GameDemo");
 	SetTargetFPS(60);
-
 
 	Background background("Assets/oggy.jpeg"); // Load a background image
 	Water particle;
@@ -15,8 +15,8 @@ int main() {
 	char selected_file_path[1024] = "";
 
 	// Main game loop
-	while (!WindowShouldClose()) {
-
+	while (!WindowShouldClose()) 
+	{
 		float delta_time = GetFrameTime();
 		particle.Update(delta_time);
 
@@ -56,8 +56,7 @@ int main() {
 
 			if (file)
 			{
-				strncpy(selected_file_path, file, sizeof(selected_file_path));
-				selected_file_path[sizeof(selected_file_path) - 1] = '\0';
+				strncpy_s(selected_file_path, sizeof(selected_file_path), file, _TRUNCATE);
 			}
 		}
 
