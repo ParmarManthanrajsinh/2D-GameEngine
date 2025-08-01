@@ -146,7 +146,7 @@ int main()
 				obj.position[0] = obj.position[1] = obj.position[2] = 0.0f;
 				obj.rotation[0] = obj.rotation[1] = obj.rotation[2] = 0.0f;
 				obj.scale[0] = obj.scale[1] = obj.scale[2] = 1.0f;
-			}
+			}	
 		}
 		else
 		{
