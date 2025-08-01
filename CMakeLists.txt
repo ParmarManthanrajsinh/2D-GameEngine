@@ -19,7 +19,7 @@ if (NOT raylib_FOUND)
 endif()
 
 # Collect source files only (.cpp)
-file(GLOB PROJECT_SRC_CPP "Game/*.cpp" "Engine/*.cpp")
+file(GLOB PROJECT_SRC_CPP "Game/*.cpp" "Engine/*.cpp" "Editor/*.cpp")
 
 # rlImGui and ImGui sources
 set(RLIMGUI_SRC Editor/rlImGui/rlImGui.cpp)

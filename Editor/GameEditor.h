@@ -4,26 +4,23 @@
 #include <raylib.h>
 #include <imgui.h>
 #include <tinyfiledialogs.h>
+#include <memory>
 
 #include "GameEditorTheme.h"
 #include "GameEditorLayout.h"
 
-void GameEditorInit(int width, int hight,const char* title)
-{	
-	InitWindow(width, hight, title);
-	rlImGuiSetup(true);
+class GameEditor {
+public:
+    GameEditor(int width, int height, const char* title);
+    ~GameEditor();
 
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    void Run();
 
-	rlImGuiReloadFonts();
+private:
+    void Init(int width, int height, const char* title);
+    void Close();
 
-	SetEngineTheme();
-	LoadEditorDefaultIni();
-}
-
-void GameEditorClose()
-{
-	rlImGuiShutdown();
-	CloseWindow();
-}
+    // Forward declaration for pImpl pattern
+    class Impl;
+    std::unique_ptr<Impl> pImpl;
+};

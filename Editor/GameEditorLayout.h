@@ -1,4 +1,5 @@
 #include<imgui.h>
+#include<cstring>
 
 // Optional: disable saving to file
 // ImGui::GetIO().IniFilename = nullptr;
@@ -59,7 +60,7 @@ DockSpace       ID=0x08BD597D Window=0x1BBC0F80 Pos=0,28 Size=1280,692 Split=X S
   DockNode      ID=0x00000004 Parent=0x08BD597D SizeRef=262,981 Selected=0x36DC96AB
 )";
 
-void LoadEditorDefaultIni()
+inline void LoadEditorDefaultIni()
 {
     ImGui::LoadIniSettingsFromMemory(EditorDefaultIni, strlen(EditorDefaultIni));
 }
