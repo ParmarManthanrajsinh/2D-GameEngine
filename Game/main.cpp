@@ -2,73 +2,52 @@
 #include "background.h"
 #include "water.h"
 
-int main() {
-	// Initialization
-	GameEditorInit(900, 900, "GameDemo");
+int main()
+{
+	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+
+	GameEditorInit(800, 600, "raylib + ImGui Docking Example");
+
 	SetTargetFPS(60);
 
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
 
-	Background background("Assets/oggy.jpeg"); // Load a background image
-	Water particle;
-	particle.position = { 450, 450 };
-
-	char selected_file_path[1024] = "";
-
-	// Main game loop
-	while (!WindowShouldClose()) {
-
-		float delta_time = GetFrameTime();
-		particle.Update(delta_time);
-
-		// Start Drawing
+	while (!WindowShouldClose())
+	{
 		BeginDrawing();
-		ClearBackground(RAYWHITE);
-
-		// Draw the background
-		background.Draw();
-		particle.Draw();
-
-		// Start ImGui frame
+		ClearBackground(DARKGRAY);
 		rlImGuiBegin();
+		ImGui::DockSpaceOverViewport(0, viewport);
 
-		// Your ImGui Code
-		ImGui::Begin("Demo Window");
-		ImGui::Text("Hello, world!");
+		ImGui::Begin("C++ Performance Poem");
+		ImGui::BeginChild("PoemScroll", ImVec2(0, 0), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
 
-		static int counter = 0;
-		if (ImGui::Button("Click Me")) {
-			counter++;
-		}
-		ImGui::Text("Button pressed %d times", counter);
-
-		if (ImGui::Button("Open File Dialog"))
-		{
-			const char* filterPatterns[] = { "*.png", "*.jpg", "*.jpeg" };
-			const char* file = tinyfd_openFileDialog
-			(
-				"Select an Image",
-				"",
-				3,
-				filterPatterns,
-				"Image files",
-				0
-			);
-
-			if (file)
-			{
-				strncpy(selected_file_path, file, sizeof(selected_file_path));
-				selected_file_path[sizeof(selected_file_path) - 1] = '\0';
-			}
-		}
-
-		if (selected_file_path[0] != '\0')
-		{
-			ImGui::Text("Selected File: %s", selected_file_path);
-		}
-
+		ImGui::TextWrapped
+		(
+			"No JVM to slow me down, no Python's sugar high,\n"
+			"C++ runs like lightning - others just crawl by.\n"
+			"\n"
+			"With lambdas in hand and move semantics tight,\n"
+			"Zero-cost abstractions make performance feel light.\n"
+			"\n"
+			"Python says, 'Hey, my code is clean and fun!'\n"
+			"But C++ replies, 'I race jets, you barely run.'\n"
+			"\n"
+			"Java boasts, 'I've got a garbage collector to clean!'\n"
+			"C++ grins, 'I have RAII - lean, fast, and mean.'\n"
+			"\n"
+			"Compile-time magic, with constexpr charm,\n"
+			"Cache-friendly layout - no runtime harm.\n"
+			"\n"
+			"Want real performance? Need full control?\n"
+			"C++ is the blade - the rest just scroll.\n"
+			"\n"
+			"So when building engines or launching to Mars,\n"
+			"C++ drives the future - with STL and stars."
+		);
+		ImGui::EndChild();
 		ImGui::End();
 
-		// End ImGui Frame
 		rlImGuiEnd();
 		EndDrawing();
 	}
@@ -76,3 +55,4 @@ int main() {
 	GameEditorClose();
 	return 0;
 }
+

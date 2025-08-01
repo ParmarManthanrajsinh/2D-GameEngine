@@ -32,7 +32,7 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/Assets")
 endif()
 
 # Create executable
-add_executable(main ${PROJECT_SRC_CPP} ${RLIMGUI_SRC} ${IMGUI_SRC} ${TINYFILEDIALOGS} "Editor/GameEditor.h")
+add_executable(main ${PROJECT_SRC_CPP} ${RLIMGUI_SRC} ${IMGUI_SRC} ${TINYFILEDIALOGS})
 
 # Add include directories — this is what lets you include .hpp/.h files
 target_include_directories(main PRIVATE 

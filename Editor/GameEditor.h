@@ -1,9 +1,11 @@
 #pragma once
 
-#include <raylib.h>
 #include <rlImGui.h>
+#include <raylib.h>
 #include <imgui.h>
 #include <tinyfiledialogs.h>
+
+#include "GameEditorTheme.h"
 
 void GameEditorInit(int width, int hight,const char* title)
 {	
@@ -12,9 +14,11 @@ void GameEditorInit(int width, int hight,const char* title)
 
 	// Load a font
 	ImGuiIO& io = ImGui::GetIO();
-	io.Fonts->Clear();
-	io.Fonts->AddFontFromFileTTF("Assets/Roboto-Regular.ttf", 24.0f);
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
 	rlImGuiReloadFonts();
+
+	SetEngineTheme();
 }
 
 void GameEditorClose()

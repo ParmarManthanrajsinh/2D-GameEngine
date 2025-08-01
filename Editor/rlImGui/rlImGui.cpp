@@ -695,8 +695,6 @@ void ImGui_ImplRaylib_Shutdown()
     }
 
     ImGui_ImplRaylib_FreeBackendData();
-
-    io.Fonts->TexID = 0;
 }
 
 void ImGui_ImplRaylib_NewFrame(void)
@@ -719,11 +717,10 @@ void ImGui_ImplRaylib_RenderDrawData(ImDrawData* draw_data)
             if (cmd.UserCallback != nullptr)
             {
                 cmd.UserCallback(commandList, &cmd);
-
                 continue;
             }
 
-            ImGuiRenderTriangles(cmd.ElemCount, cmd.IdxOffset, commandList->IdxBuffer, commandList->VtxBuffer, cmd.TextureId);
+            ImGuiRenderTriangles(cmd.ElemCount, cmd.IdxOffset, commandList->IdxBuffer, commandList->VtxBuffer, cmd.GetTexID());
             rlDrawRenderBatchActive();
         }
     }
@@ -751,7 +748,7 @@ void HandleGamepadStickEvent(ImGuiIO& io, GamepadAxis axis, ImGuiKey negKey, ImG
     io.AddKeyAnalogEvent(posKey, axisValue > deadZone, axisValue > deadZone ? axisValue : 0);
 }
 
-bool ImGui_ImplRaylib_ProcessEvents(void)
+bool ImGui_ImplRaylib_ProcessEvents(void) 
 {
     ImGuiIO& io = ImGui::GetIO();
 
