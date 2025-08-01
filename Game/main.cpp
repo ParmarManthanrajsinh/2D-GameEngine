@@ -33,7 +33,7 @@ int main()
 	bool showDemo = false;
 	char logBuffer[1024] = "Engine initialized successfully\nReady to create!\n";
 
-	ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
 
 	while (!WindowShouldClose())
 	{
@@ -122,11 +122,10 @@ int main()
 		}
 		ImGui::End();
 
-		// Inspector Panel
-		ImGui::Begin("Inspector");
-		if (selectedObject < objectCount)
-		{
-			GameObject& obj = gameObjects[selectedObject];
+        // Inspector Panel
+        ImGui::Begin("Inspector");
+        if (selectedObject < objectCount) {
+            GameObject& obj = gameObjects[selectedObject];
 
 			ImGui::Text("Selected: %s", obj.name);
 			ImGui::Separator();
@@ -140,19 +139,17 @@ int main()
 			ImGui::DragFloat3("Rotation", obj.rotation, 1.0f);
 			ImGui::DragFloat3("Scale", obj.scale, 0.1f);
 
-			ImGui::Spacing();
-			if (ImGui::Button("Reset Transform"))
-			{
-				obj.position[0] = obj.position[1] = obj.position[2] = 0.0f;
-				obj.rotation[0] = obj.rotation[1] = obj.rotation[2] = 0.0f;
-				obj.scale[0] = obj.scale[1] = obj.scale[2] = 1.0f;
-			}
-		}
-		else
-		{
-			ImGui::Text("No object selected");
-		}
-		ImGui::End();
+            ImGui::Spacing();
+            if (ImGui::Button("Reset Transform")) {
+                obj.position[0] = obj.position[1] = obj.position[2] = 0.0f;
+                obj.rotation[0] = obj.rotation[1] = obj.rotation[2] = 0.0f;
+                obj.scale[0] = obj.scale[1] = obj.scale[2] = 1.0f;
+            }
+        }
+        else {
+            ImGui::Text("No object selected");
+        }
+        ImGui::End();
 
 		// Scene View (placeholder)
 		ImGui::Begin("Scene View");
@@ -160,23 +157,15 @@ int main()
 		ImGui::Text("Scene Viewport (%dx%d)", (int)viewSize.x, (int)viewSize.y);
 		ImGui::Text("Right-click to interact");
 
-		// Simple scene representation
-		ImDrawList* drawList = ImGui::GetWindowDrawList();
-		ImVec2 canvasPos = ImGui::GetCursorScreenPos();
-		ImVec2 canvasSize = ImGui::GetContentRegionAvail();
+        // Simple scene representation
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+        ImVec2 canvasPos = ImGui::GetCursorScreenPos();
+        ImVec2 canvasSize = ImGui::GetContentRegionAvail();
 
-		if (canvasSize.x > 50 && canvasSize.y > 50)
-		{
-			drawList->AddRectFilled
-			(
-				canvasPos,
-				ImVec2
-				(
-					canvasPos.x + canvasSize.x,
-					canvasPos.y + canvasSize.y
-				),
-				IM_COL32(50, 50, 50, 255)
-			);
+        if (canvasSize.x > 50 && canvasSize.y > 50) {
+            drawList->AddRectFilled(canvasPos,
+                ImVec2(canvasPos.x + canvasSize.x, canvasPos.y + canvasSize.y),
+                IM_COL32(50, 50, 50, 255));
 
 			// Draw objects as simple shapes
 			for (int i = 0; i < objectCount; i++)
@@ -211,20 +200,15 @@ int main()
 		ImGui::Text("Project Assets");
 		ImGui::Separator();
 
-		const char* assetTypes[] =
-		{
-			"Textures", "Models", "Scripts", "Audio", "Materials"
-		};
-		for (int i = 0; i < 5; i++)
-		{
-			if (ImGui::TreeNode(assetTypes[i]))
-			{
-				ImGui::Text("  - asset_example_%d", i + 1);
-				ImGui::Text("  - asset_example_%d", i + 2);
-				ImGui::TreePop();
-			}
-		}
-		ImGui::End();
+        const char* assetTypes[] = { "Textures", "Models", "Scripts", "Audio", "Materials" };
+        for (int i = 0; i < 5; i++) {
+            if (ImGui::TreeNode(assetTypes[i])) {
+                ImGui::Text("  - asset_example_%d", i + 1);
+                ImGui::Text("  - asset_example_%d", i + 2);
+                ImGui::TreePop();
+            }
+        }
+        ImGui::End();
 
 		// Show ImGui demo if requested
 		if (showDemo)
