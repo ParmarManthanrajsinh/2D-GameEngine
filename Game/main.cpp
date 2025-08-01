@@ -22,9 +22,9 @@ int main()
 	int selectedObject = 0;
 
 	// Initialize some demo objects
-	strcpy(gameObjects[0].name, "Player");
-	strcpy(gameObjects[1].name, "Camera");
-	strcpy(gameObjects[2].name, "Light");
+	strcpy_s(gameObjects[0].name, "Player");
+	strcpy_s(gameObjects[1].name, "Camera");
+	strcpy_s(gameObjects[2].name, "Light");
 
 	gameObjects[1].position[1] = 5.0f;
 	gameObjects[2].position[0] = 2.0f;
@@ -52,17 +52,17 @@ int main()
 			{
 				if (ImGui::MenuItem("New Scene", "Ctrl+N"))
 				{
-					strcat(logBuffer, "New scene created\n");
+					strcat_s(logBuffer, "New scene created\n");
 				}
 
 				if (ImGui::MenuItem("Open Scene", "Ctrl+O"))
 				{
-					strcat(logBuffer, "Scene loading...\n");
+					strcat_s(logBuffer, "Scene loading...\n");
 				}
 
 				if (ImGui::MenuItem("Save Scene", "Ctrl+S"))
 				{
-					strcat(logBuffer, "Scene saved\n");
+					strcat_s(logBuffer, "Scene saved\n");
 				}
 
 				ImGui::Separator();
@@ -109,16 +109,16 @@ int main()
 		{
 			if (objectCount < 10)
 			{
-				sprintf(gameObjects[objectCount].name, "GameObject_%d", objectCount);
+				sprintf_s(gameObjects[objectCount].name, "GameObject_%d", objectCount);
 				objectCount++;
-				strcat(logBuffer, "New object added\n");
+				strcat_s(logBuffer, "New object added\n");
 			}
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Delete") && objectCount > 0)
 		{
 			objectCount--;
-			strcat(logBuffer, "Object deleted\n");
+			strcat_s(logBuffer, "Object deleted\n");
 		}
 		ImGui::End();
 
@@ -202,7 +202,7 @@ int main()
 		ImGui::SameLine();
 		if (ImGui::Button("Test Log"))
 		{
-			strcat(logBuffer, "Test message added\n");
+			strcat_s(logBuffer, "Test message added\n");
 		}
 		ImGui::End();
 
