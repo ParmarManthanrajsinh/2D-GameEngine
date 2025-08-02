@@ -19,6 +19,12 @@ class CoreEngine;
 class GameLogic
 {
 public:
+    bool IsRunning() const { return m_isRunning; }
+    void SetRunning(bool running) { m_isRunning = running; }
+
+private:
+    bool m_isRunning = false;
+public:
     GameLogic(CoreEngine *coreEngine);
     virtual ~GameLogic() = default;
 

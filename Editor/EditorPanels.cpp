@@ -166,6 +166,13 @@ void SceneViewPanel::Render()
 
     RenderScene();
 
+    // Play/Stop controls
+    if (ImGui::Button(m_gameLogic->IsRunning() ? "Stop" : "Play", ImVec2(80, 25)))
+    {
+        m_gameLogic->SetRunning(!m_gameLogic->IsRunning());
+        m_coreEngine->SetSimulationState(m_gameLogic->IsRunning());
+    }
+
     // Only display the texture if it's properly initialized
     if (m_renderTextureInitialized && m_renderTexture.texture.id != 0)
     {
@@ -239,7 +246,7 @@ void SceneViewPanel::RenderScene()
 void SceneViewPanel::HandleSceneInput()
 {
     // Update game logic
-    if (m_gameLogic && m_gameInitialized && m_coreEngine)
+    if (m_gameLogic && m_gameInitialized && m_coreEngine && m_gameLogic->IsRunning())
     {
         float deltaTime = GetFrameTime();
         m_gameLogic->Update(deltaTime);
