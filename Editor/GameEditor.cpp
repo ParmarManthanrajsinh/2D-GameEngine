@@ -1,8 +1,4 @@
 #include "GameEditor.h"
-#include "EditorPanels.h"
-#include <cstring>
-#include <cstdio>
-#include <iostream>
 
 // Simple game object structure for demo
 struct GameObject

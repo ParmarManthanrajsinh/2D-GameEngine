@@ -5,7 +5,11 @@
 #include <imgui.h>
 #include <tinyfiledialogs.h>
 #include <memory>
+#include <cstring>
+#include <cstdio>
+#include <iostream>
 
+#include "EditorPanels.h"
 #include "GameEditorTheme.h"
 #include "GameEditorLayout.h"
 #include "CoreEngine.h"
