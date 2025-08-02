@@ -2,6 +2,9 @@
 
 #include <vector>
 #include <raylib.h>
+#include <algorithm>
+#include <cmath>
+#include "CoreEngine.h"
 
 class CoreEngine;
 /**
