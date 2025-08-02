@@ -24,8 +24,8 @@ void GameLogic::Init()
     for (int i = 0; i < 3; i++)
     {
         Enemy enemy;
-        enemy.position = {(float)(100 + i * 200), (float)(100 + i * 50)};
-        enemy.velocity = {(float)((i % 2 == 0) ? 50 : -50), (float)(30 + i * 10)};
+        enemy.position = {(float)static_cast<int>(100 + i * 200), (float)static_cast<int>(100 + i * 50)};
+        enemy.velocity = {(float)static_cast<int>(((i % 2 == 0) ? 50 : -50)), (float)static_cast<int>(30 + i * 10)};
         m_enemies.push_back(enemy);
     }
 }
@@ -134,8 +134,8 @@ void GameLogic::Update(float deltaTime)
     if (m_enemySpawnTimer > 3.0f)
     {
         Enemy enemy;
-        enemy.position = {(float)(rand() % (int)(m_sceneWidth - 100) + 50), 50};
-        enemy.velocity = {(float)(rand() % 100 - 50), (float)(rand() % 50 + 50)};
+        enemy.position = {(float)static_cast<int>(rand() % (int)(m_sceneWidth - 100) + 50), 50};
+        enemy.velocity = {(float)static_cast<int>(rand() % 100 - 50), (float)static_cast<int>(rand() % 50 + 50)};
         m_enemies.push_back(enemy);
         m_enemySpawnTimer = 0.0f;
     }
@@ -157,10 +157,10 @@ void GameLogic::Render()
         return;
 
     // Render background
-    m_coreEngine->DrawRectangle(0, 0, (int)m_sceneWidth, (int)m_sceneHeight, DARKBLUE);
+    m_coreEngine->DrawRectangle(0, 0, static_cast<int>(m_sceneWidth), static_cast<int>(m_sceneHeight), DARKBLUE);
 
     // Render player
-    m_coreEngine->DrawCircle((int)m_player.position.x, (int)m_player.position.y,
+    m_coreEngine->DrawCircle(static_cast<int>(m_player.position.x), static_cast<int>(m_player.position.y),
                              m_player.radius, m_player.color);
 
     // Render bullets
@@ -168,7 +168,7 @@ void GameLogic::Render()
     {
         if (bullet.active)
         {
-            m_coreEngine->DrawCircle((int)bullet.position.x, (int)bullet.position.y,
+            m_coreEngine->DrawCircle(static_cast<int>(bullet.position.x), static_cast<int>(bullet.position.y),
                                      bullet.radius, bullet.color);
         }
     }
@@ -178,7 +178,7 @@ void GameLogic::Render()
     {
         if (enemy.active)
         {
-            m_coreEngine->DrawCircle((int)enemy.position.x, (int)enemy.position.y,
+            m_coreEngine->DrawCircle(static_cast<int>(enemy.position.x), static_cast<int>(enemy.position.y),
                                      enemy.radius, enemy.color);
         }
     }
