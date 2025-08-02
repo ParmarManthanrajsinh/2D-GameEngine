@@ -3,7 +3,8 @@
 Background::Background(const char *filePath)
 {
     Image image = LoadImage(filePath);
-    if (image.data == nullptr) {
+    if (image.data == nullptr)
+    {
         TraceLog(LOG_ERROR, "Failed to load image: %s", filePath);
         return;
     }
