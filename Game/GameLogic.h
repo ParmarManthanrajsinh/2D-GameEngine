@@ -4,7 +4,6 @@
 #include <raylib.h>
 
 class CoreEngine;
-
 /**
  * GameLogic - This is where game developers write their game code
  *
