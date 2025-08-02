@@ -1,11 +1,8 @@
 #include "CoreEngine.h"
-#include <raylib.h>
-#include <iostream>
-#include <algorithm>
 
 // CoreEngine Implementation
 CoreEngine::CoreEngine()
-    : m_initialized(false), m_screenWidth(800), m_screenHeight(600), m_windowTitle("2D Game Engine")
+    : m_initialized(false), m_screenWidth(800), m_screenHeight(600),           m_windowTitle("2D Game Engine")
 {
 }
 
