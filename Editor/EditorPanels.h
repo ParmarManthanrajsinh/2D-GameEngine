@@ -3,6 +3,10 @@
 #include <imgui.h>
 #include <raylib.h>
 #include <string>
+#include <cstring>
+#include <cstdio>
+#include "CoreEngine.h"
+#include "GameLogic.h"
 
 // Forward declarations
 struct GameObject;

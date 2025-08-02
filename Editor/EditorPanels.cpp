@@ -1,8 +1,4 @@
 #include "EditorPanels.h"
-#include "CoreEngine.h"
-#include "GameLogic.h"
-#include <cstring>
-#include <cstdio>
 
 // Forward declare the GameObject struct (defined in GameEditor.cpp)
 struct GameObject

@@ -30,7 +30,10 @@ public:
     virtual void Render();
 
     // Get core engine for advanced usage
-    CoreEngine *GetCoreEngine() const { return m_coreEngine; }
+    CoreEngine *GetCoreEngine() const 
+    { 
+        return m_coreEngine; 
+    }
 
 protected:
     CoreEngine *m_coreEngine;
