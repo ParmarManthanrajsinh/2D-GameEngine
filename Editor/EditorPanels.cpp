@@ -1,4 +1,6 @@
 #include "EditorPanels.h"
+#include "CoreEngine.h"
+#include "GameLogic.h"
 #include <cstring>
 #include <cstdio>
 
@@ -105,30 +107,103 @@ void InspectorPanel::Render() {
     ImGui::End();
 }
 
-SceneViewPanel::SceneViewPanel(GameObject* gameObjects, int& objectCount, int& selectedObject) 
-    : m_gameObjects(gameObjects), m_objectCount(objectCount), m_selectedObject(selectedObject) {}
+SceneViewPanel::SceneViewPanel(GameObject* gameObjects, int& objectCount, int& selectedObject, CoreEngine* coreEngine) 
+    : m_gameObjects(gameObjects), m_objectCount(objectCount), m_selectedObject(selectedObject),
+      m_coreEngine(coreEngine), m_renderTexture({0}), m_renderTextureInitialized(false), 
+      m_sceneWidth(800), m_sceneHeight(600), m_gameLogic(nullptr), m_gameInitialized(false)
+{
+    // Initialize game logic
+    if (m_coreEngine) {
+        m_gameLogic = new GameLogic(m_coreEngine);
+    }
+}
+
+SceneViewPanel::~SceneViewPanel() {
+    if (m_renderTextureInitialized && m_coreEngine) {
+        m_coreEngine->UnloadRenderTexture(m_renderTexture);
+    }
+    
+    // Clean up game logic
+    delete m_gameLogic;
+    m_gameLogic = nullptr;
+}
 
 void SceneViewPanel::Render() {
     ImGui::Begin("Scene View");
     ImVec2 viewSize = ImGui::GetContentRegionAvail();
-    ImGui::Text("Scene Viewport (%dx%d)", (int)viewSize.x, (int)viewSize.y);
-    ImGui::Text("Right-click to interact");
-    // Simple scene representation
-    ImDrawList* drawList = ImGui::GetWindowDrawList();
-    ImVec2 canvasPos = ImGui::GetCursorScreenPos();
-    ImVec2 canvasSize = ImGui::GetContentRegionAvail();
+    m_sceneWidth = (int)viewSize.x;
+    m_sceneHeight = (int)viewSize.y;
 
-    if (canvasSize.x > 50 && canvasSize.y > 50) {
-        drawList->AddRectFilled(canvasPos, ImVec2(canvasPos.x + canvasSize.x, canvasPos.y + canvasSize.y), IM_COL32(50, 50, 50, 255));
-        for (int i = 0; i < m_objectCount; i++) {
-            float x = canvasPos.x + canvasSize.x * 0.5f + m_gameObjects[i].position[0] * 20;
-            float y = canvasPos.y + canvasSize.y * 0.5f - m_gameObjects[i].position[1] * 20;
-            ImU32 color = (i == m_selectedObject) ? IM_COL32(255, 255, 0, 255) : IM_COL32(100, 150, 255, 255);
-            drawList->AddCircleFilled(ImVec2(x, y), 8, color);
-            drawList->AddText(ImVec2(x + 12, y - 8), IM_COL32(255, 255, 255, 255), m_gameObjects[i].name);
-        }
+    if (!m_renderTextureInitialized ||
+        m_renderTexture.texture.width != m_sceneWidth ||
+        m_renderTexture.texture.height != m_sceneHeight) {
+        InitializeRenderTexture(m_sceneWidth, m_sceneHeight);
+    }
+
+    RenderScene();
+
+    // Only display the texture if it's properly initialized
+    if (m_renderTextureInitialized && m_renderTexture.texture.id != 0) {
+        ImGui::Image((void*)m_renderTexture.texture.id, viewSize, ImVec2(0, 1), ImVec2(1, 0));
+    } else {
+        ImGui::Text("Initializing scene view...");
     }
     ImGui::End();
+}
+
+void SceneViewPanel::Update() {
+    HandleSceneInput();
+}
+
+void SceneViewPanel::InitializeRenderTexture(int width, int height) {
+    if (m_renderTextureInitialized && m_coreEngine) {
+        m_coreEngine->UnloadRenderTexture(m_renderTexture);
+    }
+    if (m_coreEngine) {
+        m_renderTexture = m_coreEngine->LoadRenderTexture(width, height);
+        m_renderTextureInitialized = true;
+    }
+}
+
+void SceneViewPanel::RenderScene() {
+    if (!m_renderTextureInitialized) {
+        return; // Don't render if texture isn't initialized
+    }
+    
+    // Initialize game logic if not done yet
+    if (m_gameLogic && !m_gameInitialized) {
+        m_gameLogic->SetSceneBounds((float)m_sceneWidth, (float)m_sceneHeight);
+        m_gameLogic->Init();
+        m_gameInitialized = true;
+    } else if (m_gameLogic) {
+        // Update scene bounds in case the scene view was resized
+        m_gameLogic->SetSceneBounds((float)m_sceneWidth, (float)m_sceneHeight);
+    }
+    
+    // Begin rendering to texture
+    if (m_coreEngine) {
+        m_coreEngine->BeginTextureMode(m_renderTexture);
+        m_coreEngine->ClearScreen(DARKBLUE);
+        
+        // Render the game logic
+        if (m_gameLogic) {
+            m_gameLogic->Render();
+        }
+        
+        // Render editor overlay information
+        m_coreEngine->DrawText("GAME PREVIEW - Live in Editor", 10, m_sceneHeight - 40, 14, LIME);
+        m_coreEngine->DrawText("Edit GameLogic.cpp to modify this game", 10, m_sceneHeight - 20, 12, LIGHTGRAY);
+        
+        m_coreEngine->EndTextureMode();
+    }
+}
+
+void SceneViewPanel::HandleSceneInput() {
+    // Update game logic
+    if (m_gameLogic && m_gameInitialized && m_coreEngine) {
+        float deltaTime = GetFrameTime();
+        m_gameLogic->Update(deltaTime);
+    }
 }
 
 ConsolePanel::ConsolePanel(char* logBuffer) : m_logBuffer(logBuffer) {}

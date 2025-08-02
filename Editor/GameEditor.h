@@ -8,6 +8,7 @@
 
 #include "GameEditorTheme.h"
 #include "GameEditorLayout.h"
+#include "CoreEngine.h"
 
 class GameEditor {
 public:

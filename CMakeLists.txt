@@ -19,7 +19,13 @@ if (NOT raylib_FOUND)
 endif()
 
 # Collect source files only (.cpp)
-file(GLOB PROJECT_SRC_CPP "Game/*.cpp" "Engine/*.cpp" "Editor/*.cpp")
+file(GLOB GAME_SRC_CPP "Game/*.cpp")
+file(GLOB ENGINE_SRC_CPP "Engine/*.cpp")
+file(GLOB EDITOR_SRC_CPP "Editor/*.cpp")
+
+
+# Combine sources for main executable
+set(PROJECT_SRC_CPP ${GAME_SRC_CPP} ${ENGINE_SRC_CPP} ${EDITOR_SRC_CPP})
 
 # rlImGui and ImGui sources
 set(RLIMGUI_SRC Editor/rlImGui/rlImGui.cpp)
@@ -31,7 +37,7 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/Assets")
     file(COPY ${CMAKE_SOURCE_DIR}/Assets DESTINATION ${CMAKE_BINARY_DIR})
 endif()
 
-# Create executable
+# Create main executable (Game Editor)
 add_executable(main ${PROJECT_SRC_CPP} ${RLIMGUI_SRC} ${IMGUI_SRC} ${TINYFILEDIALOGS})
 
 # Add include directories — this is what lets you include .hpp/.h files
@@ -47,3 +53,5 @@ target_include_directories(main PRIVATE
 
 # Link libraries
 target_link_libraries(main raylib)
+
+

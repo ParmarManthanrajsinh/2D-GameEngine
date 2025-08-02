@@ -1,10 +1,13 @@
 #pragma once
 
 #include <imgui.h>
+#include <raylib.h>
 #include <string>
 
 // Forward declarations
 struct GameObject;
+class CoreEngine;
+class GameLogic;
 
 class MenuBarPanel {
 public:
@@ -41,13 +44,31 @@ private:
 
 class SceneViewPanel {
 public:
-    SceneViewPanel(GameObject* gameObjects, int& objectCount, int& selectedObject);
+    SceneViewPanel(GameObject* gameObjects, int& objectCount, int& selectedObject, CoreEngine* coreEngine);
+    ~SceneViewPanel();
     void Render();
+    void Update(); // Handle input and scene updates
 
 private:
     GameObject* m_gameObjects;
     int& m_objectCount;
     int& m_selectedObject;
+    
+    // Rendering
+    CoreEngine* m_coreEngine;  // Pointer to core engine for rendering and input
+
+    RenderTexture2D m_renderTexture;
+    bool m_renderTextureInitialized;
+    int m_sceneWidth;
+    int m_sceneHeight;
+    
+    // Game logic integration
+    GameLogic* m_gameLogic;
+    bool m_gameInitialized;
+    
+    void InitializeRenderTexture(int width, int height);
+    void RenderScene();
+    void HandleSceneInput();
 };
 
 class ConsolePanel {

@@ -2,6 +2,7 @@
 #include "EditorPanels.h"
 #include <cstring>
 #include <cstdio>
+#include <iostream>
 
 // Simple game object structure for demo
 struct GameObject
@@ -23,6 +24,9 @@ public:
     char logBuffer[1024] = "Engine initialized successfully\nReady to create!\n";
     ImGuiViewport* viewport = nullptr;
 
+    // Core engine
+    CoreEngine coreEngine;
+
     // Panel instances for better modularity
     std::unique_ptr<MenuBarPanel> menuBarPanel;
     std::unique_ptr<HierarchyPanel> hierarchyPanel;
@@ -41,11 +45,13 @@ public:
         gameObjects[2].position[0] = 2.0f;
         gameObjects[2].position[1] = 3.0f;
 
+        // CoreEngine initialization will be done in GameEditor::Init()
+
         // Initialize panels
         menuBarPanel = std::make_unique<MenuBarPanel>(logBuffer, showDemo);
         hierarchyPanel = std::make_unique<HierarchyPanel>(gameObjects, objectCount, selectedObject, logBuffer);
         inspectorPanel = std::make_unique<InspectorPanel>(gameObjects, objectCount, selectedObject);
-        sceneViewPanel = std::make_unique<SceneViewPanel>(gameObjects, objectCount, selectedObject);
+        sceneViewPanel = std::make_unique<SceneViewPanel>(gameObjects, objectCount, selectedObject, &coreEngine);
         consolePanel = std::make_unique<ConsolePanel>(logBuffer);
         assetsPanel = std::make_unique<AssetsPanel>();
     }
@@ -61,7 +67,12 @@ GameEditor::~GameEditor() {
 }
 
 void GameEditor::Init(int width, int height, const char* title) {
-    InitWindow(width, height, title);
+    // Initialize core engine (this will create the raylib window)
+    if (!pImpl->coreEngine.Initialize(width, height, std::string(title))) {
+        std::cerr << "Failed to initialize CoreEngine!" << std::endl;
+        return;
+    }
+    
     rlImGuiSetup(true);
 
     ImGuiIO& io = ImGui::GetIO();
@@ -79,14 +90,17 @@ void GameEditor::Init(int width, int height, const char* title) {
 void GameEditor::Run() {
     while (!WindowShouldClose())
     {
-        BeginDrawing();
-        ClearBackground(DARKGRAY);
+        pImpl->coreEngine.BeginFrame();
+        pImpl->coreEngine.ClearScreen(DARKGRAY);
 
         rlImGuiBegin();
 
         // Create dockspace
         ImGui::DockSpaceOverViewport(0, pImpl->viewport);
 
+        // Update scene panel for input handling
+        pImpl->sceneViewPanel->Update();
+        
         // Render all UI panels using dedicated panel classes
         pImpl->menuBarPanel->Render();
         pImpl->hierarchyPanel->Render();
@@ -102,11 +116,11 @@ void GameEditor::Run() {
         }
 
         rlImGuiEnd();
-        EndDrawing();
+        pImpl->coreEngine.EndFrame();
     }
 }
 
 void GameEditor::Close() {
     rlImGuiShutdown();
-    CloseWindow();
+    pImpl->coreEngine.Shutdown();
 }
