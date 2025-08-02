@@ -35,7 +35,6 @@ bool CoreEngine::Initialize(int width, int height, const std::string &title)
         return false;
     }
 
-    // Set default target FPS
     ::SetTargetFPS(60);
 
     m_initialized = true;
@@ -79,63 +78,81 @@ bool CoreEngine::ShouldClose() const
 void CoreEngine::BeginFrame()
 {
     if (!m_initialized)
+    {
         return;
+    }
     BeginDrawing();
 }
 
 void CoreEngine::EndFrame()
 {
     if (!m_initialized)
+    {
         return;
+    }
     EndDrawing();
 }
 
 void CoreEngine::ClearScreen(Color color)
 {
     if (!m_initialized)
+    {
         return;
+    }
     ClearBackground(color);
 }
 
 void CoreEngine::DrawRectangle(int x, int y, int width, int height, Color color)
 {
     if (!m_initialized)
+    {
         return;
+    }
     ::DrawRectangle(x, y, width, height, color);
 }
 
 void CoreEngine::DrawCircle(int centerX, int centerY, float radius, Color color)
 {
     if (!m_initialized)
+    {
         return;
+    }
     ::DrawCircle(centerX, centerY, radius, color);
 }
 
 void CoreEngine::DrawTexture(Texture2D texture, int x, int y, Color tint)
 {
     if (!m_initialized)
+    {
         return;
+    }
     ::DrawTexture(texture, x, y, tint);
 }
 
 void CoreEngine::DrawSprite(Texture2D texture, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint)
 {
     if (!m_initialized)
+    {
         return;
+    }
     DrawTexturePro(texture, source, dest, origin, rotation, tint);
 }
 
 void CoreEngine::DrawLine(int startPosX, int startPosY, int endPosX, int endPosY, Color color)
 {
     if (!m_initialized)
+    {
         return;
+    }
     ::DrawLine(startPosX, startPosY, endPosX, endPosY, color);
 }
 
 void CoreEngine::DrawText(const char *text, int posX, int posY, int fontSize, Color color)
 {
     if (!m_initialized)
+    {
         return;
+    }
     ::DrawText(text, posX, posY, fontSize, color);
 }
 
@@ -166,8 +183,9 @@ Texture2D CoreEngine::LoadTextureFromFile(const std::string &filename)
 void CoreEngine::UnloadTexture(Texture2D texture)
 {
     if (!m_initialized || texture.id == 0)
+    {
         return;
-
+    }
     // Remove from tracking vector
     auto it = std::find_if(m_loadedTextures.begin(), m_loadedTextures.end(),
                            [texture](const Texture2D &t)
@@ -194,21 +212,27 @@ RenderTexture2D CoreEngine::LoadRenderTexture(int width, int height)
 void CoreEngine::UnloadRenderTexture(RenderTexture2D target)
 {
     if (!m_initialized)
+    {
         return;
+    }
     ::UnloadRenderTexture(target);
 }
 
 void CoreEngine::BeginTextureMode(RenderTexture2D target)
 {
     if (!m_initialized)
+    {
         return;
+    }
     ::BeginTextureMode(target);
 }
 
 void CoreEngine::EndTextureMode()
 {
     if (!m_initialized)
+    {
         return;
+    }
     ::EndTextureMode();
 }
 
@@ -235,8 +259,9 @@ void CoreEngine::ClearRenderObjects()
 void CoreEngine::RenderAllObjects()
 {
     if (!m_initialized)
+    {
         return;
-
+    }
     for (const auto &obj : m_renderObjects)
     {
         switch (obj.type)
@@ -309,34 +334,44 @@ RenderObject RenderObject::CreateSprite(Texture2D tex, Rectangle source, Rectang
 bool CoreEngine::CheckCollisionRecs(Rectangle rec1, Rectangle rec2) const
 {
     if (!m_initialized)
+    {
         return false;
+    }
     return ::CheckCollisionRecs(rec1, rec2);
 }
 
 bool CoreEngine::CheckCollisionCircles(Vector2 center1, float radius1, Vector2 center2, float radius2) const
 {
     if (!m_initialized)
+    {    
         return false;
+    }
     return ::CheckCollisionCircles(center1, radius1, center2, radius2);
 }
 
 bool CoreEngine::CheckCollisionCircleRec(Vector2 center, float radius, Rectangle rec) const
 {
-    if (!m_initialized)
+    if (!m_initialized) 
+    {
         return false;
+    }
     return ::CheckCollisionCircleRec(center, radius, rec);
 }
 
 bool CoreEngine::CheckCollisionPointRec(Vector2 point, Rectangle rec) const
 {
-    if (!m_initialized)
+    if (!m_initialized) 
+    {
         return false;
+    }
     return ::CheckCollisionPointRec(point, rec);
 }
 
 bool CoreEngine::CheckCollisionPointCircle(Vector2 point, Vector2 center, float radius) const
 {
     if (!m_initialized)
+    {
         return false;
+    }
     return ::CheckCollisionPointCircle(point, center, radius);
 }
