@@ -9,20 +9,21 @@ struct RenderObject;
 
 /**
  * Core Engine Foundation - Milestone 1
- * 
+ *
  * This class provides the basic window management and rendering capabilities
  * using raylib. It handles:
  * 1. Window initialization with title and dimensions
  * 2. Basic drawing operations (shapes, sprites, textures)
  * 3. Screen clearing each frame
  */
-class CoreEngine {
+class CoreEngine
+{
 public:
     CoreEngine();
     ~CoreEngine();
 
     // Core initialization and cleanup
-    bool Initialize(int width, int height, const std::string& title);
+    bool Initialize(int width, int height, const std::string &title);
     void Shutdown();
 
     // Main loop control
@@ -37,10 +38,10 @@ public:
     void DrawTexture(Texture2D texture, int x, int y, Color tint = WHITE);
     void DrawSprite(Texture2D texture, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint = WHITE);
     void DrawLine(int startPosX, int startPosY, int endPosX, int endPosY, Color color);
-    void DrawText(const char* text, int posX, int posY, int fontSize, Color color);
+    void DrawText(const char *text, int posX, int posY, int fontSize, Color color);
 
     // Texture management
-    Texture2D LoadTextureFromFile(const std::string& filename);
+    Texture2D LoadTextureFromFile(const std::string &filename);
     void UnloadTexture(Texture2D texture);
     RenderTexture2D LoadRenderTexture(int width, int height);
     void UnloadRenderTexture(RenderTexture2D target);
@@ -59,7 +60,7 @@ public:
     bool CheckCollisionPointCircle(Vector2 point, Vector2 center, float radius) const;
 
     // Render object management (for basic scene rendering)
-    void AddRenderObject(const RenderObject& obj);
+    void AddRenderObject(const RenderObject &obj);
     void ClearRenderObjects();
     void RenderAllObjects();
 
@@ -73,8 +74,10 @@ private:
 };
 
 // Simple render object structure for basic rendering
-struct RenderObject {
-    enum Type {
+struct RenderObject
+{
+    enum Type
+    {
         RECTANGLE,
         CIRCLE,
         TEXTURE,
@@ -84,21 +87,21 @@ struct RenderObject {
     Type type;
     Vector2 position;
     Color color;
-    
+
     // Rectangle specific
     Vector2 size;
-    
+
     // Circle specific
     float radius;
-    
+
     // Texture/Sprite specific
     Texture2D texture;
-    Rectangle sourceRect;  // For sprite sheets
-    Rectangle destRect;    // Destination rectangle
-    Vector2 origin;        // Origin point for rotation
-    float rotation;        // Rotation in degrees
+    Rectangle sourceRect; // For sprite sheets
+    Rectangle destRect;   // Destination rectangle
+    Vector2 origin;       // Origin point for rotation
+    float rotation;       // Rotation in degrees
     Color tint;           // Texture tinting
-    
+
     // Constructors for different types
     static RenderObject CreateRectangle(float x, float y, float width, float height, Color color);
     static RenderObject CreateCircle(float x, float y, float radius, Color color);

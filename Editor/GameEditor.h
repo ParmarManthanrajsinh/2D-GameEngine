@@ -10,7 +10,8 @@
 #include "GameEditorLayout.h"
 #include "CoreEngine.h"
 
-class GameEditor {
+class GameEditor 
+{
 public:
     GameEditor(int width, int height, const char* title);
     ~GameEditor();
