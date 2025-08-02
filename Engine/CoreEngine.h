@@ -11,7 +11,9 @@ struct RenderObject;
  * Core Engine Foundation - Milestone 1
  *
  * This class provides the basic window management and rendering capabilities
- * using raylib. It handles:
+ * using raylib. 
+ * 
+ * It handles:
  * 1. Window initialization with title and dimensions
  * 2. Basic drawing operations (shapes, sprites, textures)
  * 3. Screen clearing each frame
