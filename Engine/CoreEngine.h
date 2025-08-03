@@ -23,11 +23,11 @@ struct RenderObject;
 class CoreEngine
 {
 public:
-    void SetSimulationState(bool running) { m_IsRunning = running; }
-    bool IsRunning() const { return m_IsRunning; }
+    void SetSimulationState(bool running) { bm_IsRunning = running; }
+    bool b_IsRunning() const { return bm_IsRunning; }
 
 private:
-    bool m_IsRunning = false;
+    bool bm_IsRunning = false;
 public:
     CoreEngine();
     ~CoreEngine();

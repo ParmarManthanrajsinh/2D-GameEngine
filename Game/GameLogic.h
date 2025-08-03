@@ -21,7 +21,7 @@ class GameLogic
     bool bm_IsRunning = false;
 
 public:
-    bool IsRunning() const { return bm_IsRunning; }
+    bool b_IsRunning() const { return bm_IsRunning; }
     void SetRunning(bool running) { bm_IsRunning = running; }
 
     GameLogic(CoreEngine *core_engine);
