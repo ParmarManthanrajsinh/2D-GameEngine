@@ -4,7 +4,9 @@
 // Optional: disable saving to file
 // ImGui::GetIO().IniFilename = nullptr;
 
-static const char* EditorDefaultIni = R"(
+// Default docking layout for the editor, loaded on startup
+static const char* sc_EDITOR_DEFAULT_INI = 
+R"(
 [Window][WindowOverViewport_11111111]
 Pos=0,28
 Size=1280,692
@@ -62,5 +64,5 @@ DockSpace       ID=0x08BD597D Window=0x1BBC0F80 Pos=0,28 Size=1280,692 Split=X S
 
 inline void LoadEditorDefaultIni()
 {
-    ImGui::LoadIniSettingsFromMemory(EditorDefaultIni, strlen(EditorDefaultIni));
+    ImGui::LoadIniSettingsFromMemory(sc_EDITOR_DEFAULT_INI, strlen(sc_EDITOR_DEFAULT_INI));
 }
