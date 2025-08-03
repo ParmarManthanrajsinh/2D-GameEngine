@@ -18,13 +18,12 @@ class CoreEngine;
  */
 class GameLogic
 {
+    bool bm_IsRunning = false;
+    
 public:
-    bool IsRunning() const { return m_isRunning; }
-    void SetRunning(bool running) { m_isRunning = running; }
+    bool IsRunning() const { return bm_IsRunning; }
+    void SetRunning(bool running) { bm_IsRunning = running; }
 
-private:
-    bool m_isRunning = false;
-public:
     GameLogic(CoreEngine *core_engine);
     virtual ~GameLogic() = default;
 
@@ -47,7 +46,7 @@ protected:
     CoreEngine *m_CoreEngine;
 
     // Example game entities - developers can replace with their own
-    struct Player
+    struct t_Player
     {
         Vector2 position = {400, 300};
         float speed = 200.0f;
@@ -55,7 +54,7 @@ protected:
         Color color = BLUE;
     };
 
-    struct Enemy
+    struct t_Enemy
     {
         Vector2 position = {0, 0};
         Vector2 velocity = {0, 0};
@@ -64,7 +63,7 @@ protected:
         bool active = true;
     };
 
-    struct Bullet
+    struct t_Bullet
     {
         Vector2 position = {0, 0};
         Vector2 velocity = {0, 0};
@@ -74,22 +73,22 @@ protected:
     };
 
     // Example game state
-    Player m_player;
-    std::vector<Enemy> m_enemies;
-    std::vector<Bullet> m_bullets;
+    t_Player m_player;
+    std::vector<t_Enemy> m_enemies;
+    std::vector<t_Bullet> m_bullets;
     int m_score = 0;
-    bool m_gameStarted = false;
-    float m_enemySpawnTimer = 0.0f;
+    bool bm_GameStarted = false;
+    float m_EnemySpawnTimer = 0.0f;
 
     // Scene bounds (set by the SceneViewPanel)
-    float m_sceneWidth = 800.0f;
+    float m_SceneWidth = 800.0f;
     float m_SceneHeight = 600.0f;
 
 public:
     // Method to set scene bounds from the editor
     void SetSceneBounds(float width, float height)
     {
-        m_sceneWidth = width;
+        m_SceneWidth = width;
         m_SceneHeight = height;
     }
 };

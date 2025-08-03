@@ -10,8 +10,8 @@ void GameLogic::Init()
     // Initialize game state
     m_player.position = {400, 300};
     m_score = 0;
-    m_gameStarted = true;
-    m_enemySpawnTimer = 0.0f;
+    bm_GameStarted = true;
+    m_EnemySpawnTimer = 0.0f;
 
     // Clear any existing entities
     m_enemies.clear();
@@ -20,7 +20,7 @@ void GameLogic::Init()
     // Spawn initial enemies
     for (int i = 0; i < 3; i++)
     {
-        Enemy enemy;
+        t_Enemy enemy;
         enemy.position = {static_cast<float>(100 + i * 200), static_cast<float>(100 + i * 50)};
         enemy.velocity = {static_cast<float>((i % 2 == 0) ? 50 : -50), static_cast<float>(30 + i * 10)};
         m_enemies.push_back(enemy);
@@ -29,7 +29,7 @@ void GameLogic::Init()
 
 void GameLogic::Update(float deltaTime)
 {
-    if (!m_gameStarted || !m_CoreEngine)
+    if (!bm_GameStarted || !m_CoreEngine)
     {
         return;
     }
@@ -54,7 +54,7 @@ void GameLogic::Update(float deltaTime)
     // Shoot bullets with SPACE
     if (IsKeyPressed(KEY_SPACE))
     {
-        Bullet bullet;
+        t_Bullet bullet;
         bullet.position = m_player.position;
         bullet.velocity = {0, -300}; // Shoot upward
         m_bullets.push_back(bullet);
@@ -63,8 +63,8 @@ void GameLogic::Update(float deltaTime)
     // Keep player in scene bounds
     if (m_player.position.x < m_player.radius)
         m_player.position.x = m_player.radius;
-    if (m_player.position.x > m_sceneWidth - m_player.radius)
-        m_player.position.x = m_sceneWidth - m_player.radius;
+    if (m_player.position.x > m_SceneWidth - m_player.radius)
+        m_player.position.x = m_SceneWidth - m_player.radius;
     if (m_player.position.y < m_player.radius)
         m_player.position.y = m_player.radius;
     if (m_player.position.y > m_SceneHeight - m_player.radius)
@@ -80,7 +80,7 @@ void GameLogic::Update(float deltaTime)
 
             // Remove bullets that are off screen
             if (bullet.position.y < 0 || bullet.position.y > m_SceneHeight ||
-                bullet.position.x < 0 || bullet.position.x > m_sceneWidth)
+                bullet.position.x < 0 || bullet.position.x > m_SceneWidth)
             {
                 bullet.active = false;
             }
@@ -96,7 +96,7 @@ void GameLogic::Update(float deltaTime)
             enemy.position.y += enemy.velocity.y * deltaTime;
 
             // Bounce off walls
-            if (enemy.position.x <= enemy.radius || enemy.position.x >= m_sceneWidth - enemy.radius)
+            if (enemy.position.x <= enemy.radius || enemy.position.x >= m_SceneWidth - enemy.radius)
             {
                 enemy.velocity.x *= -1;
             }
@@ -130,23 +130,23 @@ void GameLogic::Update(float deltaTime)
     }
 
     // Spawn new enemies periodically
-    m_enemySpawnTimer += deltaTime;
-    if (m_enemySpawnTimer > 3.0f)
+    m_EnemySpawnTimer += deltaTime;
+    if (m_EnemySpawnTimer > 3.0f)
     {
-        Enemy enemy;
-        enemy.position = {static_cast<float>(rand() % static_cast<int>(m_sceneWidth - 100) + 50), 50};
+        t_Enemy enemy;
+        enemy.position = {static_cast<float>(rand() % static_cast<int>(m_SceneWidth - 100) + 50), 50};
         enemy.velocity = {static_cast<float>(rand() % 100 - 50), static_cast<float>(rand() % 50 + 50)};
         m_enemies.push_back(enemy);
-        m_enemySpawnTimer = 0.0f;
+        m_EnemySpawnTimer = 0.0f;
     }
 
     // Remove inactive entities
     m_bullets.erase(std::remove_if(m_bullets.begin(), m_bullets.end(),
-                                   [](const Bullet &b)
+                                   [](const t_Bullet &b)
                                    { return !b.active; }),
                     m_bullets.end());
     m_enemies.erase(std::remove_if(m_enemies.begin(), m_enemies.end(),
-                                   [](const Enemy &e)
+                                   [](const t_Enemy &e)
                                    { return !e.active; }),
                     m_enemies.end());
 }
@@ -158,7 +158,7 @@ void GameLogic::Render()
         return;
     }
     // Render background
-    m_CoreEngine->DrawRectangle(0, 0, static_cast<int>(m_sceneWidth), static_cast<int>(m_SceneHeight), DARKBLUE);
+    m_CoreEngine->DrawRectangle(0, 0, static_cast<int>(m_SceneWidth), static_cast<int>(m_SceneHeight), DARKBLUE);
 
     // Render player
     m_CoreEngine->DrawCircle(static_cast<int>(m_player.position.x), static_cast<int>(m_player.position.y),
