@@ -58,8 +58,8 @@ void MenuBarPanel::Render()
     }
 }
 
-HierarchyPanel::HierarchyPanel(t_GameObject *gameObjects, int &object_count, int &selected_object, char *log_buffer)
-    : m_GameObjects(gameObjects), m_ObjectCount(object_count), m_SelectedObject(selected_object), m_LogBuffer(log_buffer) {}
+HierarchyPanel::HierarchyPanel(t_GameObject *game_objects, int &object_count, int &selected_object, char *log_buffer)
+    : m_GameObjects(game_objects), m_ObjectCount(object_count), m_SelectedObject(selected_object), m_LogBuffer(log_buffer) {}
 
 void HierarchyPanel::Render()
 {
@@ -93,8 +93,8 @@ void HierarchyPanel::Render()
     ImGui::End();
 }
 
-InspectorPanel::InspectorPanel(t_GameObject *gameObjects, int &object_count, int &selected_object)
-    : m_GameObjects(gameObjects), m_ObjectCount(object_count), m_SelectedObject(selected_object) {}
+InspectorPanel::InspectorPanel(t_GameObject *game_objects, int &object_count, int &selected_object)
+    : m_GameObjects(game_objects), m_ObjectCount(object_count), m_SelectedObject(selected_object) {}
 
 void InspectorPanel::Render()
 {
@@ -126,8 +126,8 @@ void InspectorPanel::Render()
     ImGui::End();
 }
 
-SceneViewPanel::SceneViewPanel(t_GameObject *gameObjects, int &object_count, int &selected_object, CoreEngine *core_engine)
-    : m_GameObjects(gameObjects), m_ObjectCount(object_count), m_SelectedObject(selected_object),
+SceneViewPanel::SceneViewPanel(t_GameObject *game_objects, int &object_count, int &selected_object, CoreEngine *core_engine)
+    : m_GameObjects(game_objects), m_ObjectCount(object_count), m_SelectedObject(selected_object),
       m_CoreEngine(core_engine), m_RenderTexture({0}), bm_RenderTextureInitialized(false),
       m_SceneWidth(800), m_SceneHeight(600), m_GameLogic(nullptr), bm_GameInitialized(false)
 {

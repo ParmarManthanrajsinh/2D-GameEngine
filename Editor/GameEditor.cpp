@@ -14,7 +14,7 @@ class GameEditor::Impl
 {
 public:
     // Demo data
-    t_GameObject gameObjects[10];
+    t_GameObject game_objects[10];
     int object_count = 3;
     int selected_object = 0;
     bool b_ShowDemo = false;
@@ -35,21 +35,21 @@ public:
     Impl() 
     {
         // Initialize some demo objects
-        strcpy_s(gameObjects[0].name, "Player");
-        strcpy_s(gameObjects[1].name, "Camera");
-        strcpy_s(gameObjects[2].name, "Light");
+        strcpy_s(game_objects[0].name, "Player");
+        strcpy_s(game_objects[1].name, "Camera");
+        strcpy_s(game_objects[2].name, "Light");
 
-        gameObjects[1].position[1] = 5.0f;
-        gameObjects[2].position[0] = 2.0f;
-        gameObjects[2].position[1] = 3.0f;
+        game_objects[1].position[1] = 5.0f;
+        game_objects[2].position[0] = 2.0f;
+        game_objects[2].position[1] = 3.0f;
 
         // CoreEngine initialization will be done in GameEditor::Init()
 
         // Initialize panels
         menu_bar_panel = std::make_unique<MenuBarPanel>(log_buffer, b_ShowDemo);
-        hierarchy_panel = std::make_unique<HierarchyPanel>(gameObjects, object_count, selected_object, log_buffer);
-        inspector_panel = std::make_unique<InspectorPanel>(gameObjects, object_count, selected_object);
-        scene_view_panel = std::make_unique<SceneViewPanel>(gameObjects, object_count, selected_object, &core_engine);
+        hierarchy_panel = std::make_unique<HierarchyPanel>(game_objects, object_count, selected_object, log_buffer);
+        inspector_panel = std::make_unique<InspectorPanel>(game_objects, object_count, selected_object);
+        scene_view_panel = std::make_unique<SceneViewPanel>(game_objects, object_count, selected_object, &core_engine);
         console_panel = std::make_unique<ConsolePanel>(log_buffer);
         assets_panel = std::make_unique<AssetsPanel>();
     }

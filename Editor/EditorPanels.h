@@ -27,7 +27,7 @@ private:
 class HierarchyPanel
 {
 public:
-    HierarchyPanel(t_GameObject *gameObjects, int &ObjectCount, int &selected_object, char *log_buffer);
+    HierarchyPanel(t_GameObject *game_objects, int &ObjectCount, int &selected_object, char *log_buffer);
     void Render();
 
 private:
@@ -40,7 +40,7 @@ private:
 class InspectorPanel
 {
 public:
-    InspectorPanel(t_GameObject *gameObjects, int &ObjectCount, int &selected_object);
+    InspectorPanel(t_GameObject *game_objects, int &ObjectCount, int &selected_object);
     void Render();
 
 private:
@@ -52,7 +52,7 @@ private:
 class SceneViewPanel
 {
 public:
-    SceneViewPanel(t_GameObject *gameObjects, int &ObjectCount, int &selected_object, CoreEngine *core_engine);
+    SceneViewPanel(t_GameObject *game_objects, int &ObjectCount, int &selected_object, CoreEngine *core_engine);
     ~SceneViewPanel();
     void Render();
     void Update(); 
