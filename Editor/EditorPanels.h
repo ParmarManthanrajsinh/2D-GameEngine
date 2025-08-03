@@ -9,82 +9,88 @@
 #include "GameLogic.h"
 
 // Forward declarations
-struct GameObject;
+struct t_GameObject;
 class CoreEngine;
 class GameLogic;
 
-class MenuBarPanel {
+class MenuBarPanel
+{
 public:
-    MenuBarPanel(char* logBuffer, bool& showDemo);
+    MenuBarPanel(char *log_buffer, bool &b_ShowDemo);
     void Render();
 
 private:
-    char* m_logBuffer;
-    bool& m_showDemo;
+    char *m_LogBuffer;
+    bool &bm_ShowDemo;
 };
 
-class HierarchyPanel {
+class HierarchyPanel
+{
 public:
-    HierarchyPanel(GameObject* gameObjects, int& objectCount, int& selectedObject, char* logBuffer);
+    HierarchyPanel(t_GameObject *gameObjects, int &ObjectCount, int &selected_object, char *log_buffer);
     void Render();
 
 private:
-    GameObject* m_gameObjects;
-    int& m_objectCount;
-    int& m_selectedObject;
-    char* m_logBuffer;
+    t_GameObject *m_GameObjects;
+    int &m_ObjectCount;
+    int &m_SelectedObject;
+    char *m_LogBuffer;
 };
 
-class InspectorPanel {
+class InspectorPanel
+{
 public:
-    InspectorPanel(GameObject* gameObjects, int& objectCount, int& selectedObject);
+    InspectorPanel(t_GameObject *gameObjects, int &ObjectCount, int &selected_object);
     void Render();
 
 private:
-    GameObject* m_gameObjects;
-    int& m_objectCount;
-    int& m_selectedObject;
+    t_GameObject *m_GameObjects;
+    int &m_ObjectCount;
+    int &m_SelectedObject;
 };
 
-class SceneViewPanel {
+class SceneViewPanel
+{
 public:
-    SceneViewPanel(GameObject* gameObjects, int& objectCount, int& selectedObject, CoreEngine* coreEngine);
+    SceneViewPanel(t_GameObject *gameObjects, int &ObjectCount, int &selected_object, CoreEngine *core_engine);
     ~SceneViewPanel();
     void Render();
-    void Update(); // Handle input and scene updates
+    void Update(); 
 
 private:
-    GameObject* m_gameObjects;
-    int& m_objectCount;
-    int& m_selectedObject;
-    
-    // Rendering
-    CoreEngine* m_coreEngine;  // Pointer to core engine for rendering and input
+    t_GameObject *m_GameObjects;
+    int &m_ObjectCount;
+    int &m_SelectedObject;
 
-    RenderTexture2D m_renderTexture;
-    bool m_renderTextureInitialized;
-    int m_sceneWidth;
-    int m_sceneHeight;
-    
+    // Rendering
+    CoreEngine *m_CoreEngine; // Pointer to core engine for rendering and input
+
+    RenderTexture2D m_RenderTexture;
+    bool bm_RenderTextureInitialized;
+    int m_SceneWidth;
+    int m_SceneHeight;
+
     // Game logic integration
-    GameLogic* m_gameLogic;
-    bool m_gameInitialized;
-    
+    GameLogic *m_GameLogic;
+    bool bm_GameInitialized;
+
     void InitializeRenderTexture(int width, int height);
     void RenderScene();
     void HandleSceneInput();
 };
 
-class ConsolePanel {
+class ConsolePanel
+{
 public:
-    ConsolePanel(char* logBuffer);
+    ConsolePanel(char *log_buffer);
     void Render();
 
 private:
-    char* m_logBuffer;
+    char *m_LogBuffer;
 };
 
-class AssetsPanel {
+class AssetsPanel
+{
 public:
     AssetsPanel();
     void Render();

@@ -1,37 +1,39 @@
 #include "GameEditor.h"
 
 // Simple game object structure for demo
-struct GameObject
+struct t_GameObject
 {
     char name[64] = "";
     float position[3] = { 0.0f, 0.0f, 0.0f };
     float rotation[3] = { 0.0f, 0.0f, 0.0f };
     float scale[3] = { 1.0f, 1.0f, 1.0f };
-    bool enabled = true;
+    bool b_Enabled = true;
 };
 
-class GameEditor::Impl {
+class GameEditor::Impl 
+{
 public:
     // Demo data
-    GameObject gameObjects[10];
-    int objectCount = 3;
-    int selectedObject = 0;
-    bool showDemo = false;
-    char logBuffer[1024] = "Engine initialized successfully\nReady to create!\n";
+    t_GameObject gameObjects[10];
+    int object_count = 3;
+    int selected_object = 0;
+    bool b_ShowDemo = false;
+    char log_buffer[1024] = "Engine initialized successfully\nReady to create!\n";
     ImGuiViewport* viewport = nullptr;
 
     // Core engine
-    CoreEngine coreEngine;
+    CoreEngine core_engine;
 
     // Panel instances for better modularity
-    std::unique_ptr<MenuBarPanel> menuBarPanel;
-    std::unique_ptr<HierarchyPanel> hierarchyPanel;
-    std::unique_ptr<InspectorPanel> inspectorPanel;
-    std::unique_ptr<SceneViewPanel> sceneViewPanel;
-    std::unique_ptr<ConsolePanel> consolePanel;
-    std::unique_ptr<AssetsPanel> assetsPanel;
+    std::unique_ptr<MenuBarPanel> menu_bar_panel;
+    std::unique_ptr<HierarchyPanel> hierarchy_panel;
+    std::unique_ptr<InspectorPanel> inspector_panel;
+    std::unique_ptr<SceneViewPanel> scene_view_panel;
+    std::unique_ptr<ConsolePanel> console_panel;
+    std::unique_ptr<AssetsPanel> assets_panel;
 
-    Impl() {
+    Impl() 
+    {
         // Initialize some demo objects
         strcpy_s(gameObjects[0].name, "Player");
         strcpy_s(gameObjects[1].name, "Camera");
@@ -44,27 +46,31 @@ public:
         // CoreEngine initialization will be done in GameEditor::Init()
 
         // Initialize panels
-        menuBarPanel = std::make_unique<MenuBarPanel>(logBuffer, showDemo);
-        hierarchyPanel = std::make_unique<HierarchyPanel>(gameObjects, objectCount, selectedObject, logBuffer);
-        inspectorPanel = std::make_unique<InspectorPanel>(gameObjects, objectCount, selectedObject);
-        sceneViewPanel = std::make_unique<SceneViewPanel>(gameObjects, objectCount, selectedObject, &coreEngine);
-        consolePanel = std::make_unique<ConsolePanel>(logBuffer);
-        assetsPanel = std::make_unique<AssetsPanel>();
+        menu_bar_panel = std::make_unique<MenuBarPanel>(log_buffer, b_ShowDemo);
+        hierarchy_panel = std::make_unique<HierarchyPanel>(gameObjects, object_count, selected_object, log_buffer);
+        inspector_panel = std::make_unique<InspectorPanel>(gameObjects, object_count, selected_object);
+        scene_view_panel = std::make_unique<SceneViewPanel>(gameObjects, object_count, selected_object, &core_engine);
+        console_panel = std::make_unique<ConsolePanel>(log_buffer);
+        assets_panel = std::make_unique<AssetsPanel>();
     }
 };
 
 GameEditor::GameEditor(int width, int height, const char* title) 
-    : pImpl(std::make_unique<Impl>()) {
+    : PImpl(std::make_unique<Impl>()) 
+{
     Init(width, height, title);
 }
 
-GameEditor::~GameEditor() {
+GameEditor::~GameEditor() 
+{
     Close();
 }
 
-void GameEditor::Init(int width, int height, const char* title) {
+void GameEditor::Init(int width, int height, const char* title) 
+{
     // Initialize core engine (this will create the raylib window)
-    if (!pImpl->coreEngine.Initialize(width, height, std::string(title))) {
+    if (!PImpl->core_engine.Initialize(width, height, std::string(title))) 
+    {
         std::cerr << "Failed to initialize CoreEngine!" << std::endl;
         return;
     }
@@ -80,43 +86,45 @@ void GameEditor::Init(int width, int height, const char* title) {
     LoadEditorDefaultIni();
     
     SetTargetFPS(60);
-    pImpl->viewport = ImGui::GetMainViewport();
+    PImpl->viewport = ImGui::GetMainViewport();
 }
 
-void GameEditor::Run() {
+void GameEditor::Run() 
+{
     while (!WindowShouldClose())
     {
-        pImpl->coreEngine.BeginFrame();
-        pImpl->coreEngine.ClearScreen(DARKGRAY);
+        PImpl->core_engine.BeginFrame();
+        PImpl->core_engine.ClearScreen(DARKGRAY);
 
         rlImGuiBegin();
 
         // Create dockspace
-        ImGui::DockSpaceOverViewport(0, pImpl->viewport);
+        ImGui::DockSpaceOverViewport(0, PImpl->viewport);
 
         // Update scene panel for input handling
-        pImpl->sceneViewPanel->Update();
+        PImpl->scene_view_panel->Update();
         
         // Render all UI panels using dedicated panel classes
-        pImpl->menuBarPanel->Render();
-        pImpl->hierarchyPanel->Render();
-        pImpl->inspectorPanel->Render();
-        pImpl->sceneViewPanel->Render();
-        pImpl->consolePanel->Render();
-        pImpl->assetsPanel->Render();
+        PImpl->menu_bar_panel->Render();
+        PImpl->hierarchy_panel->Render();
+        PImpl->inspector_panel->Render();
+        PImpl->scene_view_panel->Render();
+        PImpl->console_panel->Render();
+        PImpl->assets_panel->Render();
 
         // Show ImGui demo if requested
-        if (pImpl->showDemo)
+        if (PImpl->b_ShowDemo)
         {
-            ImGui::ShowDemoWindow(&pImpl->showDemo);
+            ImGui::ShowDemoWindow(&PImpl->b_ShowDemo);
         }
 
         rlImGuiEnd();
-        pImpl->coreEngine.EndFrame();
+        PImpl->core_engine.EndFrame();
     }
 }
 
-void GameEditor::Close() {
+void GameEditor::Close() 
+{
     rlImGuiShutdown();
-    pImpl->coreEngine.Shutdown();
+    PImpl->core_engine.Shutdown();
 }

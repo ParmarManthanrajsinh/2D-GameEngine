@@ -28,5 +28,5 @@ private:
 
     // Forward declaration for pImpl pattern
     class Impl;
-    std::unique_ptr<Impl> pImpl;
+    std::unique_ptr<Impl> PImpl;
 };

@@ -1,7 +1,7 @@
 #include "GameLogic.h"
 
-GameLogic::GameLogic(CoreEngine *coreEngine)
-    : m_coreEngine(coreEngine)
+GameLogic::GameLogic(CoreEngine *core_engine)
+    : m_CoreEngine(core_engine)
 {
 }
 
@@ -29,7 +29,7 @@ void GameLogic::Init()
 
 void GameLogic::Update(float deltaTime)
 {
-    if (!m_gameStarted || !m_coreEngine)
+    if (!m_gameStarted || !m_CoreEngine)
     {
         return;
     }
@@ -67,8 +67,8 @@ void GameLogic::Update(float deltaTime)
         m_player.position.x = m_sceneWidth - m_player.radius;
     if (m_player.position.y < m_player.radius)
         m_player.position.y = m_player.radius;
-    if (m_player.position.y > m_sceneHeight - m_player.radius)
-        m_player.position.y = m_sceneHeight - m_player.radius;
+    if (m_player.position.y > m_SceneHeight - m_player.radius)
+        m_player.position.y = m_SceneHeight - m_player.radius;
 
     // Update bullets
     for (auto &bullet : m_bullets)
@@ -79,7 +79,7 @@ void GameLogic::Update(float deltaTime)
             bullet.position.y += bullet.velocity.y * deltaTime;
 
             // Remove bullets that are off screen
-            if (bullet.position.y < 0 || bullet.position.y > m_sceneHeight ||
+            if (bullet.position.y < 0 || bullet.position.y > m_SceneHeight ||
                 bullet.position.x < 0 || bullet.position.x > m_sceneWidth)
             {
                 bullet.active = false;
@@ -100,7 +100,7 @@ void GameLogic::Update(float deltaTime)
             {
                 enemy.velocity.x *= -1;
             }
-            if (enemy.position.y <= enemy.radius || enemy.position.y >= m_sceneHeight - enemy.radius)
+            if (enemy.position.y <= enemy.radius || enemy.position.y >= m_SceneHeight - enemy.radius)
             {
                 enemy.velocity.y *= -1;
             }
@@ -120,7 +120,7 @@ void GameLogic::Update(float deltaTime)
             {
                 continue;
             }
-            if (m_coreEngine->CheckCollisionCircles(bullet.position, bullet.radius, enemy.position, enemy.radius))
+            if (m_CoreEngine->CheckCollisionCircles(bullet.position, bullet.radius, enemy.position, enemy.radius))
             {
                 bullet.active = false;
                 enemy.active = false;
@@ -153,15 +153,15 @@ void GameLogic::Update(float deltaTime)
 
 void GameLogic::Render()
 {
-    if (!m_coreEngine)
+    if (!m_CoreEngine)
     {
         return;
     }
     // Render background
-    m_coreEngine->DrawRectangle(0, 0, static_cast<int>(m_sceneWidth), static_cast<int>(m_sceneHeight), DARKBLUE);
+    m_CoreEngine->DrawRectangle(0, 0, static_cast<int>(m_sceneWidth), static_cast<int>(m_SceneHeight), DARKBLUE);
 
     // Render player
-    m_coreEngine->DrawCircle(static_cast<int>(m_player.position.x), static_cast<int>(m_player.position.y),
+    m_CoreEngine->DrawCircle(static_cast<int>(m_player.position.x), static_cast<int>(m_player.position.y),
                              m_player.radius, m_player.color);
 
     // Render bullets
@@ -169,7 +169,7 @@ void GameLogic::Render()
     {
         if (bullet.active)
         {
-            m_coreEngine->DrawCircle
+            m_CoreEngine->DrawCircle
             (
                 static_cast<int>(bullet.position.x), 
                 static_cast<int>(bullet.position.y),
@@ -184,7 +184,7 @@ void GameLogic::Render()
     {
         if (enemy.active)
         {
-            m_coreEngine->DrawCircle
+            m_CoreEngine->DrawCircle
             (
                 static_cast<int>(enemy.position.x), 
                 static_cast<int>(enemy.position.y),
@@ -195,11 +195,11 @@ void GameLogic::Render()
     }
 
     // Render UI
-    m_coreEngine->DrawText("SPACE SHOOTER DEMO", 10, 10, 20, WHITE);
-    m_coreEngine->DrawText(("Score: " + std::to_string(m_score)).c_str(), 10, 40, 16, WHITE);
-    m_coreEngine->DrawText("WASD: Move, SPACE: Shoot", 10, 60, 14, LIGHTGRAY);
+    m_CoreEngine->DrawText("SPACE SHOOTER DEMO", 10, 10, 20, WHITE);
+    m_CoreEngine->DrawText(("Score: " + std::to_string(m_score)).c_str(), 10, 40, 16, WHITE);
+    m_CoreEngine->DrawText("WASD: Move, SPACE: Shoot", 10, 60, 14, LIGHTGRAY);
 
     // Show entity counts
-    m_coreEngine->DrawText(("Enemies: " + std::to_string(m_enemies.size())).c_str(), 10, 80, 14, LIGHTGRAY);
-    m_coreEngine->DrawText(("Bullets: " + std::to_string(m_bullets.size())).c_str(), 10, 100, 14, LIGHTGRAY);
+    m_CoreEngine->DrawText(("Enemies: " + std::to_string(m_enemies.size())).c_str(), 10, 80, 14, LIGHTGRAY);
+    m_CoreEngine->DrawText(("Bullets: " + std::to_string(m_bullets.size())).c_str(), 10, 100, 14, LIGHTGRAY);
 }

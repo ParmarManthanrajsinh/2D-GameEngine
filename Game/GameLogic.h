@@ -25,7 +25,7 @@ public:
 private:
     bool m_isRunning = false;
 public:
-    GameLogic(CoreEngine *coreEngine);
+    GameLogic(CoreEngine *core_engine);
     virtual ~GameLogic() = default;
 
     // Called once when the game starts
@@ -40,11 +40,11 @@ public:
     // Get core engine for advanced usage
     CoreEngine *GetCoreEngine() const 
     { 
-        return m_coreEngine; 
+        return m_CoreEngine; 
     }
 
 protected:
-    CoreEngine *m_coreEngine;
+    CoreEngine *m_CoreEngine;
 
     // Example game entities - developers can replace with their own
     struct Player
@@ -83,13 +83,13 @@ protected:
 
     // Scene bounds (set by the SceneViewPanel)
     float m_sceneWidth = 800.0f;
-    float m_sceneHeight = 600.0f;
+    float m_SceneHeight = 600.0f;
 
 public:
     // Method to set scene bounds from the editor
     void SetSceneBounds(float width, float height)
     {
         m_sceneWidth = width;
-        m_sceneHeight = height;
+        m_SceneHeight = height;
     }
 };
