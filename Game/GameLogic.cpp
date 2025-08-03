@@ -120,7 +120,7 @@ void GameLogic::Update(float deltaTime)
             {
                 continue;
             }
-            if (m_CoreEngine->CheckCollisionCircles(bullet.position, bullet.radius, enemy.position, enemy.radius))
+            if (m_CoreEngine->b_CheckCollisionCircles(bullet.position, bullet.radius, enemy.position, enemy.radius))
             {
                 bullet.active = false;
                 enemy.active = false;

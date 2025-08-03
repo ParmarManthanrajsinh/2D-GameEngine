@@ -33,11 +33,11 @@ public:
     ~CoreEngine();
 
     // Core initialization and cleanup
-    bool Initialize(int width, int height, const std::string &title);
+    bool b_Initialize(int width, int height, const std::string &title);
     void Shutdown();
 
     // Main loop control
-    bool ShouldClose() const;
+    bool b_ShouldClose() const;
     void BeginFrame();
     void EndFrame();
 
@@ -63,11 +63,11 @@ public:
     int GetScreenHeight() const;
 
     // Collision detection
-    bool CheckCollisionRecs(Rectangle rec1, Rectangle rec2) const;
-    bool CheckCollisionCircles(Vector2 center1, float radius1, Vector2 center2, float radius2) const;
-    bool CheckCollisionCircleRec(Vector2 center, float radius, Rectangle rec) const;
-    bool CheckCollisionPointRec(Vector2 point, Rectangle rec) const;
-    bool CheckCollisionPointCircle(Vector2 point, Vector2 center, float radius) const;
+    bool b_CheckCollisionRecs(Rectangle rec1, Rectangle rec2) const;
+    bool b_CheckCollisionCircles(Vector2 center1, float radius1, Vector2 center2, float radius2) const;
+    bool b_CheckCollisionCircleRec(Vector2 center, float radius, Rectangle rec) const;
+    bool b_CheckCollisionPointRec(Vector2 point, Rectangle rec) const;
+    bool b_CheckCollisionPointCircle(Vector2 point, Vector2 center, float radius) const;
 
     // Render object management (for basic scene rendering)
     void AddRenderObject(const RenderObject &obj);
@@ -113,8 +113,8 @@ struct RenderObject
     Color tint;           // Texture tinting
 
     // Constructors for different types
-    static RenderObject CreateRectangle(float x, float y, float width, float height, Color color);
-    static RenderObject CreateCircle(float x, float y, float radius, Color color);
-    static RenderObject CreateTexture(Texture2D tex, float x, float y, Color tint = WHITE);
-    static RenderObject CreateSprite(Texture2D tex, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint = WHITE);
+    static RenderObject sf_CreateRectangle(float x, float y, float width, float height, Color color);
+    static RenderObject sf_CreateCircle(float x, float y, float radius, Color color);
+    static RenderObject sf_CreateTexture(Texture2D tex, float x, float y, Color tint = WHITE);
+    static RenderObject sf_CreateSprite(Texture2D tex, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint = WHITE);
 };

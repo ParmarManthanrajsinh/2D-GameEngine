@@ -69,7 +69,7 @@ GameEditor::~GameEditor()
 void GameEditor::Init(int width, int height, const char* title) 
 {
     // Initialize core engine (this will create the raylib window)
-    if (!PImpl->core_engine.Initialize(width, height, std::string(title))) 
+    if (!PImpl->core_engine.b_Initialize(width, height, std::string(title))) 
     {
         std::cerr << "Failed to initialize CoreEngine!" << std::endl;
         return;

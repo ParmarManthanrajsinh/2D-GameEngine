@@ -131,7 +131,7 @@ SceneViewPanel::SceneViewPanel(t_GameObject *game_objects, int &object_count, in
       m_CoreEngine(core_engine), m_RenderTexture({0}), bm_RenderTextureInitialized(false),
       m_SceneWidth(800), m_SceneHeight(600), m_GameLogic(nullptr), bm_GameInitialized(false)
 {
-    // Initialize game logic
+    // b_Initialize game logic
     if (m_CoreEngine)
     {
         m_GameLogic = new GameLogic(m_CoreEngine);
@@ -213,7 +213,7 @@ void SceneViewPanel::RenderScene()
         return; // Don't render if texture isn't initialized
     }
 
-    // Initialize game logic if not done yet
+    // b_Initialize game logic if not done yet
     if (m_GameLogic && !bm_GameInitialized)
     {
         m_GameLogic->SetSceneBounds((float)m_SceneWidth, (float)m_SceneHeight);

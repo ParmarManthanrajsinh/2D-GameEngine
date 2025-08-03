@@ -14,7 +14,7 @@ CoreEngine::~CoreEngine()
     }
 }
 
-bool CoreEngine::Initialize(int width, int height, const std::string &title)
+bool CoreEngine::b_Initialize(int width, int height, const std::string &title)
 {
     if (bm_Initialized)
     {
@@ -70,7 +70,7 @@ void CoreEngine::Shutdown()
     std::cout << "CoreEngine: Shutdown complete" << std::endl;
 }
 
-bool CoreEngine::ShouldClose() const
+bool CoreEngine::b_ShouldClose() const
 {
     return WindowShouldClose();
 }
@@ -288,7 +288,7 @@ void CoreEngine::RenderAllObjects()
 }
 
 // RenderObject static factory methods
-RenderObject RenderObject::CreateRectangle(float x, float y, float width, float height, Color color)
+RenderObject RenderObject::sf_CreateRectangle(float x, float y, float width, float height, Color color)
 {
     RenderObject obj = {};
     obj.type = RECTANGLE;
@@ -298,7 +298,7 @@ RenderObject RenderObject::CreateRectangle(float x, float y, float width, float 
     return obj;
 }
 
-RenderObject RenderObject::CreateCircle(float x, float y, float radius, Color color)
+RenderObject RenderObject::sf_CreateCircle(float x, float y, float radius, Color color)
 {
     RenderObject obj = {};
     obj.type = CIRCLE;
@@ -308,7 +308,7 @@ RenderObject RenderObject::CreateCircle(float x, float y, float radius, Color co
     return obj;
 }
 
-RenderObject RenderObject::CreateTexture(Texture2D tex, float x, float y, Color tint)
+RenderObject RenderObject::sf_CreateTexture(Texture2D tex, float x, float y, Color tint)
 {
     RenderObject obj = {};
     obj.type = TEXTURE;
@@ -318,7 +318,7 @@ RenderObject RenderObject::CreateTexture(Texture2D tex, float x, float y, Color 
     return obj;
 }
 
-RenderObject RenderObject::CreateSprite(Texture2D tex, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint)
+RenderObject RenderObject::sf_CreateSprite(Texture2D tex, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint)
 {
     RenderObject obj = {};
     obj.type = SPRITE;
@@ -332,7 +332,7 @@ RenderObject RenderObject::CreateSprite(Texture2D tex, Rectangle source, Rectang
 }
 
 // Collision detection methods
-bool CoreEngine::CheckCollisionRecs(Rectangle rec1, Rectangle rec2) const
+bool CoreEngine::b_CheckCollisionRecs(Rectangle rec1, Rectangle rec2) const
 {
     if (!bm_Initialized)
     {
@@ -341,7 +341,7 @@ bool CoreEngine::CheckCollisionRecs(Rectangle rec1, Rectangle rec2) const
     return ::CheckCollisionRecs(rec1, rec2);
 }
 
-bool CoreEngine::CheckCollisionCircles(Vector2 center1, float radius1, Vector2 center2, float radius2) const
+bool CoreEngine::b_CheckCollisionCircles(Vector2 center1, float radius1, Vector2 center2, float radius2) const
 {
     if (!bm_Initialized)
     {    
@@ -350,7 +350,7 @@ bool CoreEngine::CheckCollisionCircles(Vector2 center1, float radius1, Vector2 c
     return ::CheckCollisionCircles(center1, radius1, center2, radius2);
 }
 
-bool CoreEngine::CheckCollisionCircleRec(Vector2 center, float radius, Rectangle rec) const
+bool CoreEngine::b_CheckCollisionCircleRec(Vector2 center, float radius, Rectangle rec) const
 {
     if (!bm_Initialized) 
     {
@@ -359,7 +359,7 @@ bool CoreEngine::CheckCollisionCircleRec(Vector2 center, float radius, Rectangle
     return ::CheckCollisionCircleRec(center, radius, rec);
 }
 
-bool CoreEngine::CheckCollisionPointRec(Vector2 point, Rectangle rec) const
+bool CoreEngine::b_CheckCollisionPointRec(Vector2 point, Rectangle rec) const
 {
     if (!bm_Initialized) 
     {
@@ -368,7 +368,7 @@ bool CoreEngine::CheckCollisionPointRec(Vector2 point, Rectangle rec) const
     return ::CheckCollisionPointRec(point, rec);
 }
 
-bool CoreEngine::CheckCollisionPointCircle(Vector2 point, Vector2 center, float radius) const
+bool CoreEngine::b_CheckCollisionPointCircle(Vector2 point, Vector2 center, float radius) const
 {
     if (!bm_Initialized)
     {
