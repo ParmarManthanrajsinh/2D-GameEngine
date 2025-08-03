@@ -75,12 +75,12 @@ public:
     void RenderAllObjects();
 
 private:
-    bool m_initialized;
-    int m_screenWidth;
-    int m_screenHeight;
+    bool bm_Initialized;
+    int m_ScreenWidth;
+    int m_ScreenHeight;
     std::string m_windowTitle;
-    std::vector<RenderObject> m_renderObjects;
-    std::vector<Texture2D> m_loadedTextures; // For cleanup tracking
+    std::vector<RenderObject> m_RenderObjects;
+    std::vector<Texture2D> m_LoadedTextures; // For cleanup tracking
 };
 
 // Simple render object structure for basic rendering
@@ -106,8 +106,8 @@ struct RenderObject
 
     // Texture/Sprite specific
     Texture2D texture;
-    Rectangle sourceRect; // For sprite sheets
-    Rectangle destRect;   // Destination rectangle
+    Rectangle source_rect; // For sprite sheets
+    Rectangle dest_rect;   // Destination rectangle
     Vector2 origin;       // Origin point for rotation
     float rotation;       // Rotation in degrees
     Color tint;           // Texture tinting

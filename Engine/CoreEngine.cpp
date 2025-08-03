@@ -2,13 +2,13 @@
 
 // CoreEngine Implementation
 CoreEngine::CoreEngine()
-    : m_initialized(false), m_screenWidth(800), m_screenHeight(600),           m_windowTitle("2D Game Engine")
+    : bm_Initialized(false), m_ScreenWidth(800), m_ScreenHeight(600),           m_windowTitle("2D Game Engine")
 {
 }
 
 CoreEngine::~CoreEngine()
 {
-    if (m_initialized)
+    if (bm_Initialized)
     {
         Shutdown();
     }
@@ -16,14 +16,14 @@ CoreEngine::~CoreEngine()
 
 bool CoreEngine::Initialize(int width, int height, const std::string &title)
 {
-    if (m_initialized)
+    if (bm_Initialized)
     {
         std::cout << "CoreEngine: Already initialized!" << std::endl;
         return false;
     }
 
-    m_screenWidth = width;
-    m_screenHeight = height;
+    m_ScreenWidth = width;
+    m_ScreenHeight = height;
     m_windowTitle = title;
 
     // Initialize raylib window
@@ -37,7 +37,7 @@ bool CoreEngine::Initialize(int width, int height, const std::string &title)
 
     ::SetTargetFPS(60);
 
-    m_initialized = true;
+    bm_Initialized = true;
 
     std::cout << "CoreEngine: Initialized successfully" << std::endl;
     std::cout << "  - Window: " << width << "x" << height << " '" << title << "'" << std::endl;
@@ -48,17 +48,17 @@ bool CoreEngine::Initialize(int width, int height, const std::string &title)
 
 void CoreEngine::Shutdown()
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {
         return;
     }
 
     // Unload all tracked textures
-    for (auto &texture : m_loadedTextures)
+    for (auto &texture : m_LoadedTextures)
     {
         UnloadTexture(texture);
     }
-    m_loadedTextures.clear();
+    m_LoadedTextures.clear();
 
     // Clear render objects
     ClearRenderObjects();
@@ -66,7 +66,7 @@ void CoreEngine::Shutdown()
     // Close raylib window
     CloseWindow();
 
-    m_initialized = false;
+    bm_Initialized = false;
     std::cout << "CoreEngine: Shutdown complete" << std::endl;
 }
 
@@ -77,7 +77,7 @@ bool CoreEngine::ShouldClose() const
 
 void CoreEngine::BeginFrame()
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {
         return;
     }
@@ -86,7 +86,7 @@ void CoreEngine::BeginFrame()
 
 void CoreEngine::EndFrame()
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {
         return;
     }
@@ -95,7 +95,7 @@ void CoreEngine::EndFrame()
 
 void CoreEngine::ClearScreen(Color color)
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {
         return;
     }
@@ -104,7 +104,7 @@ void CoreEngine::ClearScreen(Color color)
 
 void CoreEngine::DrawRectangle(int x, int y, int width, int height, Color color)
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {
         return;
     }
@@ -113,7 +113,7 @@ void CoreEngine::DrawRectangle(int x, int y, int width, int height, Color color)
 
 void CoreEngine::DrawCircle(int centerX, int centerY, float radius, Color color)
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {
         return;
     }
@@ -122,7 +122,7 @@ void CoreEngine::DrawCircle(int centerX, int centerY, float radius, Color color)
 
 void CoreEngine::DrawTexture(Texture2D texture, int x, int y, Color tint)
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {
         return;
     }
@@ -131,7 +131,7 @@ void CoreEngine::DrawTexture(Texture2D texture, int x, int y, Color tint)
 
 void CoreEngine::DrawSprite(Texture2D texture, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint)
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {
         return;
     }
@@ -140,7 +140,7 @@ void CoreEngine::DrawSprite(Texture2D texture, Rectangle source, Rectangle dest,
 
 void CoreEngine::DrawLine(int startPosX, int startPosY, int endPosX, int endPosY, Color color)
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {
         return;
     }
@@ -149,7 +149,7 @@ void CoreEngine::DrawLine(int startPosX, int startPosY, int endPosX, int endPosY
 
 void CoreEngine::DrawText(const char *text, int posX, int posY, int fontSize, Color color)
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {
         return;
     }
@@ -158,7 +158,7 @@ void CoreEngine::DrawText(const char *text, int posX, int posY, int fontSize, Co
 
 Texture2D CoreEngine::LoadTextureFromFile(const std::string &filename)
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {
         std::cout << "CoreEngine: Cannot load texture - engine not initialized!" << std::endl;
         return {0};
@@ -173,7 +173,7 @@ Texture2D CoreEngine::LoadTextureFromFile(const std::string &filename)
     else
     {
         // Track loaded texture for cleanup
-        m_loadedTextures.push_back(texture);
+        m_LoadedTextures.push_back(texture);
         std::cout << "CoreEngine: Loaded texture: " << filename << " (ID: " << texture.id << ")" << std::endl;
     }
 
@@ -182,18 +182,19 @@ Texture2D CoreEngine::LoadTextureFromFile(const std::string &filename)
 
 void CoreEngine::UnloadTexture(Texture2D texture)
 {
-    if (!m_initialized || texture.id == 0)
+    if (!bm_Initialized || texture.id == 0)
     {
         return;
     }
+    
     // Remove from tracking vector
-    auto it = std::find_if(m_loadedTextures.begin(), m_loadedTextures.end(),
+    auto it = std::find_if(m_LoadedTextures.begin(), m_LoadedTextures.end(),
                            [texture](const Texture2D &t)
                            { return t.id == texture.id; });
 
-    if (it != m_loadedTextures.end())
+    if (it != m_LoadedTextures.end())
     {
-        m_loadedTextures.erase(it);
+        m_LoadedTextures.erase(it);
     }
 
     ::UnloadTexture(texture);
@@ -201,7 +202,7 @@ void CoreEngine::UnloadTexture(Texture2D texture)
 
 RenderTexture2D CoreEngine::LoadRenderTexture(int width, int height)
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {
         std::cout << "CoreEngine: Cannot load render texture - engine not initialized!" << std::endl;
         return {0};
@@ -211,7 +212,7 @@ RenderTexture2D CoreEngine::LoadRenderTexture(int width, int height)
 
 void CoreEngine::UnloadRenderTexture(RenderTexture2D target)
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {
         return;
     }
@@ -220,7 +221,7 @@ void CoreEngine::UnloadRenderTexture(RenderTexture2D target)
 
 void CoreEngine::BeginTextureMode(RenderTexture2D target)
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {
         return;
     }
@@ -229,7 +230,7 @@ void CoreEngine::BeginTextureMode(RenderTexture2D target)
 
 void CoreEngine::EndTextureMode()
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {
         return;
     }
@@ -238,31 +239,31 @@ void CoreEngine::EndTextureMode()
 
 int CoreEngine::GetScreenWidth() const
 {
-    return m_screenWidth;
+    return m_ScreenWidth;
 }
 
 int CoreEngine::GetScreenHeight() const
 {
-    return m_screenHeight;
+    return m_ScreenHeight;
 }
 
 void CoreEngine::AddRenderObject(const RenderObject &obj)
 {
-    m_renderObjects.push_back(obj);
+    m_RenderObjects.push_back(obj);
 }
 
 void CoreEngine::ClearRenderObjects()
 {
-    m_renderObjects.clear();
+    m_RenderObjects.clear();
 }
 
 void CoreEngine::RenderAllObjects()
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {
         return;
     }
-    for (const auto &obj : m_renderObjects)
+    for (const auto &obj : m_RenderObjects)
     {
         switch (obj.type)
         {
@@ -280,7 +281,7 @@ void CoreEngine::RenderAllObjects()
             break;
 
         case RenderObject::SPRITE:
-            DrawSprite(obj.texture, obj.sourceRect, obj.destRect, obj.origin, obj.rotation, obj.tint);
+            DrawSprite(obj.texture, obj.source_rect, obj.dest_rect, obj.origin, obj.rotation, obj.tint);
             break;
         }
     }
@@ -322,8 +323,8 @@ RenderObject RenderObject::CreateSprite(Texture2D tex, Rectangle source, Rectang
     RenderObject obj = {};
     obj.type = SPRITE;
     obj.texture = tex;
-    obj.sourceRect = source;
-    obj.destRect = dest;
+    obj.source_rect = source;
+    obj.dest_rect = dest;
     obj.origin = origin;
     obj.rotation = rotation;
     obj.tint = tint;
@@ -333,7 +334,7 @@ RenderObject RenderObject::CreateSprite(Texture2D tex, Rectangle source, Rectang
 // Collision detection methods
 bool CoreEngine::CheckCollisionRecs(Rectangle rec1, Rectangle rec2) const
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {
         return false;
     }
@@ -342,7 +343,7 @@ bool CoreEngine::CheckCollisionRecs(Rectangle rec1, Rectangle rec2) const
 
 bool CoreEngine::CheckCollisionCircles(Vector2 center1, float radius1, Vector2 center2, float radius2) const
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {    
         return false;
     }
@@ -351,7 +352,7 @@ bool CoreEngine::CheckCollisionCircles(Vector2 center1, float radius1, Vector2 c
 
 bool CoreEngine::CheckCollisionCircleRec(Vector2 center, float radius, Rectangle rec) const
 {
-    if (!m_initialized) 
+    if (!bm_Initialized) 
     {
         return false;
     }
@@ -360,7 +361,7 @@ bool CoreEngine::CheckCollisionCircleRec(Vector2 center, float radius, Rectangle
 
 bool CoreEngine::CheckCollisionPointRec(Vector2 point, Rectangle rec) const
 {
-    if (!m_initialized) 
+    if (!bm_Initialized) 
     {
         return false;
     }
@@ -369,7 +370,7 @@ bool CoreEngine::CheckCollisionPointRec(Vector2 point, Rectangle rec) const
 
 bool CoreEngine::CheckCollisionPointCircle(Vector2 point, Vector2 center, float radius) const
 {
-    if (!m_initialized)
+    if (!bm_Initialized)
     {
         return false;
     }

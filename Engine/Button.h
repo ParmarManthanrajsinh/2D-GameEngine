@@ -17,9 +17,9 @@ public:
 private:
     Rectangle bounds;              // Button bounds
     std::string label;             // Button label
-    std::function<void()> onClick; // Click callback
+    std::function<void()> on_click; // Click callback
 
     // Button states
-    bool isHovered;
-    bool isClicked;
+    bool b_IsHovered;
+    bool b_IsClicked;
 };

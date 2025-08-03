@@ -1,7 +1,7 @@
 #include "Button.h"
 
 Button::Button(float x, float y, float width, float height, std::string label, std::function<void()> onClick)
-    : bounds({x, y, width, height}), label(label), onClick(onClick), isHovered(false), isClicked(false)
+    : bounds({x, y, width, height}), label(label), on_click(onClick), b_IsHovered(false), b_IsClicked(false)
 {
 }
 
@@ -11,12 +11,12 @@ void Button::Render()
     Color buttonColor = GRAY;
     Color textColor = BLACK;
 
-    if (isClicked)
+    if (b_IsClicked)
     {
         buttonColor = DARKGRAY;
         textColor = WHITE;
     }
-    else if (isHovered)
+    else if (b_IsHovered)
     {
         buttonColor = LIGHTGRAY;
         textColor = BLACK;
@@ -39,19 +39,19 @@ void Button::Update()
     Vector2 mousePos = GetMousePosition();
 
     // Check if mouse is hovering over button
-    isHovered = CheckCollisionPointRec(mousePos, bounds);
+    b_IsHovered = CheckCollisionPointRec(mousePos, bounds);
 
     // Check if button is clicked
-    if (isHovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+    if (b_IsHovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
-        isClicked = true;
-        if (onClick)
+        b_IsClicked = true;
+        if (on_click)
         {
-            onClick(); // Call the callback function
+            on_click(); // Call the callback function
         }
     }
     else if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
     {
-        isClicked = false;
+        b_IsClicked = false;
     }
 }
