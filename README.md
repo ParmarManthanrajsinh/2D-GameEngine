@@ -18,7 +18,7 @@ The goal is to have:
 
 ### **Tools & Libraries**
 
-* **C++17/20** for modern language features.
+* **C++20/23** for modern language features.
 * **Raylib** for rendering.
 * **Entt** for ECS (Entity Component System).
 * **JSON/YAML/Flatbuffers** for scene serialization.
