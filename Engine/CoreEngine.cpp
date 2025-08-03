@@ -247,7 +247,7 @@ int CoreEngine::GetScreenHeight() const
     return m_ScreenHeight;
 }
 
-void CoreEngine::AddRenderObject(const RenderObject &obj)
+void CoreEngine::AddRenderObject(const t_RenderObject &obj)
 {
     m_RenderObjects.push_back(obj);
 }
@@ -267,20 +267,20 @@ void CoreEngine::RenderAllObjects()
     {
         switch (obj.type)
         {
-        case RenderObject::RECTANGLE:
+        case t_RenderObject::RECTANGLE:
             DrawRectangle((int)obj.position.x, (int)obj.position.y,
                           (int)obj.size.x, (int)obj.size.y, obj.color);
             break;
 
-        case RenderObject::CIRCLE:
+        case t_RenderObject::CIRCLE:
             DrawCircle((int)obj.position.x, (int)obj.position.y, obj.radius, obj.color);
             break;
 
-        case RenderObject::TEXTURE:
+        case t_RenderObject::TEXTURE:
             DrawTexture(obj.texture, (int)obj.position.x, (int)obj.position.y, obj.tint);
             break;
 
-        case RenderObject::SPRITE:
+        case t_RenderObject::SPRITE:
             DrawSprite(obj.texture, obj.source_rect, obj.dest_rect, obj.origin, obj.rotation, obj.tint);
             break;
         }
@@ -288,9 +288,9 @@ void CoreEngine::RenderAllObjects()
 }
 
 // RenderObject static factory methods
-RenderObject RenderObject::sf_CreateRectangle(float x, float y, float width, float height, Color color)
+t_RenderObject t_RenderObject::sf_CreateRectangle(float x, float y, float width, float height, Color color)
 {
-    RenderObject obj = {};
+    t_RenderObject obj = {};
     obj.type = RECTANGLE;
     obj.position = {x, y};
     obj.size = {width, height};
@@ -298,9 +298,9 @@ RenderObject RenderObject::sf_CreateRectangle(float x, float y, float width, flo
     return obj;
 }
 
-RenderObject RenderObject::sf_CreateCircle(float x, float y, float radius, Color color)
+t_RenderObject t_RenderObject::sf_CreateCircle(float x, float y, float radius, Color color)
 {
-    RenderObject obj = {};
+    t_RenderObject obj = {};
     obj.type = CIRCLE;
     obj.position = {x, y};
     obj.radius = radius;
@@ -308,9 +308,9 @@ RenderObject RenderObject::sf_CreateCircle(float x, float y, float radius, Color
     return obj;
 }
 
-RenderObject RenderObject::sf_CreateTexture(Texture2D tex, float x, float y, Color tint)
+t_RenderObject t_RenderObject::sf_CreateTexture(Texture2D tex, float x, float y, Color tint)
 {
-    RenderObject obj = {};
+    t_RenderObject obj = {};
     obj.type = TEXTURE;
     obj.position = {x, y};
     obj.texture = tex;
@@ -318,9 +318,9 @@ RenderObject RenderObject::sf_CreateTexture(Texture2D tex, float x, float y, Col
     return obj;
 }
 
-RenderObject RenderObject::sf_CreateSprite(Texture2D tex, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint)
+t_RenderObject t_RenderObject::sf_CreateSprite(Texture2D tex, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint)
 {
-    RenderObject obj = {};
+    t_RenderObject obj = {};
     obj.type = SPRITE;
     obj.texture = tex;
     obj.source_rect = source;

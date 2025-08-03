@@ -7,7 +7,7 @@
 #include <algorithm>
 
 // Forward declarations
-struct RenderObject;
+struct t_RenderObject;
 
 /**
  * Core Engine Foundation - Milestone 1
@@ -70,7 +70,7 @@ public:
     bool b_CheckCollisionPointCircle(Vector2 point, Vector2 center, float radius) const;
 
     // Render object management (for basic scene rendering)
-    void AddRenderObject(const RenderObject &obj);
+    void AddRenderObject(const t_RenderObject &obj);
     void ClearRenderObjects();
     void RenderAllObjects();
 
@@ -79,14 +79,14 @@ private:
     int m_ScreenWidth;
     int m_ScreenHeight;
     std::string m_windowTitle;
-    std::vector<RenderObject> m_RenderObjects;
+    std::vector<t_RenderObject> m_RenderObjects;
     std::vector<Texture2D> m_LoadedTextures; // For cleanup tracking
 };
 
 // Simple render object structure for basic rendering
-struct RenderObject
+struct t_RenderObject
 {
-    enum Type
+    enum e_Type
     {
         RECTANGLE,
         CIRCLE,
@@ -94,7 +94,7 @@ struct RenderObject
         SPRITE
     };
 
-    Type type;
+    e_Type type;
     Vector2 position;
     Color color;
 
@@ -113,8 +113,8 @@ struct RenderObject
     Color tint;           // Texture tinting
 
     // Constructors for different types
-    static RenderObject sf_CreateRectangle(float x, float y, float width, float height, Color color);
-    static RenderObject sf_CreateCircle(float x, float y, float radius, Color color);
-    static RenderObject sf_CreateTexture(Texture2D tex, float x, float y, Color tint = WHITE);
-    static RenderObject sf_CreateSprite(Texture2D tex, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint = WHITE);
+    static t_RenderObject sf_CreateRectangle(float x, float y, float width, float height, Color color);
+    static t_RenderObject sf_CreateCircle(float x, float y, float radius, Color color);
+    static t_RenderObject sf_CreateTexture(Texture2D tex, float x, float y, Color tint = WHITE);
+    static t_RenderObject sf_CreateSprite(Texture2D tex, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint = WHITE);
 };
