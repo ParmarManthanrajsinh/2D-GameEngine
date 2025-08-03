@@ -19,7 +19,7 @@ class CoreEngine;
 class GameLogic
 {
     bool bm_IsRunning = false;
-    
+
 public:
     bool IsRunning() const { return bm_IsRunning; }
     void SetRunning(bool running) { bm_IsRunning = running; }
@@ -73,10 +73,10 @@ protected:
     };
 
     // Example game state
-    t_Player m_player;
-    std::vector<t_Enemy> m_enemies;
-    std::vector<t_Bullet> m_bullets;
-    int m_score = 0;
+    t_Player m_Player;
+    std::vector<t_Enemy> m_Enemies;
+    std::vector<t_Bullet> m_Bullets;
+    int m_Score = 0;
     bool bm_GameStarted = false;
     float m_EnemySpawnTimer = 0.0f;
 
