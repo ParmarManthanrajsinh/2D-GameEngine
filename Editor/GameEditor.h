@@ -30,4 +30,11 @@ private:
 
 	void DrawExploreWindow();
 	void DrawSceneWindow();
+
+    // New icon texture members
+    Texture2D m_PlayIcon;
+    Texture2D m_PauseIcon;
+    Texture2D m_RestartIcon;
+    bool m_IconsLoaded;
+    void LoadIconTextures();
 };
