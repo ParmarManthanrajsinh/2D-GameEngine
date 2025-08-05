@@ -5,7 +5,7 @@ class MyMap : public GameMap
 {
 	Vector2 position;
 
-	public:
+public:
 	MyMap() : GameMap("MyMap") 
 	{
 		position = { 400, 300 };
