@@ -25,10 +25,8 @@ void GameEditor::Init(int width, int height, std::string title)
 	rlImGuiReloadFonts();
 
 	SetEngineTheme();
-	if (b_Restart)
-	{
-		LoadEditorDefaultIni();
-	}
+	LoadEditorDefaultIni();
+
 	SetTargetFPS(60);
 	m_viewport = ImGui::GetMainViewport();
 
