@@ -98,13 +98,16 @@ void GameEditor::DrawSceneWindow()
 
 	ImVec2 content_size = ImGui::GetContentRegionAvail();
 
-	bool b_is_visible = ImGui::IsWindowAppearing() || ImGui::IsWindowHovered() || ImGui::IsWindowFocused();
+	bool b_is_visible = ImGui::IsWindowAppearing() 
+						|| ImGui::IsWindowHovered() 
+						|| ImGui::IsWindowFocused();
 
 	// Resize debounce
 	static double s_LastResizeTime = 0;
 	bool b_NeedsResize = false;
 
-	if ((int)content_size.x != (int)m_LastSize.x || (int)content_size.y != (int)m_LastSize.y) 
+	if (static_cast<int>(content_size.x) != static_cast<int>(m_LastSize.x) 
+		|| static_cast<int>(content_size.y) != static_cast<int>(m_LastSize.y)) 
 	{
 		s_LastResizeTime = GetTime();
 		m_LastSize = { content_size.x, content_size.y };
@@ -117,7 +120,11 @@ void GameEditor::DrawSceneWindow()
 		if (content_size.x > 0 && content_size.y > 0) 
 		{
 			UnloadRenderTexture(m_RaylibTexture);
-			m_RaylibTexture = LoadRenderTexture((int)content_size.x, (int)content_size.y);
+			m_RaylibTexture = LoadRenderTexture
+			(
+				static_cast<int>(content_size.x), 
+				static_cast<int>(content_size.y)
+			);
 		}
 	}
 

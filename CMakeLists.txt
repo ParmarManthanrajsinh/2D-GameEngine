@@ -53,5 +53,3 @@ target_include_directories(main PRIVATE
 
 # Link libraries
 target_link_libraries(main raylib)
-
-
