@@ -9,7 +9,6 @@
 #include "GameEditorLayout.h"
 #include "GameEngine.h"
 
-
 class GameEditor 
 {
 public:
@@ -22,11 +21,11 @@ public:
 private:
     void Close() const;
 
-	GameEngine m_game_engine;
+	GameEngine m_GameEngine;
     ImGuiViewport* m_viewport;
 
-    RenderTexture2D m_raylib_texture;
-    Vector2 m_last_size;
+    RenderTexture2D m_RaylibTexture;
+    Vector2 m_LastSize;
 
 	void DrawExploreWindow();
 	void DrawSceneWindow();

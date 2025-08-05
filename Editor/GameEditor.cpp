@@ -3,8 +3,8 @@
 
 GameEditor::GameEditor()
 	: m_viewport(nullptr),
-	m_raylib_texture({ 0 }),
-	m_last_size({ 1280, 720 })
+	  m_RaylibTexture({ 0 }),
+	  m_LastSize({ 1280, 720 })
 {
 }
 
@@ -14,7 +14,7 @@ GameEditor::~GameEditor()
 
 void GameEditor::Init(int width, int height, std::string title)
 {
-	m_game_engine.LaunchWindow(width, height, title);
+	m_GameEngine.LaunchWindow(width, height, title);
 
 	rlImGuiSetup(true);
 
@@ -29,8 +29,8 @@ void GameEditor::Init(int width, int height, std::string title)
 	SetTargetFPS(60);
 	m_viewport = ImGui::GetMainViewport();
 
-	m_raylib_texture = LoadRenderTexture(1280, 720);
-	m_last_size = { 1280, 720 };
+	m_RaylibTexture = LoadRenderTexture(1280, 720);
+	m_LastSize = { 1280, 720 };
 }
 
 void GameEditor::Run()
@@ -39,14 +39,14 @@ void GameEditor::Run()
 	{
 		float DeltaTime = GetFrameTime();
 
-		m_game_engine.UpdateMap(DeltaTime);
+		m_GameEngine.UpdateMap(DeltaTime);
 
 		BeginDrawing();
 
-		BeginTextureMode(m_raylib_texture);
+		BeginTextureMode(m_RaylibTexture);
 		ClearBackground(RAYWHITE);
 
-		m_game_engine.DrawMap();
+		m_GameEngine.DrawMap();
 
 		EndTextureMode();
 
@@ -66,7 +66,7 @@ void GameEditor::Run()
 
 void GameEditor::Close() const
 {
-	UnloadRenderTexture(m_raylib_texture);
+	UnloadRenderTexture(m_RaylibTexture);
 	rlImGuiShutdown();
 	CloseWindow();
 }
@@ -89,32 +89,32 @@ void GameEditor::DrawSceneWindow()
 	bool b_is_visible = ImGui::IsWindowAppearing() || ImGui::IsWindowHovered() || ImGui::IsWindowFocused();
 
 	// Resize debounce
-	static double last_resize_time = 0;
-	bool b_needs_resize = false;
+	static double s_LastResizeTime = 0;
+	bool b_NeedsResize = false;
 
-	if ((int)content_size.x != (int)m_last_size.x || (int)content_size.y != (int)m_last_size.y) 
+	if ((int)content_size.x != (int)m_LastSize.x || (int)content_size.y != (int)m_LastSize.y) 
 	{
-		last_resize_time = GetTime();
-		m_last_size = { content_size.x, content_size.y };
-		b_needs_resize = true;
+		s_LastResizeTime = GetTime();
+		m_LastSize = { content_size.x, content_size.y };
+		b_NeedsResize = true;
 	}
 
 	// Only reallocate texture if user stopped resizing for 0.1 sec
-	if (b_needs_resize && (GetTime() - last_resize_time) > 0.1) 
+	if (b_NeedsResize && (GetTime() - s_LastResizeTime) > 0.1) 
 	{
 		if (content_size.x > 0 && content_size.y > 0) 
 		{
-			UnloadRenderTexture(m_raylib_texture);
-			m_raylib_texture = LoadRenderTexture((int)content_size.x, (int)content_size.y);
+			UnloadRenderTexture(m_RaylibTexture);
+			m_RaylibTexture = LoadRenderTexture((int)content_size.x, (int)content_size.y);
 		}
 	}
 
 	//// Skip rendering if window is hidden/collapsed to save GPU
 	//if (!ImGui::IsWindowCollapsed() && isVisible && content_size.x > 0 && content_size.y > 0)
 	//{
-	//	BeginTextureMode(m_raylib_texture);
+	//	BeginTextureMode(m_RaylibTexture);
 	//	ClearBackground(RAYWHITE);
-	//	DrawCircle(GetFrameTime() * 100, m_raylib_texture.texture.height / 2, 50, RED);
+	//	DrawCircle(GetFrameTime() * 100, m_RaylibTexture.texture.height / 2, 50, RED);
 	//	DrawText("Raylib Scene in ImGui Window", 10, 10, 20, BLUE);
 	//	EndTextureMode();
 	//}
@@ -122,7 +122,7 @@ void GameEditor::DrawSceneWindow()
 	// Draw the texture to ImGui
 	ImGui::Image
 	(
-		(ImTextureID)(intptr_t)m_raylib_texture.texture.id,
+		(ImTextureID)(intptr_t)m_RaylibTexture.texture.id,
 		content_size,
 		ImVec2(0, 1),
 		ImVec2(1, 0)
@@ -135,11 +135,11 @@ void GameEditor::LoadMap(std::unique_ptr<GameMap>& game_map)
 {
 	if (game_map)
 	{
-		m_game_engine.SetMap(std::move(game_map));
+		m_GameEngine.SetMap(std::move(game_map));
 	}
 	else
 	{
-		m_game_engine.SetMap(std::make_unique<GameMap>());
+		m_GameEngine.SetMap(std::make_unique<GameMap>());
 	}
 }
 

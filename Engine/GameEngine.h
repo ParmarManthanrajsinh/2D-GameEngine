@@ -10,11 +10,11 @@ class GameEngine
     bool b_IsRunning() const { return m_bIsRunning; }
 
 	// The window dimensions
-    int m_window_width;
-	int m_window_height;
-	std::string m_window_title;
+    int m_WindowWidth;
+	int m_WindowHeight;
+	std::string m_WindowTitle;
 
-	std::unique_ptr<GameMap> m_game_map;
+	std::unique_ptr<GameMap> m_GameMap;
 public:
 
     GameEngine();

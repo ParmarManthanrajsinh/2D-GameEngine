@@ -4,7 +4,6 @@
 class MyMap : public GameMap
 {
 	Vector2 position;
-
 public:
 	MyMap() : GameMap("MyMap") 
 	{
