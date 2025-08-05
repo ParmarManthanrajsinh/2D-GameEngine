@@ -4,29 +4,30 @@
 #include <raylib.h>
 #include <imgui.h>
 #include <tinyfiledialogs.h>
-#include <memory>
-#include <cstring>
-#include <cstdio>
-#include <iostream>
 
-#include "EditorPanels.h"
 #include "GameEditorTheme.h"
 #include "GameEditorLayout.h"
-#include "CoreEngine.h"
+#include "GameEngine.h"
+
 
 class GameEditor 
 {
 public:
-    GameEditor(int width, int height, const char* title);
+    GameEditor();
     ~GameEditor();
 
-    void Run();
-
+    void Init(int width, int height, std::string title);
+    void LoadMap(std::unique_ptr<GameMap>& game_map);
+	void Run();
 private:
-    void Init(int width, int height, const char* title);
-    void Close();
+    void Close() const;
 
-    // Forward declaration for pImpl pattern
-    class Impl;
-    std::unique_ptr<Impl> PImpl;
+	GameEngine m_game_engine;
+    ImGuiViewport* m_viewport;
+
+    RenderTexture2D m_raylib_texture;
+    Vector2 m_last_size;
+
+	void DrawExploreWindow();
+	void DrawSceneWindow();
 };

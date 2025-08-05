@@ -1,130 +1,145 @@
 #include "GameEditor.h"
+#include "GameEngine.h"
 
-// Simple game object structure for demo
-struct t_GameObject
+GameEditor::GameEditor()
+	: m_viewport(nullptr),
+	m_raylib_texture({ 0 }),
+	m_last_size({ 1280, 720 })
 {
-    char name[64] = "";
-    float position[3] = { 0.0f, 0.0f, 0.0f };
-    float rotation[3] = { 0.0f, 0.0f, 0.0f };
-    float scale[3] = { 1.0f, 1.0f, 1.0f };
-    bool b_Enabled = true;
-};
-
-class GameEditor::Impl 
-{
-public:
-    // Demo data
-    t_GameObject game_objects[10];
-    int object_count = 3;
-    int selected_object = 0;
-    bool b_ShowDemo = false;
-    char log_buffer[1024] = "Engine initialized successfully\nReady to create!\n";
-    ImGuiViewport* viewport = nullptr;
-
-    // Core engine
-    CoreEngine core_engine;
-
-    // Panel instances for better modularity
-    std::unique_ptr<MenuBarPanel> menu_bar_panel;
-    std::unique_ptr<HierarchyPanel> hierarchy_panel;
-    std::unique_ptr<InspectorPanel> inspector_panel;
-    std::unique_ptr<SceneViewPanel> scene_view_panel;
-    std::unique_ptr<ConsolePanel> console_panel;
-    std::unique_ptr<AssetsPanel> assets_panel;
-
-    Impl() 
-    {
-        // Initialize some demo objects
-        strcpy_s(game_objects[0].name, "Player");
-        strcpy_s(game_objects[1].name, "Camera");
-        strcpy_s(game_objects[2].name, "Light");
-
-        game_objects[1].position[1] = 5.0f;
-        game_objects[2].position[0] = 2.0f;
-        game_objects[2].position[1] = 3.0f;
-
-        // CoreEngine initialization will be done in GameEditor::Init()
-
-        // Initialize panels
-        menu_bar_panel = std::make_unique<MenuBarPanel>(log_buffer, b_ShowDemo);
-        hierarchy_panel = std::make_unique<HierarchyPanel>(game_objects, object_count, selected_object, log_buffer);
-        inspector_panel = std::make_unique<InspectorPanel>(game_objects, object_count, selected_object);
-        scene_view_panel = std::make_unique<SceneViewPanel>(game_objects, object_count, selected_object, &core_engine);
-        console_panel = std::make_unique<ConsolePanel>(log_buffer);
-        assets_panel = std::make_unique<AssetsPanel>();
-    }
-};
-
-GameEditor::GameEditor(int width, int height, const char* title) 
-    : PImpl(std::make_unique<Impl>()) 
-{
-    Init(width, height, title);
 }
 
-GameEditor::~GameEditor() 
+GameEditor::~GameEditor()
 {
-    Close();
 }
 
-void GameEditor::Init(int width, int height, const char* title) 
+void GameEditor::Init(int width, int height, std::string title)
 {
-    // Initialize core engine (this will create the raylib window)
-    if (!PImpl->core_engine.b_Initialize(width, height, std::string(title))) 
-    {
-        std::cerr << "Failed to initialize CoreEngine!" << std::endl;
-        return;
-    }
-    
-    rlImGuiSetup(true);
+	m_game_engine.LaunchWindow(width, height, title);
 
-    ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	rlImGuiSetup(true);
 
-    rlImGuiReloadFonts();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-    SetEngineTheme();
-    LoadEditorDefaultIni();
-    
-    SetTargetFPS(60);
-    PImpl->viewport = ImGui::GetMainViewport();
+	rlImGuiReloadFonts();
+
+	SetEngineTheme();
+	LoadEditorDefaultIni();
+
+	SetTargetFPS(60);
+	m_viewport = ImGui::GetMainViewport();
+
+	m_raylib_texture = LoadRenderTexture(1280, 720);
+	m_last_size = { 1280, 720 };
 }
 
-void GameEditor::Run() 
+void GameEditor::Run()
 {
-    while (!WindowShouldClose())
-    {
-        PImpl->core_engine.BeginFrame();
-        PImpl->core_engine.ClearScreen(DARKGRAY);
+	while (!WindowShouldClose())
+	{
+		float DeltaTime = GetFrameTime();
 
-        rlImGuiBegin();
+		m_game_engine.UpdateMap(DeltaTime);
 
-        // Create dockspace
-        ImGui::DockSpaceOverViewport(0, PImpl->viewport);
+		BeginDrawing();
 
-        // Update scene panel for input handling
-        PImpl->scene_view_panel->Update();
-        
-        // Render all UI panels using dedicated panel classes
-        PImpl->menu_bar_panel->Render();
-        PImpl->hierarchy_panel->Render();
-        PImpl->inspector_panel->Render();
-        PImpl->scene_view_panel->Render();
-        PImpl->console_panel->Render();
-        PImpl->assets_panel->Render();
+		BeginTextureMode(m_raylib_texture);
+		ClearBackground(RAYWHITE);
 
-        // Show ImGui demo if requested
-        if (PImpl->b_ShowDemo)
-        {
-            ImGui::ShowDemoWindow(&PImpl->b_ShowDemo);
-        }
+		m_game_engine.DrawMap();
 
-        rlImGuiEnd();
-        PImpl->core_engine.EndFrame();
-    }
+		EndTextureMode();
+
+		rlImGuiBegin();
+
+		ImGui::DockSpaceOverViewport(0, m_viewport);
+
+		DrawExploreWindow();
+		DrawSceneWindow();
+
+		rlImGuiEnd();
+		EndDrawing();
+	}
+
+	Close();
 }
 
-void GameEditor::Close() 
+void GameEditor::Close() const
 {
-    rlImGuiShutdown();
-    PImpl->core_engine.Shutdown();
+	UnloadRenderTexture(m_raylib_texture);
+	rlImGuiShutdown();
+	CloseWindow();
 }
+
+void GameEditor::DrawExploreWindow()
+{
+	ImGui::Begin("File Explorer");
+	ImGui::Text("Project Assets");
+	ImGui::Separator();
+	ImGui::Text("Assets will be displayed here.");
+	ImGui::End();
+}
+
+void GameEditor::DrawSceneWindow()
+{
+	ImGui::Begin("Scene");
+
+	ImVec2 content_size = ImGui::GetContentRegionAvail();
+
+	bool b_is_visible = ImGui::IsWindowAppearing() || ImGui::IsWindowHovered() || ImGui::IsWindowFocused();
+
+	// Resize debounce
+	static double last_resize_time = 0;
+	bool b_needs_resize = false;
+
+	if ((int)content_size.x != (int)m_last_size.x || (int)content_size.y != (int)m_last_size.y) 
+	{
+		last_resize_time = GetTime();
+		m_last_size = { content_size.x, content_size.y };
+		b_needs_resize = true;
+	}
+
+	// Only reallocate texture if user stopped resizing for 0.1 sec
+	if (b_needs_resize && (GetTime() - last_resize_time) > 0.1) 
+	{
+		if (content_size.x > 0 && content_size.y > 0) 
+		{
+			UnloadRenderTexture(m_raylib_texture);
+			m_raylib_texture = LoadRenderTexture((int)content_size.x, (int)content_size.y);
+		}
+	}
+
+	//// Skip rendering if window is hidden/collapsed to save GPU
+	//if (!ImGui::IsWindowCollapsed() && isVisible && content_size.x > 0 && content_size.y > 0)
+	//{
+	//	BeginTextureMode(m_raylib_texture);
+	//	ClearBackground(RAYWHITE);
+	//	DrawCircle(GetFrameTime() * 100, m_raylib_texture.texture.height / 2, 50, RED);
+	//	DrawText("Raylib Scene in ImGui Window", 10, 10, 20, BLUE);
+	//	EndTextureMode();
+	//}
+
+	// Draw the texture to ImGui
+	ImGui::Image
+	(
+		(ImTextureID)(intptr_t)m_raylib_texture.texture.id,
+		content_size,
+		ImVec2(0, 1),
+		ImVec2(1, 0)
+	);
+
+	ImGui::End();
+}
+
+void GameEditor::LoadMap(std::unique_ptr<GameMap>& game_map)
+{
+	if (game_map)
+	{
+		m_game_engine.SetMap(std::move(game_map));
+	}
+	else
+	{
+		m_game_engine.SetMap(std::make_unique<GameMap>());
+	}
+}
+
