@@ -16,6 +16,7 @@ public:
     ~GameEditor();
 
     bool b_IsPlaying;
+    bool b_Restart;
     void Init(int width, int height, std::string title);
     void LoadMap(std::unique_ptr<GameMap>& game_map);
 	void Run();

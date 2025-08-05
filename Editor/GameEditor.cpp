@@ -5,7 +5,8 @@ GameEditor::GameEditor()
 	: m_viewport(nullptr),
 	  m_RaylibTexture({ 0 }),
 	  m_LastSize({ 1280, 720 }),
-	  b_IsPlaying(false)
+	  b_IsPlaying(false),
+	  b_Restart(false)
 {
 }
 
@@ -16,7 +17,6 @@ GameEditor::~GameEditor()
 void GameEditor::Init(int width, int height, std::string title)
 {
 	m_GameEngine.LaunchWindow(width, height, title);
-
 	rlImGuiSetup(true);
 
 	ImGuiIO& io = ImGui::GetIO();
@@ -25,8 +25,10 @@ void GameEditor::Init(int width, int height, std::string title)
 	rlImGuiReloadFonts();
 
 	SetEngineTheme();
-	LoadEditorDefaultIni();
-
+	if (b_Restart)
+	{
+		LoadEditorDefaultIni();
+	}
 	SetTargetFPS(60);
 	m_viewport = ImGui::GetMainViewport();
 
@@ -39,17 +41,17 @@ void GameEditor::Run()
 	while (!WindowShouldClose())
 	{
 		float DeltaTime = GetFrameTime();
-		m_GameEngine.UpdateMap(DeltaTime);
 
+		if (b_IsPlaying)
+		{
+			m_GameEngine.UpdateMap(DeltaTime);
+		}
 		BeginDrawing();
 
 		BeginTextureMode(m_RaylibTexture);
 		ClearBackground(RAYWHITE);
 
-		if (b_IsPlaying)
-		{
-			m_GameEngine.DrawMap();
-		}
+		m_GameEngine.DrawMap();
 		EndTextureMode();
 
 		rlImGuiBegin();
@@ -89,6 +91,12 @@ void GameEditor::DrawSceneWindow()
 	if (ImGui::Button(b_IsPlaying ? "Pause" : "Play"))
 	{
 		b_IsPlaying = !b_IsPlaying;
+	}
+
+	ImGui::SameLine();
+	if (ImGui::Button("Restart"))
+	{
+		b_Restart = true;
 	}
 
 	ImVec2 content_size = ImGui::GetContentRegionAvail();

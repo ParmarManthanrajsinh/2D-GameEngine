@@ -18,7 +18,7 @@ public:
 
 	void Update(float deltaTime) override
 	{
-		position.x += 10 * deltaTime;
+		position.x += 100 * deltaTime;
 	}
 
 	void Initialize() override
