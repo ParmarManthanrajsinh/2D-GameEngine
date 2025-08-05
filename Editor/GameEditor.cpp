@@ -4,7 +4,8 @@
 GameEditor::GameEditor()
 	: m_viewport(nullptr),
 	  m_RaylibTexture({ 0 }),
-	  m_LastSize({ 1280, 720 })
+	  m_LastSize({ 1280, 720 }),
+	  b_IsPlaying(false)
 {
 }
 
@@ -38,7 +39,6 @@ void GameEditor::Run()
 	while (!WindowShouldClose())
 	{
 		float DeltaTime = GetFrameTime();
-
 		m_GameEngine.UpdateMap(DeltaTime);
 
 		BeginDrawing();
@@ -46,8 +46,10 @@ void GameEditor::Run()
 		BeginTextureMode(m_RaylibTexture);
 		ClearBackground(RAYWHITE);
 
-		m_GameEngine.DrawMap();
-
+		if (b_IsPlaying)
+		{
+			m_GameEngine.DrawMap();
+		}
 		EndTextureMode();
 
 		rlImGuiBegin();
@@ -83,6 +85,11 @@ void GameEditor::DrawExploreWindow()
 void GameEditor::DrawSceneWindow()
 {
 	ImGui::Begin("Scene");
+		
+	if (ImGui::Button(b_IsPlaying ? "Pause" : "Play"))
+	{
+		b_IsPlaying = !b_IsPlaying;
+	}
 
 	ImVec2 content_size = ImGui::GetContentRegionAvail();
 
