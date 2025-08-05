@@ -33,7 +33,8 @@ int main()
 	std::unique_ptr<GameMap> my_map = std::make_unique<MyMap>();
 
 	GameEditor editor;
-	editor.Init(1280,720,"My Game");
+
+	editor.Init(1200,700,"My Game");
 	editor.LoadMap(my_map);
 	editor.Run();
     

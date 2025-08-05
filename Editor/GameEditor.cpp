@@ -1,5 +1,4 @@
 #include "GameEditor.h"
-#include "GameEngine.h"
 
 GameEditor::GameEditor()
 	: m_viewport(nullptr),

@@ -2,8 +2,8 @@
 
 GameEngine::GameEngine()
 {
-	m_WindowWidth = 1280;
-	m_WindowHeight = 720;
+	m_WindowWidth = 800;
+	m_WindowHeight = 600;
 	m_WindowTitle = "Game Window";
 }
 

@@ -9,7 +9,7 @@ protected:
     float m_SceneHeight = 0.0f;  // Initialized
 
 public:
-    GameMap() : m_MapName("DefaultMap") {}
+    GameMap() : m_MapName("DefaultMap"){}
 
     GameMap(const std::string& map_name)
         : m_MapName(map_name)
