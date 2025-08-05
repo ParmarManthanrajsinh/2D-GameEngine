@@ -7,10 +7,15 @@ class MyMap : public GameMap
 public:
 	MyMap() : GameMap("MyMap") 
 	{
-		position = { 400, 300 };
+		position = { 0, 0 };
 	}
 	~MyMap() = default;
 	
+	void Initialize() override
+	{
+		position = { 400, 300 };
+	}
+
 	void Draw() override
 	{
 		DrawCircle(int(position.x), int(position.y), 50, RED);
@@ -19,10 +24,6 @@ public:
 	void Update(float deltaTime) override
 	{
 		position.x += 100 * deltaTime;
-	}
-
-	void Initialize() override
-	{
 	}
 };
 

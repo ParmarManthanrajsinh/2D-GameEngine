@@ -25,6 +25,10 @@ void GameEngine::LaunchWindow(int width, int height, std::string title)
 void GameEngine::SetMap(std::unique_ptr<GameMap> game_map)
 {
 	m_GameMap = std::move(game_map);
+	if(m_GameMap)
+	{
+		m_GameMap->Initialize();
+	}
 }
 
 void GameEngine::DrawMap() const
@@ -41,4 +45,9 @@ void GameEngine::UpdateMap(float DeltaTime) const
 	{
 		m_GameMap->Update(DeltaTime);
 	}
+}
+
+void GameEngine::ResetMap()
+{	
+	m_GameMap->Initialize();
 }
