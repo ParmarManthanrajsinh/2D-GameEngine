@@ -4,8 +4,7 @@ GameEditor::GameEditor()
 	: m_viewport(nullptr),
 	  m_RaylibTexture({ 0 }),
 	  m_LastSize({ 1280, 720 }),
-	  b_IsPlaying(false),
-	  b_Restart(false)
+	  b_IsPlaying(false)
 {
 }
 
@@ -93,7 +92,8 @@ void GameEditor::DrawSceneWindow()
 	ImGui::SameLine();
 	if (ImGui::Button("Restart"))
 	{
-		b_Restart = true;
+		b_IsPlaying = false;
+		m_GameEngine.ResetMap();
 	}
 
 	ImVec2 content_size = ImGui::GetContentRegionAvail();
