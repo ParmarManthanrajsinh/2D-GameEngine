@@ -7,7 +7,7 @@
 class GameEngine
 {
     bool m_bIsRunning = false;
-    bool m_bIsRunning() const { return m_bIsRunning; }
+    bool bIsRunning() const { return m_bIsRunning; }
 
 	// The window dimensions
     int m_WindowWidth;
