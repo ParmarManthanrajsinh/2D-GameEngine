@@ -24,4 +24,5 @@ public:
 	void SetMap(std::unique_ptr<GameMap> game_map);
 	void DrawMap() const;
 	void UpdateMap(float DeltaTime) const;
+	void ResetMap();
 };

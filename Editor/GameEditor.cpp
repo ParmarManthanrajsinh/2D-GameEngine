@@ -155,4 +155,3 @@ void GameEditor::LoadMap(std::unique_ptr<GameMap>& game_map)
 		m_GameEngine.SetMap(std::make_unique<GameMap>());
 	}
 }
-

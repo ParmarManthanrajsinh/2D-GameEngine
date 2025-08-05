@@ -27,7 +27,6 @@ void GameEngine::SetMap(std::unique_ptr<GameMap> game_map)
 	m_GameMap = std::move(game_map);
 }
 
-
 void GameEngine::DrawMap() const
 {
 	if(m_GameMap)
