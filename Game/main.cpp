@@ -30,11 +30,8 @@ public:
 int main()
 {
 	printf("Game Engine Starting...\n");
-
 	std::unique_ptr<GameMap> my_map = std::make_unique<MyMap>();
-
 	GameEditor editor;
-
 	editor.Init(1200,700,"My Game");
 	editor.LoadMap(my_map);
 	editor.Run();
