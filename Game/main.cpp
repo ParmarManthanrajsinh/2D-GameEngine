@@ -9,7 +9,7 @@ public:
 	{
 		position = { 400, 300 };
 	}
-	~MyMap() {}
+	~MyMap() = default;
 	
 	void Draw() override
 	{
