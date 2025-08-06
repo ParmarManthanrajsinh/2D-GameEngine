@@ -21,9 +21,9 @@ public:
 		DrawCircle(int(position.x), int(position.y), 50, RED);
 	}
 
-	void Update(float deltaTime) override
+	void Update(float dt) override
 	{
-		position.x += 100 * deltaTime;
+		position.x += 100 * dt;
 	}
 };
 
