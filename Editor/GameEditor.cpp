@@ -147,25 +147,40 @@ void GameEditor::DrawExploreWindow()
 	ImGui::End();
 }
 
+void DrawToolbarBackground()
+{
+    // Get current window's draw list
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+    // Determine position and size of the toolbar
+    ImVec2 toolbar_pos = ImGui::GetCursorScreenPos();
+    ImVec2 toolbar_size = ImVec2(ImGui::GetContentRegionAvail().x, 32.0f);
+
+    // Define gradient colors
+    ImU32 toolbar_color_top = IM_COL32(50, 50, 55, 255);
+    ImU32 toolbar_color_bottom = IM_COL32(40, 40, 45, 255);
+
+    // Draw gradient-filled rectangle
+    draw_list->AddRectFilledMultiColor
+	(
+        toolbar_pos,
+        ImVec2
+		(
+			toolbar_pos.x + toolbar_size.x, 
+			toolbar_pos.y + toolbar_size.y
+		),
+        toolbar_color_top,     // top-left
+        toolbar_color_top,     // top-right
+        toolbar_color_bottom,  // bottom-right
+        toolbar_color_bottom   // bottom-left
+    );
+}
+
 void GameEditor::DrawSceneWindow()
 {
 	ImGui::Begin("Scene");
 
-	// Create a compact toolbar background
-	ImDrawList* draw_list = ImGui::GetWindowDrawList();
-	ImVec2 toolbar_pos = ImGui::GetCursorScreenPos();
-	ImVec2 toolbar_size = ImVec2(ImGui::GetContentRegionAvail().x, 32);
-
-	// Toolbar background with subtle gradient
-	ImU32 toolbar_color_top = IM_COL32(50, 50, 55, 255);
-	ImU32 toolbar_color_bottom = IM_COL32(40, 40, 45, 255);
-	draw_list->AddRectFilledMultiColor
-	(
-		toolbar_pos,
-		ImVec2(toolbar_pos.x + toolbar_size.x, toolbar_pos.y + toolbar_size.y),
-		toolbar_color_top, toolbar_color_top,
-		toolbar_color_bottom, toolbar_color_bottom
-	);
+	DrawToolbarBackground();
 
 	// Compact button styling
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));

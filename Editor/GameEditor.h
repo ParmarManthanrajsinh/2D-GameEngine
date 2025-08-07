@@ -37,4 +37,5 @@ private:
     Texture2D m_RestartIcon;
     bool m_IconsLoaded;
     void LoadIconTextures();
+    friend void DrawToolbarBackground();
 };
