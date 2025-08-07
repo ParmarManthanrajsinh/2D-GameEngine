@@ -13,7 +13,6 @@ class GameEngine
     int m_WindowWidth;
 	int m_WindowHeight;
 	std::string m_WindowTitle;
-
 	std::unique_ptr<GameMap> m_GameMap;
 public:
 
