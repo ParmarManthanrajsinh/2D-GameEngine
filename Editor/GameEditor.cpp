@@ -173,7 +173,6 @@ void GameEditor::DrawSceneWindow()
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
 
 	// Center buttons vertically in toolbar
-	ImGui::Indent(6);
 
 	// Play/Pause button with PNG icon
 	if (b_IsPlaying)
@@ -237,8 +236,6 @@ void GameEditor::DrawSceneWindow()
 		ImGui::Text("STOPPED");
 		ImGui::PopStyleColor();
 	}
-
-	ImGui::Unindent(6);
 	ImGui::PopStyleVar(3);
 
 	ImVec2 content_size = ImGui::GetContentRegionAvail();
