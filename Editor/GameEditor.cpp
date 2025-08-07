@@ -179,31 +179,19 @@ void DrawToolbarBackground()
 void GameEditor::DrawSceneWindow()
 {
 	ImGui::Begin("Scene");
-
 	DrawToolbarBackground();
-
 	// Compact button styling
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 2));
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
 
-	// Center buttons vertically in toolbar
-
 	// Play/Pause button with PNG icon
 	if (b_IsPlaying)
 	{
-
 		if (ImGui::ImageButton("pause_btn", (ImTextureID)(intptr_t)m_PauseIcon.id, ImVec2(20, 20)))
 		{
 			b_IsPlaying = false;
 		}
-
-		// Feature 
-		// if (ImGui::IsItemHovered())
-		// {
-		// 	ImGui::SetTooltip("Pause (Space)");
-		// }
-
 	}
 	else
 	{
@@ -211,13 +199,6 @@ void GameEditor::DrawSceneWindow()
 		{
 			b_IsPlaying = true;
 		}
-
-		// Feature
-		// if (ImGui::IsItemHovered())
-		// {
-		// 	ImGui::SetTooltip("Play (Space)");
-		// }
-
 	}
 
 	ImGui::SameLine();
@@ -227,12 +208,6 @@ void GameEditor::DrawSceneWindow()
 		b_IsPlaying = false;
 		m_GameEngine.ResetMap();
 	}
-
-	// Feature
-	// if (ImGui::IsItemHovered())
-	// {
-	// 	ImGui::SetTooltip("Restart (Ctrl+R)");
-	// }
 
 	// Status indicator
 	ImGui::SameLine();
