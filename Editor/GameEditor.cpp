@@ -224,31 +224,11 @@ void GameEditor::DrawSceneWindow()
 	}
 	ImGui::PopStyleVar(3);
 	
-	ImVec2 content_size = ImGui::GetContentRegionAvail();
-
-	// Resize debounce
-	static double s_LastResizeTime = 0;
-	bool b_NeedsResize = false;
-
-	// Only reallocate texture if user stopped resizing for 0.1 sec
-	if (b_NeedsResize && (GetTime() - s_LastResizeTime) > 0.1)
-	{
-		if (content_size.x > 0 && content_size.y > 0)
-		{
-			UnloadRenderTexture(m_RaylibTexture);
-			m_RaylibTexture = LoadRenderTexture
-			(
-				static_cast<int>(content_size.x), 
-				static_cast<int>(content_size.y)
-			);
-		}
-	}
-
 	// Draw the texture to ImGui
 	ImGui::Image
 	(
 		(ImTextureID)(intptr_t)m_RaylibTexture.texture.id,
-		content_size,
+		ImGui::GetContentRegionAvail(),
 		ImVec2(0, 1),
 		ImVec2(1, 0)
 	);
