@@ -38,4 +38,5 @@ private:
     bool m_IconsLoaded;
     void LoadIconTextures();
     friend void DrawToolbarBackground();
+    friend void ButtonFunctionalityForScene();
 };

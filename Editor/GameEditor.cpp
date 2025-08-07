@@ -223,19 +223,12 @@ void GameEditor::DrawSceneWindow()
 		ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "STOPPED");
 	}
 	ImGui::PopStyleVar(3);
+	
 	ImVec2 content_size = ImGui::GetContentRegionAvail();
 
 	// Resize debounce
 	static double s_LastResizeTime = 0;
 	bool b_NeedsResize = false;
-
-	if (static_cast<int>(content_size.x) != static_cast<int>(m_LastSize.x) 
-		|| static_cast<int>(content_size.y) != static_cast<int>(m_LastSize.y)) 
-	{
-		s_LastResizeTime = GetTime();
-		m_LastSize = { content_size.x, content_size.y };
-		b_NeedsResize = true;
-	}
 
 	// Only reallocate texture if user stopped resizing for 0.1 sec
 	if (b_NeedsResize && (GetTime() - s_LastResizeTime) > 0.1)
