@@ -2,13 +2,13 @@
 
 GameEditor::GameEditor()
 	: m_viewport(nullptr),
-	m_RaylibTexture({ 0 }),
-	m_LastSize({ 1280, 720 }),
-	b_IsPlaying(false),
-	m_PlayIcon({ 0 }),
-	m_PauseIcon({ 0 }),
-	m_RestartIcon({ 0 }),
-	m_IconsLoaded(false)
+	  m_RaylibTexture({ 0 }),
+	  m_LastSize({ 1280, 720 }),
+	  b_IsPlaying(false),
+	  m_PlayIcon({ 0 }),
+	  m_PauseIcon({ 0 }),
+	  m_RestartIcon({ 0 }),
+	  m_IconsLoaded(false)
 {
 }
 
