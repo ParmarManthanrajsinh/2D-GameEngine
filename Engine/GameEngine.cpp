@@ -17,7 +17,14 @@ void GameEngine::LaunchWindow(int width, int height, std::string title)
 	m_WindowHeight = height;
 	m_WindowTitle = title;
 
-	std::cout << "Window initialized: " << title << " (" << width << "x" << height << ")" << std::endl;
+	std::cout << "Window initialized: " 
+	<< title 
+	<< " (" 
+	<< width 
+	<< "x" 
+	<< height 
+	<< ")" 
+	<< std::endl;
 
 	InitWindow(width, height, title.c_str());
 }
