@@ -180,6 +180,7 @@ void GameEditor::DrawSceneWindow()
 {
 	ImGui::Begin("Scene");
 	DrawToolbarBackground();
+
 	// Compact button styling
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 2));
@@ -202,7 +203,6 @@ void GameEditor::DrawSceneWindow()
 	}
 
 	ImGui::SameLine();
-
 	if (ImGui::ImageButton("restart_btn", (ImTextureID)(intptr_t)m_RestartIcon.id, ImVec2(20, 20)))
 	{
 		b_IsPlaying = false;
@@ -216,22 +216,14 @@ void GameEditor::DrawSceneWindow()
 
 	if (b_IsPlaying)
 	{
-		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.0f, 1.0f));
-		ImGui::Text("PLAYING");
-		ImGui::PopStyleColor();
+		ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "PLAYING");
 	}
 	else
 	{
-		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
-		ImGui::Text("STOPPED");
-		ImGui::PopStyleColor();
+		ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "STOPPED");
 	}
 	ImGui::PopStyleVar(3);
-
 	ImVec2 content_size = ImGui::GetContentRegionAvail();
-	bool b_IsVisible = ImGui::IsWindowAppearing() 
-						|| ImGui::IsWindowHovered() 
-						|| ImGui::IsWindowFocused();
 
 	// Resize debounce
 	static double s_LastResizeTime = 0;
