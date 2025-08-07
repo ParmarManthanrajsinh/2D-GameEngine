@@ -239,13 +239,16 @@ void GameEditor::DrawSceneWindow()
 	ImGui::PopStyleVar(3);
 
 	ImVec2 content_size = ImGui::GetContentRegionAvail();
-	bool b_is_visible = ImGui::IsWindowAppearing() || ImGui::IsWindowHovered() || ImGui::IsWindowFocused();
+	bool b_IsVisible = ImGui::IsWindowAppearing() 
+						|| ImGui::IsWindowHovered() 
+						|| ImGui::IsWindowFocused();
 
 	// Resize debounce
 	static double s_LastResizeTime = 0;
 	bool b_NeedsResize = false;
 
-	if ((int)content_size.x != (int)m_LastSize.x || (int)content_size.y != (int)m_LastSize.y) 
+	if (static_cast<int>(content_size.x) != static_cast<int>(m_LastSize.x) 
+		|| static_cast<int>(content_size.y) != static_cast<int>(m_LastSize.y)) 
 	{
 		s_LastResizeTime = GetTime();
 		m_LastSize = { content_size.x, content_size.y };
