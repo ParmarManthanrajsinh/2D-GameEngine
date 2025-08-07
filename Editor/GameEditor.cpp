@@ -184,10 +184,11 @@ void GameEditor::DrawSceneWindow()
 			b_IsPlaying = false;
 		}
 
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Pause (Space)");
-		}
+		// Feature 
+		// if (ImGui::IsItemHovered())
+		// {
+		// 	ImGui::SetTooltip("Pause (Space)");
+		// }
 
 	}
 	else
@@ -197,10 +198,11 @@ void GameEditor::DrawSceneWindow()
 			b_IsPlaying = true;
 		}
 
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Play (Space)");
-		}
+		// Feature
+		// if (ImGui::IsItemHovered())
+		// {
+		// 	ImGui::SetTooltip("Play (Space)");
+		// }
 
 	}
 
@@ -212,10 +214,11 @@ void GameEditor::DrawSceneWindow()
 		m_GameEngine.ResetMap();
 	}
 
-	if (ImGui::IsItemHovered())
-	{
-		ImGui::SetTooltip("Restart (Ctrl+R)");
-	}
+	// Feature
+	// if (ImGui::IsItemHovered())
+	// {
+	// 	ImGui::SetTooltip("Restart (Ctrl+R)");
+	// }
 
 	// Status indicator
 	ImGui::SameLine();
