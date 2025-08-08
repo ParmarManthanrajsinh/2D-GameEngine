@@ -328,7 +328,12 @@ bool GameEditor::LoadGameLogic(const char* dllPath)
 	}
 
 	// 2) Get factory
-	CreateGameMapFunc new_factory = reinterpret_cast<CreateGameMapFunc>(GetDllSymbol(new_dll, "CreateGameMap"));
+	CreateGameMapFunc new_factory = 
+	reinterpret_cast<CreateGameMapFunc>
+	(
+		GetDllSymbol(new_dll, "CreateGameMap")
+	);
+
 	if (!new_factory)
 	{
 		std::cerr << "Failed to get CreateGameMap from DLL" << std::endl;
