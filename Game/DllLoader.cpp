@@ -1,5 +1,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include "DllLoader.h"
+#include <array>
 #include <cstdio>
 #include <filesystem>
 #include <string>
@@ -26,10 +27,14 @@ DllHandle LoadDll(const char* PATH)
             return result;
         }
 
-        // Determine destination directory: use the executable directory
-        char exe_path_buffer[MAX_PATH]{0};
-        GetModuleFileNameA(nullptr, exe_path_buffer, MAX_PATH);
-        fs::path exe_dir = fs::path(exe_path_buffer).parent_path();
+        // Determine destination directory: use the executable 
+        std::array<char, MAX_PATH> exe_path_buffer{};
+        GetModuleFileNameA
+        (
+            nullptr, 
+            exe_path_buffer.data(), 
+            exe_path_buffer.size()
+        );
 
         // Build a unique filename: GameLogic.shadow.<pid>.<tick>.dll
         DWORD pid = GetCurrentProcessId();
