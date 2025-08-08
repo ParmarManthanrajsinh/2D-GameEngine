@@ -16,13 +16,10 @@ GameEditor::GameEditor()
 
 GameEditor::~GameEditor()
 {
-	// Cleanup icon textures
-	if (m_IconsLoaded)
-	{
-		UnloadTexture(m_PlayIcon);
-		UnloadTexture(m_PauseIcon);
-		UnloadTexture(m_RestartIcon);
-	}
+    // Ensure any GameMap instance (potentially from the DLL) is destroyed
+    // BEFORE unloading the DLL, otherwise vtable/function code may be gone
+    // when the map's destructor runs.
+    m_GameEngine.SetMap(nullptr);
 
     if (m_GameLogicDll.handle)
     {
@@ -120,7 +117,7 @@ void GameEditor::Run()
         {
             m_ReloadCheckAccum = 0.0f;
             std::error_code ec;
-            auto nowWrite = std::filesystem::last_write_time(std::filesystem::u8path(m_GameLogicPath), ec);
+            auto nowWrite = std::filesystem::last_write_time(std::filesystem::path(m_GameLogicPath), ec);
             if (!ec && m_LastLogicWriteTime != std::filesystem::file_time_type{} && nowWrite != m_LastLogicWriteTime)
             {
                 // Attempt hot reload on change
@@ -160,9 +157,16 @@ void GameEditor::Run()
 
 void GameEditor::Close() const
 {
-	UnloadRenderTexture(m_RaylibTexture);
-	rlImGuiShutdown();
-	CloseWindow();
+    // Unload GPU resources BEFORE closing the window to keep GL context valid
+    if (m_IconsLoaded)
+    {
+        UnloadTexture(m_PlayIcon);
+        UnloadTexture(m_PauseIcon);
+        UnloadTexture(m_RestartIcon);
+    }
+    UnloadRenderTexture(m_RaylibTexture);
+    rlImGuiShutdown();
+    CloseWindow();
 }
 
 void GameEditor::DrawExploreWindow()
@@ -327,7 +331,7 @@ bool GameEditor::LoadGameLogic(const char* dllPath)
 
     // Update watched timestamp (watch the original DLL path, not the shadow)
     std::error_code ec;
-    m_LastLogicWriteTime = std::filesystem::last_write_time(std::filesystem::u8path(m_GameLogicPath), ec);
+    m_LastLogicWriteTime = std::filesystem::last_write_time(std::filesystem::path(m_GameLogicPath), ec);
     return true;
 }
 

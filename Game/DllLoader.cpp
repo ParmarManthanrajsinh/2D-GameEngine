@@ -18,7 +18,7 @@ DllHandle LoadDll(const char* path)
 
     try
     {
-        fs::path srcPath = fs::u8path(path);
+        fs::path srcPath = fs::path(path);
         if (!fs::exists(srcPath))
         {
             // Fall back to trying to load directly (will fail similarly if missing)
@@ -71,7 +71,7 @@ void UnloadDll(DllHandle dll)
     {
         try
         {
-            fs::path p = fs::u8path(dll.shadowPath);
+            fs::path p = fs::path(dll.shadowPath);
             // Only delete if it looks like one of our shadow copies
             std::string filename = p.filename().string();
             if (filename.find(".shadow.") != std::string::npos)

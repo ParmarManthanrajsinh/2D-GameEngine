@@ -24,7 +24,7 @@ void MyMap::Update(float dt)
 
 void MyMap::Draw()
 {
-	DrawCircle(position.x, position.y, 90, RED);
+	DrawCircle((int)position.x, (int)position.y, 50, RED);
 }
 
 extern "C" __declspec(dllexport) GameMap* CreateGameMap() 
