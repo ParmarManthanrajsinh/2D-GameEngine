@@ -1,4 +1,6 @@
 ﻿#include "GameEditor.h"
+using Clock = std::chrono::steady_clock;
+
 
 GameEditor::GameEditor()
 	: m_Viewport(nullptr),
@@ -109,34 +111,37 @@ void GameEditor::Run()
 {
 	while (!WindowShouldClose())
 	{
-		float DeltaTime = GetFrameTime();
+		static auto lastReloadCheckTime = Clock::now();
 
 		// Periodically check for GameLogic.dll changes (e.g., every 0.5s)
-		m_ReloadCheckAccum += DeltaTime;
-		if (m_ReloadCheckAccum > 0.5f && !m_GameLogicPath.empty())
+		auto now = Clock::now();
+		auto elapsed = std::chrono::duration<float>(now - lastReloadCheckTime).count();
+
+		if (elapsed > 0.5f && !m_GameLogicPath.empty())
 		{
-			m_ReloadCheckAccum = 0.0f;
+			lastReloadCheckTime = now;
 			std::error_code ec;
-			auto now_write = 
-			std::filesystem::last_write_time
-			(
-				std::filesystem::path(m_GameLogicPath), ec
-			);
+			const std::filesystem::path path(m_GameLogicPath); // cache path once per check
+			auto now_write = std::filesystem::last_write_time(path, ec);
 
-			if
-			(	!ec 
-				&& m_LastLogicWriteTime != std::filesystem::file_time_type{} 
-				&& now_write != m_LastLogicWriteTime
-			) { b_ReloadGameLogic(); }
-				
-
-			if
-			(
-				!ec
-				&& m_LastLogicWriteTime == std::filesystem::file_time_type{}
-			) { m_LastLogicWriteTime = now_write; }
+			if (!ec)
+			{
+				if (m_LastLogicWriteTime != std::filesystem::file_time_type{})
+				{
+					if (now_write != m_LastLogicWriteTime)
+					{
+						b_ReloadGameLogic();
+						m_LastLogicWriteTime = now_write;  // update after reload
+					}
+				}
+				else
+				{
+					m_LastLogicWriteTime = now_write;
+				}
+			}
 		}
 
+		float DeltaTime = GetFrameTime();
 		if (b_IsPlaying)
 		{
 			m_GameEngine.UpdateMap(DeltaTime);

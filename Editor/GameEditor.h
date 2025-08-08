@@ -1,9 +1,11 @@
 #pragma once
 
+#include <chrono>
 #include <filesystem>
 #include <imgui.h>
 #include <raylib.h>
 #include <rlImGui.h>
+#include <system_error>
 #include <tinyfiledialogs.h>
 
 #include "DllLoader.h"
