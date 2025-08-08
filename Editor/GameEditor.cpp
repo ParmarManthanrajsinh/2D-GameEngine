@@ -111,18 +111,23 @@ void GameEditor::Run()
 {
 	while (!WindowShouldClose())
 	{
-		static auto lastReloadCheckTime = Clock::now();
+		static auto s_LastReloadCheckTime = Clock::now();
 
 		// Periodically check for GameLogic.dll changes (e.g., every 0.5s)
-		auto now = Clock::now();
-		auto elapsed = std::chrono::duration<float>(now - lastReloadCheckTime).count();
+		auto current_time = Clock::now();
+		auto elapsed_time = std::chrono::duration<float>
+		(
+			current_time - s_LastReloadCheckTime
+		).count();
 
-		if (elapsed > 0.5f && !m_GameLogicPath.empty())
+		if (elapsed_time > 0.5f && !m_GameLogicPath.empty())
 		{
-			lastReloadCheckTime = now;
+			s_LastReloadCheckTime = current_time;
 			std::error_code ec;
-			const std::filesystem::path path(m_GameLogicPath); // cache path once per check
-			auto now_write = std::filesystem::last_write_time(path, ec);
+
+			// cache path once per check
+			const std::filesystem::path PATH(m_GameLogicPath); 
+			auto now_write = std::filesystem::last_write_time(PATH, ec);
 
 			if (!ec)
 			{
