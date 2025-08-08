@@ -35,6 +35,7 @@ DllHandle LoadDll(const char* PATH)
         DWORD pid = GetCurrentProcessId();
         DWORD ticks = GetTickCount64();
 
+        // stem() will return file name without extention
         std::string base_name = src_path.stem().string();
         std::string unique_name = base_name 
             + ".shadow." 
