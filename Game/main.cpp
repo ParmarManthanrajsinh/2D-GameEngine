@@ -12,8 +12,8 @@ int main()
     printf("Game Engine Starting...\n");
 
     // Load the DLL via helper to avoid Windows headers here
-    DllHandle gameLogicDLL = LoadDll("GameLogic.dll");
-    if (!gameLogicDLL.handle) 
+    DllHandle game_logic_dll = LoadDll("GameLogic.dll");
+    if (!game_logic_dll.handle) 
     {
         std::cerr << "Failed to load GameLogic.dll!" << std::endl;
         return -1;
@@ -22,26 +22,26 @@ int main()
     // Get the factory function
     typedef GameMap* (*CreateGameMapFunc)();
 
-    auto createGameMap = reinterpret_cast<CreateGameMapFunc>(GetDllSymbol(gameLogicDLL, "CreateGameMap"));
+    auto CreateGameMap = reinterpret_cast<CreateGameMapFunc>(GetDllSymbol(game_logic_dll, "CreateGameMap"));
 
-    if (!createGameMap) 
+    if (!CreateGameMap) 
     {
         std::cerr << "Failed to find CreateGameMap in DLL!" << std::endl;
-        UnloadDll(gameLogicDLL);
+        UnloadDll(game_logic_dll);
         return -1;
     }
 
     {
         // Scope to ensure objects are destroyed before unloading the DLL
-        std::unique_ptr<GameMap> my_map(createGameMap());
+        std::unique_ptr<GameMap> my_map(CreateGameMap());
 
         GameEditor editor;
         editor.Init(1280,720,"My Game");
-        editor.LoadMap(my_map); // editor takes ownership internally via std::move
+        editor.LoadMap(my_map);
         editor.Run();
     }
 
     // Unload the DLL after the editor and map are destroyed
-    UnloadDll(gameLogicDLL);
+    UnloadDll(game_logic_dll);
     return 0;
 }
