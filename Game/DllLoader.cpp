@@ -36,11 +36,22 @@ DllHandle LoadDll(const char* path)
         DWORD ticks = GetTickCount64();
 
         std::string base_name = src_path.stem().string();
-        std::string unique_name = base_name + ".shadow." + std::to_string(pid) + "." + std::to_string(ticks) + src_path.extension().string();
+        std::string unique_name = base_name 
+            + ".shadow." 
+            + std::to_string(pid) 
+            + "." 
+            + std::to_string(ticks) 
+            + src_path.extension().string();
+
         fs::path dest_path = exe_dir / unique_name;
 
         // Copy to destination (overwrite not expected due to uniqueness)
-        fs::copy_file(src_path, dest_path, fs::copy_options::overwrite_existing);
+        fs::copy_file
+        (
+            src_path, 
+            dest_path, 
+            fs::copy_options::overwrite_existing
+        );
 
         HMODULE mod = LoadLibraryA(dest_path.string().c_str());
         result.handle = reinterpret_cast<void*>(mod);
@@ -61,7 +72,10 @@ void UnloadDll(DllHandle dll)
 {
     if (dll.handle) 
     {
-        FreeLibrary(reinterpret_cast<HMODULE>(dll.handle));
+        FreeLibrary
+        (
+            reinterpret_cast<HMODULE>(dll.handle)
+        );
     }
 
     // Attempt to delete the shadow copy after unloading. Ignore failures.
@@ -91,5 +105,12 @@ void* GetDllSymbol(DllHandle dll, const char* symbolName)
     {
         return nullptr;
     }
-    return reinterpret_cast<void*>(GetProcAddress(reinterpret_cast<HMODULE>(dll.handle), symbolName));
+    return reinterpret_cast<void*>
+    (
+        GetProcAddress
+        (
+            reinterpret_cast<HMODULE>(dll.handle), 
+            symbolName
+        )
+    );
 }
