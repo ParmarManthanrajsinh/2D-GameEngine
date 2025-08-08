@@ -33,12 +33,14 @@ DllHandle LoadDll(const char* PATH)
         (
             nullptr, 
             exe_path_buffer.data(), 
-            exe_path_buffer.size()
+            static_cast<DWORD>(exe_path_buffer.size())
         );
+
+        fs::path exe_dir = fs::path(exe_path_buffer.data()).parent_path();
 
         // Build a unique filename: GameLogic.shadow.<pid>.<tick>.dll
         DWORD pid = GetCurrentProcessId();
-        DWORD ticks = GetTickCount64();
+        DWORD ticks = static_cast<DWORD>(GetTickCount64());
 
         // stem() will return file name without extention
         std::string base_name = src_path.stem().string();
