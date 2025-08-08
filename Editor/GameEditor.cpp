@@ -376,12 +376,13 @@ bool GameEditor::LoadGameLogic(const char* dllPath)
 
 bool GameEditor::ReloadGameLogic()
 {
+	bool b_WasPlaying;
 	if (m_GameLogicPath.empty())
 	{
 		return false;
 	}
 
-	bool b_WasPlaying = b_IsPlaying;
+	b_WasPlaying = b_IsPlaying;
 	b_IsPlaying = false;
 	bool b_Ok = LoadGameLogic(m_GameLogicPath.c_str());
 	b_IsPlaying = b_WasPlaying;
