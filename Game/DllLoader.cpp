@@ -34,7 +34,7 @@ DllHandle LoadDll(const char* path)
 
         // Build a unique filename: GameLogic.shadow.<pid>.<tick>.dll
         DWORD pid = GetCurrentProcessId();
-        DWORD ticks = GetTickCount();
+        DWORD ticks = GetTickCount64();
 
         std::string baseName = srcPath.stem().string();
         std::string uniqueName = baseName + ".shadow." + std::to_string(pid) + "." + std::to_string(ticks) + srcPath.extension().string();
