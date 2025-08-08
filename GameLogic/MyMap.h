@@ -1,7 +1,8 @@
 #pragma once
 #include "GameMap.h"
 
-class MyMap : public GameMap {
+class MyMap : public GameMap 
+{
 public:
     MyMap();
     ~MyMap() override;

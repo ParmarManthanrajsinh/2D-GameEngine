@@ -19,7 +19,7 @@ void MyMap::Update(float dt)
 
 void MyMap::Draw()
 {
-	DrawCircle(400, 300, 100, YELLOW);
+	DrawCircle(400, 300, 100, GREEN);
 }
 
 extern "C" __declspec(dllexport) GameMap* CreateGameMap() 
