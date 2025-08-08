@@ -9,7 +9,7 @@ struct DllHandle
     // Absolute path of the shadow-copied DLL actually loaded via LoadLibrary.
     // This allows unloading and deleting the copy so the original DLL remains
     // writable for recompilation while the application is running.
-    std::string shadowPath;
+    std::string shadow_path;
 };
 
 DllHandle LoadDll(const char* path);
