@@ -3,6 +3,7 @@
 MyMap::MyMap() 
 {
 	std::cout << "MyMap constructed!" << std::endl;
+	position = { 0, 0 };
 }
 
 MyMap::~MyMap() 
@@ -15,7 +16,7 @@ void MyMap::Initialize()
 	position = { 400, 300 };
 }
 
-void MyMap::Update(float dt) 
+void MyMap::Update(float dt)
 {
 	// Example logic
 	position.x += 100 * dt;
