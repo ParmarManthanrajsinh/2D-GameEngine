@@ -1,5 +1,4 @@
 #include "MyMap.h"
-#include <iostream>
 
 MyMap::MyMap() 
 {

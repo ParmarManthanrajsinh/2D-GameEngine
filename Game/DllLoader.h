@@ -14,4 +14,4 @@ struct DllHandle
 
 DllHandle LoadDll(const char* path);
 void UnloadDll(DllHandle dll);
-void* GetDllSymbol(DllHandle dll, const char* symbolName);
+void* GetDllSymbol(DllHandle dll, const char* SYMBOL_NAME);
