@@ -2,15 +2,15 @@
 
 GameEditor::GameEditor()
 	: m_Viewport(nullptr),
-	m_RaylibTexture({ 0 }),
-	m_LastSize({ 1280, 720 }),
-	b_IsPlaying(false),
-	m_PlayIcon({ 0 }),
-	m_PauseIcon({ 0 }),
-	m_RestartIcon({ 0 }),
-	m_IconsLoaded(false),
-	m_GameLogicDll{},
-	m_CreateGameMap(nullptr)
+	  m_RaylibTexture({ 0 }),
+	  m_LastSize({ 1280, 720 }),
+	  b_IsPlaying(false),
+	  m_PlayIcon({ 0 }),
+	  m_PauseIcon({ 0 }),
+	  m_RestartIcon({ 0 }),
+	  m_IconsLoaded(false),
+	  m_GameLogicDll{},
+	  m_CreateGameMap(nullptr)
 {
 }
 
