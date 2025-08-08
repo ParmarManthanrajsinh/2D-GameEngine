@@ -30,7 +30,7 @@ private:
     void Close() const;
 
 	GameEngine m_GameEngine;
-    ImGuiViewport* m_viewport;
+    ImGuiViewport* m_Viewport;
 
     RenderTexture2D m_RaylibTexture;
     Vector2 m_LastSize;

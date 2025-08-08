@@ -10,7 +10,7 @@ namespace fs = std::filesystem;
 DllHandle LoadDll(const char* path) 
 {
     /*
-      On Windows, LoadLibrary locks the file on disk, which prevents recompiling the DLL while the application is running. To avoid this, copy the DLL to a temporary uniquely named file (shadow copy) and load that instead.
+      On Windows, LoadLibrary locks the file on disk, which prevents recompiling the DLL while the application is running. To avoid this, copy the DLL to a temporary uniquely named file (shadow copy) and load that instead.  
     */
 
     DllHandle result{ nullptr, {} };
