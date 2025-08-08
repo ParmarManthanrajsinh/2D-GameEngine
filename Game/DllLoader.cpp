@@ -6,7 +6,7 @@
 #include <windows.h>
 namespace fs = std::filesystem;
 
-DllHandle LoadDll(const char* path) 
+DllHandle LoadDll(const char* PATH) 
 {
     /*
       On Windows, LoadLibrary locks the file on disk, which prevents recompiling the DLL while the application is running. To avoid this, copy the DLL to a temporary uniquely named file (shadow copy) and load that instead.  
@@ -16,13 +16,13 @@ DllHandle LoadDll(const char* path)
 
     try
     {
-        fs::path src_path = fs::path(path);
+        fs::path src_path = fs::path(PATH);
         if (!fs::exists(src_path))
         {
             // Fall back to trying to load directly (will fail similarly if missing)
-            HMODULE direct = LoadLibraryA(path);
+            HMODULE direct = LoadLibraryA(PATH);
             result.handle = reinterpret_cast<void*>(direct);
-            result.shadow_path = path;
+            result.shadow_path = PATH;
             return result;
         }
 
@@ -61,9 +61,9 @@ DllHandle LoadDll(const char* path)
     catch (...)
     {
         // As a last resort, try direct load
-        HMODULE mod = LoadLibraryA(path);
+        HMODULE mod = LoadLibraryA(PATH);
         result.handle = reinterpret_cast<void*>(mod);
-        result.shadow_path = path;
+        result.shadow_path = PATH;
         return result;
     }
 }
