@@ -65,6 +65,7 @@ void GameEditor::LoadIconTextures()
 	if (play_img.data == nullptr)
 	{
 		play_img = GenImageColor(20, 20, GREEN);
+
 		// Draw a simple play triangle
 		ImageDrawRectangle(&play_img, 6, 4, 2, 12, DARKGREEN);
 		ImageDrawRectangle(&play_img, 8, 6, 2, 8, DARKGREEN);
@@ -74,6 +75,7 @@ void GameEditor::LoadIconTextures()
 	if (pause_img.data == nullptr)
 	{
 		pause_img = GenImageColor(20, 20, ORANGE);
+
 		// Draw pause bars
 		ImageDrawRectangle(&pause_img, 6, 4, 3, 12, MAROON);
 		ImageDrawRectangle(&pause_img, 11, 4, 3, 12, MAROON);
@@ -82,6 +84,7 @@ void GameEditor::LoadIconTextures()
 	if (restart_img.data == nullptr)
 	{
 		restart_img = GenImageColor(20, 20, BLUE);
+
 		// Draw a simple restart symbol (circle with arrow)
 		ImageDrawCircle(&restart_img, 10, 10, 8, DARKBLUE);
 		ImageDrawCircle(&restart_img, 10, 10, 6, BLUE);
