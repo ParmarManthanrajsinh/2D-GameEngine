@@ -8,7 +8,7 @@ GameEditor::GameEditor()
 	  m_PlayIcon({ 0 }),
 	  m_PauseIcon({ 0 }),
 	  m_RestartIcon({ 0 }),
-	  m_IconsLoaded(false),
+	  m_bIconsLoaded(false),
 	  m_GameLogicDll{},
 	  m_CreateGameMap(nullptr)
 {
@@ -102,7 +102,7 @@ void GameEditor::LoadIconTextures()
 	UnloadImage(pause_img);
 	UnloadImage(restart_img);
 
-	m_IconsLoaded = true;
+	m_bIconsLoaded = true;
 }
 
 void GameEditor::Run()
@@ -127,7 +127,7 @@ void GameEditor::Run()
 			(	!ec 
 				&& m_LastLogicWriteTime != std::filesystem::file_time_type{} 
 				&& now_write != m_LastLogicWriteTime
-			) { ReloadGameLogic(); }
+			) { b_ReloadGameLogic(); }
 				
 
 			if
@@ -166,7 +166,7 @@ void GameEditor::Run()
 void GameEditor::Close() const
 {
 	// Unload GPU resources BEFORE closing the window to keep GL context valid
-	if (m_IconsLoaded)
+	if (m_bIconsLoaded)
 	{
 		UnloadTexture(m_PlayIcon);
 		UnloadTexture(m_PauseIcon);
@@ -270,7 +270,7 @@ void GameEditor::DrawSceneWindow()
 		b_IsPlaying = false;
 
 		// Attempt hot reload of GameLogic.dll, fallback to reset if it fails
-		if (!ReloadGameLogic())
+		if (!b_ReloadGameLogic())
 		{
 			m_GameEngine.ResetMap();
 		}
@@ -315,7 +315,7 @@ void GameEditor::LoadMap(std::unique_ptr<GameMap>& game_map)
 	}
 }
 
-bool GameEditor::LoadGameLogic(const char* dllPath)
+bool GameEditor::b_LoadGameLogic(const char* dllPath)
 {
 	m_GameLogicPath = dllPath ? dllPath : "";
 
@@ -379,7 +379,7 @@ bool GameEditor::LoadGameLogic(const char* dllPath)
 	return true;
 }
 
-bool GameEditor::ReloadGameLogic()
+bool GameEditor::b_ReloadGameLogic()
 {
 	bool b_WasPlaying;
 	if (m_GameLogicPath.empty())
@@ -389,7 +389,7 @@ bool GameEditor::ReloadGameLogic()
 
 	b_WasPlaying = b_IsPlaying;
 	b_IsPlaying = false;
-	bool b_Ok = LoadGameLogic(m_GameLogicPath.c_str());
+	bool b_Ok = b_LoadGameLogic(m_GameLogicPath.c_str());
 	b_IsPlaying = b_WasPlaying;
 
 	return b_Ok;

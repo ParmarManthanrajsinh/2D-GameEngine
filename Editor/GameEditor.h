@@ -1,15 +1,15 @@
 #pragma once
 
-#include <rlImGui.h>
-#include <raylib.h>
-#include <imgui.h>
-#include <tinyfiledialogs.h>
 #include <filesystem>
+#include <imgui.h>
+#include <raylib.h>
+#include <rlImGui.h>
+#include <tinyfiledialogs.h>
 
-#include "GameEditorTheme.h"
-#include "GameEditorLayout.h"
-#include "GameEngine.h"
 #include "DllLoader.h"
+#include "GameEditorLayout.h"
+#include "GameEditorTheme.h"
+#include "GameEngine.h"
 
 class GameEditor 
 {
@@ -22,9 +22,9 @@ public:
     void LoadMap(std::unique_ptr<GameMap>& game_map);
 
     // Load the game logic DLL and create/set a new GameMap from it
-    bool LoadGameLogic(const char* dllPath);
+    bool b_LoadGameLogic(const char* dllPath);
     // Unload and reload the DLL, then recreate the GameMap
-    bool ReloadGameLogic();
+    bool b_ReloadGameLogic();
 	void Run();
 private:
     void Close() const;
@@ -42,13 +42,13 @@ private:
     Texture2D m_PlayIcon;
     Texture2D m_PauseIcon;
     Texture2D m_RestartIcon;
-    bool m_IconsLoaded;
+    bool m_bIconsLoaded;
     void LoadIconTextures();
     friend void DrawToolbarBackground();
 
     // Hot-reload state
     DllHandle m_GameLogicDll;
-    using CreateGameMapFunc = GameMap* (*)();
+    using CreateGameMapFunc = GameMap * (*)();
     CreateGameMapFunc m_CreateGameMap = nullptr;
     std::string m_GameLogicPath;
     std::filesystem::file_time_type m_LastLogicWriteTime{};
