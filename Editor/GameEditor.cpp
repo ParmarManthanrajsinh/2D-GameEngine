@@ -1,32 +1,32 @@
 ﻿#include "GameEditor.h"
 
 GameEditor::GameEditor()
-	: m_viewport(nullptr),
-	  m_RaylibTexture({ 0 }),
-	  m_LastSize({ 1280, 720 }),
-	  b_IsPlaying(false),
-	  m_PlayIcon({ 0 }),
-	  m_PauseIcon({ 0 }),
-	  m_RestartIcon({ 0 }),
-	  m_IconsLoaded(false),
-	  m_GameLogicDll{},
-	  m_CreateGameMap(nullptr)
+	: m_Viewport(nullptr),
+	m_RaylibTexture({ 0 }),
+	m_LastSize({ 1280, 720 }),
+	b_IsPlaying(false),
+	m_PlayIcon({ 0 }),
+	m_PauseIcon({ 0 }),
+	m_RestartIcon({ 0 }),
+	m_IconsLoaded(false),
+	m_GameLogicDll{},
+	m_CreateGameMap(nullptr)
 {
 }
 
 GameEditor::~GameEditor()
 {
-    // Ensure any GameMap instance (potentially from the DLL) is destroyed
-    // BEFORE unloading the DLL, otherwise vtable/function code may be gone
-    // when the map's destructor runs.
-    m_GameEngine.SetMap(nullptr);
+	// Ensure any GameMap instance (potentially from the DLL) is destroyed
+	// BEFORE unloading the DLL, otherwise vtable/function code may be gone
+	// when the map's destructor runs.
+	m_GameEngine.SetMap(nullptr);
 
-    if (m_GameLogicDll.handle)
-    {
-        UnloadDll(m_GameLogicDll);
-        m_GameLogicDll = {};
-        m_CreateGameMap = nullptr;
-    }
+	if (m_GameLogicDll.handle)
+	{
+		UnloadDll(m_GameLogicDll);
+		m_GameLogicDll = {};
+		m_CreateGameMap = nullptr;
+	}
 }
 
 void GameEditor::Init(int width, int height, std::string title)
@@ -43,7 +43,7 @@ void GameEditor::Init(int width, int height, std::string title)
 	LoadEditorDefaultIni();
 
 	SetTargetFPS(60);
-	m_viewport = ImGui::GetMainViewport();
+	m_Viewport = ImGui::GetMainViewport();
 
 	m_RaylibTexture = LoadRenderTexture(1280, 720);
 	m_LastSize = { 1280, 720 };
@@ -111,23 +111,31 @@ void GameEditor::Run()
 	{
 		float DeltaTime = GetFrameTime();
 
-        // Periodically check for GameLogic.dll changes (e.g., every 0.5s)
-        m_ReloadCheckAccum += DeltaTime;
-        if (m_ReloadCheckAccum > 0.5f && !m_GameLogicPath.empty())
-        {
-            m_ReloadCheckAccum = 0.0f;
-            std::error_code ec;
-            auto nowWrite = std::filesystem::last_write_time(std::filesystem::path(m_GameLogicPath), ec);
-            if (!ec && m_LastLogicWriteTime != std::filesystem::file_time_type{} && nowWrite != m_LastLogicWriteTime)
-            {
-                // Attempt hot reload on change
-                ReloadGameLogic();
-            }
-            if (!ec && m_LastLogicWriteTime == std::filesystem::file_time_type{})
-            {
-                m_LastLogicWriteTime = nowWrite;
-            }
-        }
+		// Periodically check for GameLogic.dll changes (e.g., every 0.5s)
+		m_ReloadCheckAccum += DeltaTime;
+		if (m_ReloadCheckAccum > 0.5f && !m_GameLogicPath.empty())
+		{
+			m_ReloadCheckAccum = 0.0f;
+			std::error_code ec;
+			auto now_write = 
+			std::filesystem::last_write_time
+			(
+				std::filesystem::path(m_GameLogicPath), ec
+			);
+
+			if
+			(	!ec 
+				&& m_LastLogicWriteTime != std::filesystem::file_time_type{} 
+				&& now_write != m_LastLogicWriteTime
+			) { ReloadGameLogic(); }
+				
+
+			if
+			(
+				!ec
+				&& m_LastLogicWriteTime == std::filesystem::file_time_type{}
+			) { m_LastLogicWriteTime = now_write; }
+		}
 
 		if (b_IsPlaying)
 		{
@@ -143,7 +151,7 @@ void GameEditor::Run()
 
 		rlImGuiBegin();
 
-		ImGui::DockSpaceOverViewport(0, m_viewport);
+		ImGui::DockSpaceOverViewport(0, m_Viewport);
 
 		DrawExploreWindow();
 		DrawSceneWindow();
@@ -157,16 +165,16 @@ void GameEditor::Run()
 
 void GameEditor::Close() const
 {
-    // Unload GPU resources BEFORE closing the window to keep GL context valid
-    if (m_IconsLoaded)
-    {
-        UnloadTexture(m_PlayIcon);
-        UnloadTexture(m_PauseIcon);
-        UnloadTexture(m_RestartIcon);
-    }
-    UnloadRenderTexture(m_RaylibTexture);
-    rlImGuiShutdown();
-    CloseWindow();
+	// Unload GPU resources BEFORE closing the window to keep GL context valid
+	if (m_IconsLoaded)
+	{
+		UnloadTexture(m_PlayIcon);
+		UnloadTexture(m_PauseIcon);
+		UnloadTexture(m_RestartIcon);
+	}
+	UnloadRenderTexture(m_RaylibTexture);
+	rlImGuiShutdown();
+	CloseWindow();
 }
 
 void GameEditor::DrawExploreWindow()
@@ -180,31 +188,31 @@ void GameEditor::DrawExploreWindow()
 
 void DrawToolbarBackground()
 {
-    // Get current window's draw list
-    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+	// Get current window's draw list
+	ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
-    // Determine position and size of the toolbar
-    ImVec2 toolbar_pos = ImGui::GetCursorScreenPos();
-    ImVec2 toolbar_size = ImVec2(ImGui::GetContentRegionAvail().x, 32.0f);
+	// Determine position and size of the toolbar
+	ImVec2 toolbar_pos = ImGui::GetCursorScreenPos();
+	ImVec2 toolbar_size = ImVec2(ImGui::GetContentRegionAvail().x, 32.0f);
 
-    // Define gradient colors
-    ImU32 toolbar_color_top = IM_COL32(50, 50, 55, 255);
-    ImU32 toolbar_color_bottom = IM_COL32(40, 40, 45, 255);
+	// Define gradient colors
+	ImU32 toolbar_color_top = IM_COL32(50, 50, 55, 255);
+	ImU32 toolbar_color_bottom = IM_COL32(40, 40, 45, 255);
 
-    // Draw gradient-filled rectangle
-    draw_list->AddRectFilledMultiColor
+	// Draw gradient-filled rectangle
+	draw_list->AddRectFilledMultiColor
 	(
-        toolbar_pos,
-        ImVec2
+		toolbar_pos,
+		ImVec2
 		(
-			toolbar_pos.x + toolbar_size.x, 
+			toolbar_pos.x + toolbar_size.x,
 			toolbar_pos.y + toolbar_size.y
 		),
-        toolbar_color_top,     // top-left
-        toolbar_color_top,     // top-right
-        toolbar_color_bottom,  // bottom-right
-        toolbar_color_bottom   // bottom-left
-    );
+		toolbar_color_top,     // top-left
+		toolbar_color_top,     // top-right
+		toolbar_color_bottom,  // bottom-right
+		toolbar_color_bottom   // bottom-left
+	);
 }
 
 void GameEditor::DrawSceneWindow()
@@ -218,30 +226,54 @@ void GameEditor::DrawSceneWindow()
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
 
 	// Play/Pause button with PNG icon
-    if (b_IsPlaying)
+	if (b_IsPlaying)
 	{
-		if (ImGui::ImageButton("pause_btn", (ImTextureID)(intptr_t)m_PauseIcon.id, ImVec2(20, 20)))
+		if 
+		(	ImGui::ImageButton
+			(
+				"pause_btn", 
+				(ImTextureID)(intptr_t)m_PauseIcon.id, 
+				ImVec2(20, 20)
+			)
+		)
 		{
 			b_IsPlaying = false;
 		}
 	}
 	else
 	{
-		if (ImGui::ImageButton("play_btn", (ImTextureID)(intptr_t)m_PlayIcon.id, ImVec2(20, 20)))
+		if 
+		(
+			ImGui::ImageButton
+			(
+				"play_btn", 
+				(ImTextureID)(intptr_t)m_PlayIcon.id, 
+				ImVec2(20, 20)
+			)
+		)
 		{
 			b_IsPlaying = true;
 		}
 	}
 
 	ImGui::SameLine();
-    if (ImGui::ImageButton("restart_btn", (ImTextureID)(intptr_t)m_RestartIcon.id, ImVec2(20, 20)))
+	if 
+	(
+		ImGui::ImageButton
+		(
+			"restart_btn", 
+			(ImTextureID)(intptr_t)m_RestartIcon.id, 
+			ImVec2(20, 20)
+		)
+	)
 	{
-        b_IsPlaying = false;
-        // Attempt hot reload of GameLogic.dll, fallback to reset if it fails
-        if (!ReloadGameLogic())
-        {
-            m_GameEngine.ResetMap();
-        }
+		b_IsPlaying = false;
+
+		// Attempt hot reload of GameLogic.dll, fallback to reset if it fails
+		if (!ReloadGameLogic())
+		{
+			m_GameEngine.ResetMap();
+		}
 	}
 
 	// Status indicator
@@ -258,7 +290,7 @@ void GameEditor::DrawSceneWindow()
 		ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "STOPPED");
 	}
 	ImGui::PopStyleVar(3);
-	
+
 	// Draw the texture to ImGui
 	ImGui::Image
 	(
@@ -285,66 +317,74 @@ void GameEditor::LoadMap(std::unique_ptr<GameMap>& game_map)
 
 bool GameEditor::LoadGameLogic(const char* dllPath)
 {
-    m_GameLogicPath = dllPath ? dllPath : "";
+	m_GameLogicPath = dllPath ? dllPath : "";
 
-    // 1) Load new DLL
-    DllHandle newDll = LoadDll(dllPath);
-    if (!newDll.handle)
-    {
-        std::cerr << "Failed to load GameLogic DLL: " << dllPath << std::endl;
-        return false;
-    }
+	// 1) Load new DLL
+	DllHandle new_dll = LoadDll(dllPath);
+	if (!new_dll.handle)
+	{
+		std::cerr << "Failed to load GameLogic DLL: " << dllPath << std::endl;
+		return false;
+	}
 
-    // 2) Get factory
-    CreateGameMapFunc newFactory = reinterpret_cast<CreateGameMapFunc>(GetDllSymbol(newDll, "CreateGameMap"));
-    if (!newFactory)
-    {
-        std::cerr << "Failed to get CreateGameMap from DLL" << std::endl;
-        UnloadDll(newDll);
-        return false;
-    }
+	// 2) Get factory
+	CreateGameMapFunc new_factory = reinterpret_cast<CreateGameMapFunc>(GetDllSymbol(new_dll, "CreateGameMap"));
+	if (!new_factory)
+	{
+		std::cerr << "Failed to get CreateGameMap from DLL" << std::endl;
+		UnloadDll(new_dll);
+		return false;
+	}
 
-    // 3) Create the new map before disturbing current state
-    std::unique_ptr<GameMap> newMap(newFactory());
-    if (!newMap)
-    {
-        std::cerr << "CreateGameMap returned null" << std::endl;
-        UnloadDll(newDll);
-        return false;
-    }
+	// 3) Create the new map before disturbing current state
+	std::unique_ptr<GameMap> new_map(new_factory());
+	if (!new_map)
+	{
+		std::cerr << "CreateGameMap returned null" << std::endl;
+		UnloadDll(new_dll);
+		return false;
+	}
 
-    // 4) Destroy current map to release old DLL code before unloading
-    m_GameEngine.SetMap(nullptr);
+	// 4) Destroy current map to release old DLL code before unloading
+	m_GameEngine.SetMap(nullptr);
 
-    // 5) Unload old DLL (if any)
-    if (m_GameLogicDll.handle)
-    {
-        UnloadDll(m_GameLogicDll);
-        m_GameLogicDll = {};
-        m_CreateGameMap = nullptr;
-    }
+	// 5) Unload old DLL (if any)
+	if (m_GameLogicDll.handle)
+	{
+		UnloadDll(m_GameLogicDll);
+		m_GameLogicDll = {};
+		m_CreateGameMap = nullptr;
+	}
 
-    // 6) Swap in new DLL and map
-    m_GameLogicDll = newDll;
-    m_CreateGameMap = newFactory;
-    m_GameEngine.SetMap(std::move(newMap));
+	// 6) Swap in new DLL and map
+	m_GameLogicDll = new_dll;
+	m_CreateGameMap = new_factory;
+	m_GameEngine.SetMap(std::move(new_map));
 
-    // Update watched timestamp (watch the original DLL path, not the shadow)
-    std::error_code ec;
-    m_LastLogicWriteTime = std::filesystem::last_write_time(std::filesystem::path(m_GameLogicPath), ec);
-    return true;
+	// Update watched timestamp (watch the original DLL path, not the shadow)
+	std::error_code ec;
+
+	m_LastLogicWriteTime = 
+	std::filesystem::last_write_time
+	(
+		std::filesystem::path(m_GameLogicPath), 
+		ec
+	);
+
+	return true;
 }
 
 bool GameEditor::ReloadGameLogic()
 {
-    if (m_GameLogicPath.empty())
-    {
-        return false;
-    }
+	if (m_GameLogicPath.empty())
+	{
+		return false;
+	}
 
-    bool wasPlaying = b_IsPlaying;
-    b_IsPlaying = false;
-    bool ok = LoadGameLogic(m_GameLogicPath.c_str());
-    b_IsPlaying = wasPlaying;
-    return ok;
+	bool b_WasPlaying = b_IsPlaying;
+	b_IsPlaying = false;
+	bool b_Ok = LoadGameLogic(m_GameLogicPath.c_str());
+	b_IsPlaying = b_WasPlaying;
+
+	return b_Ok;
 }
