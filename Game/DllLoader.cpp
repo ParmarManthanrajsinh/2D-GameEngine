@@ -24,7 +24,7 @@ DllHandle LoadDll(const char* path)
             // Fall back to trying to load directly (will fail similarly if missing)
             HMODULE direct = LoadLibraryA(path);
             result.handle = reinterpret_cast<void*>(direct);
-            result.shadowPath = path;
+            result.shadow_path = path;
             return result;
         }
 
@@ -46,7 +46,7 @@ DllHandle LoadDll(const char* path)
 
         HMODULE mod = LoadLibraryA(dstPath.string().c_str());
         result.handle = reinterpret_cast<void*>(mod);
-        result.shadowPath = dstPath.string();
+        result.shadow_path = dstPath.string();
         return result;
     }
     catch (...)
@@ -54,7 +54,7 @@ DllHandle LoadDll(const char* path)
         // As a last resort, try direct load
         HMODULE mod = LoadLibraryA(path);
         result.handle = reinterpret_cast<void*>(mod);
-        result.shadowPath = path;
+        result.shadow_path = path;
         return result;
     }
 }
@@ -67,11 +67,11 @@ void UnloadDll(DllHandle dll)
     }
 
     // Attempt to delete the shadow copy after unloading. Ignore failures.
-    if (!dll.shadowPath.empty())
+    if (!dll.shadow_path.empty())
     {
         try
         {
-            fs::path p = fs::path(dll.shadowPath);
+            fs::path p = fs::path(dll.shadow_path);
             // Only delete if it looks like one of our shadow copies
             std::string filename = p.filename().string();
             if (filename.find(".shadow.") != std::string::npos)
