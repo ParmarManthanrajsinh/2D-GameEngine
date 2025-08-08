@@ -1,9 +1,9 @@
 #define WIN32_LEAN_AND_MEAN
 #include "DllLoader.h"
-#include <windows.h>
 #include <cstdio>
 #include <filesystem>
 #include <string>
+#include <windows.h>
 namespace fs = std::filesystem;
 
 DllHandle LoadDll(const char* path) 
