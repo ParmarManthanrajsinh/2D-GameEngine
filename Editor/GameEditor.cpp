@@ -333,7 +333,10 @@ bool GameEditor::b_LoadGameLogic(const char* dllPath)
 	DllHandle new_dll = LoadDll(dllPath);
 	if (!new_dll.handle)
 	{
-		std::cerr << "Failed to load GameLogic DLL: " << dllPath << std::endl;
+		std::cerr << "Failed to load GameLogic DLL: " 
+			<< dllPath 
+			<< std::endl;
+
 		return false;
 	}
 
@@ -376,7 +379,8 @@ bool GameEditor::b_LoadGameLogic(const char* dllPath)
 	m_CreateGameMap = new_factory;
 	m_GameEngine.SetMap(std::move(new_map));
 
-	// Update watched timestamp (watch the original DLL path, not the shadow)
+	// Update watched timestamp 
+	// (watch the original DLL path, not the shadow)
 	std::error_code ec;
 
 	m_LastLogicWriteTime = 
@@ -391,14 +395,14 @@ bool GameEditor::b_LoadGameLogic(const char* dllPath)
 
 bool GameEditor::b_ReloadGameLogic()
 {
-	bool b_WasPlaying;
 	if (m_GameLogicPath.empty())
 	{
 		return false;
 	}
 
-	b_WasPlaying = b_IsPlaying;
+	bool b_WasPlaying = b_IsPlaying;
 	b_IsPlaying = false;
+
 	bool b_Ok = b_LoadGameLogic(m_GameLogicPath.c_str());
 	b_IsPlaying = b_WasPlaying;
 
