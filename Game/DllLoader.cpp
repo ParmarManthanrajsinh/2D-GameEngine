@@ -89,20 +89,14 @@ void UnloadDll(DllHandle dll)
     // Attempt to delete the shadow copy after unloading. Ignore failures.
     if (!dll.shadow_path.empty())
     {
-        try
+        fs::path p = fs::path(dll.shadow_path);
+        
+        // Only delete if it looks like one of our shadow copies
+        std::string filename = p.filename().string();
+        if (filename.find(".shadow.") != std::string::npos)
         {
-            fs::path p = fs::path(dll.shadow_path);
-            // Only delete if it looks like one of our shadow copies
-            std::string filename = p.filename().string();
-            if (filename.find(".shadow.") != std::string::npos)
-            {
-                std::error_code ec;
-                fs::remove(p, ec);
-            }
-        }
-        catch (...)
-        {
-            // swallow
+            std::error_code ec;
+            fs::remove(p, ec);
         }
     }
 }
