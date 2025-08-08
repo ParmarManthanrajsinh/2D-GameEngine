@@ -1,5 +1,6 @@
 #pragma once
 #include "GameMap.h"
+#include <iostream>
 
 class MyMap : public GameMap 
 {

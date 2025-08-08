@@ -6,7 +6,10 @@
 DllHandle LoadDll(const char* path) 
 {
     HMODULE mod = LoadLibraryA(path);
-    return { reinterpret_cast<void*>(mod) };
+    return 
+    { 
+        reinterpret_cast<void*>(mod) 
+    };
 }
 
 void UnloadDll(DllHandle dll) 
@@ -23,5 +26,11 @@ void* GetDllSymbol(DllHandle dll, const char* symbolName)
     {
         return nullptr;
     }
-    return reinterpret_cast<void*>(GetProcAddress(reinterpret_cast<HMODULE>(dll.handle), symbolName));
+    return reinterpret_cast<void*>
+    (
+        GetProcAddress
+        (
+            reinterpret_cast<HMODULE>(dll.handle), symbolName
+        )
+    );
 }
