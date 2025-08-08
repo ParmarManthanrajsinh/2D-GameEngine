@@ -11,15 +11,21 @@ MyMap::~MyMap()
 	std::cout << "MyMap destructed!" << std::endl;
 }
 
+void MyMap::Initialize() 
+{
+	position = { 400, 300 };
+}
+
 void MyMap::Update(float dt) 
 {
 	// Example logic
-	std::cout << "MyMap::Update called with dt = " << dt << std::endl;
+	position.x += 100 * dt;
+	
 }
 
 void MyMap::Draw()
 {
-	DrawCircle(400, 300, 100, GREEN);
+	DrawCircle(position.x, position.y, 90, RED);
 }
 
 extern "C" __declspec(dllexport) GameMap* CreateGameMap() 

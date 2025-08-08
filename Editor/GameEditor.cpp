@@ -8,7 +8,9 @@ GameEditor::GameEditor()
 	  m_PlayIcon({ 0 }),
 	  m_PauseIcon({ 0 }),
 	  m_RestartIcon({ 0 }),
-	  m_IconsLoaded(false)
+	  m_IconsLoaded(false),
+	  m_GameLogicDll{},
+	  m_CreateGameMap(nullptr)
 {
 }
 
@@ -21,6 +23,13 @@ GameEditor::~GameEditor()
 		UnloadTexture(m_PauseIcon);
 		UnloadTexture(m_RestartIcon);
 	}
+
+    if (m_GameLogicDll.handle)
+    {
+        UnloadDll(m_GameLogicDll);
+        m_GameLogicDll = {};
+        m_CreateGameMap = nullptr;
+    }
 }
 
 void GameEditor::Init(int width, int height, std::string title)
@@ -105,6 +114,24 @@ void GameEditor::Run()
 	{
 		float DeltaTime = GetFrameTime();
 
+        // Periodically check for GameLogic.dll changes (e.g., every 0.5s)
+        m_ReloadCheckAccum += DeltaTime;
+        if (m_ReloadCheckAccum > 0.5f && !m_GameLogicPath.empty())
+        {
+            m_ReloadCheckAccum = 0.0f;
+            std::error_code ec;
+            auto nowWrite = std::filesystem::last_write_time(std::filesystem::u8path(m_GameLogicPath), ec);
+            if (!ec && m_LastLogicWriteTime != std::filesystem::file_time_type{} && nowWrite != m_LastLogicWriteTime)
+            {
+                // Attempt hot reload on change
+                ReloadGameLogic();
+            }
+            if (!ec && m_LastLogicWriteTime == std::filesystem::file_time_type{})
+            {
+                m_LastLogicWriteTime = nowWrite;
+            }
+        }
+
 		if (b_IsPlaying)
 		{
 			m_GameEngine.UpdateMap(DeltaTime);
@@ -187,7 +214,7 @@ void GameEditor::DrawSceneWindow()
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
 
 	// Play/Pause button with PNG icon
-	if (b_IsPlaying)
+    if (b_IsPlaying)
 	{
 		if (ImGui::ImageButton("pause_btn", (ImTextureID)(intptr_t)m_PauseIcon.id, ImVec2(20, 20)))
 		{
@@ -203,10 +230,14 @@ void GameEditor::DrawSceneWindow()
 	}
 
 	ImGui::SameLine();
-	if (ImGui::ImageButton("restart_btn", (ImTextureID)(intptr_t)m_RestartIcon.id, ImVec2(20, 20)))
+    if (ImGui::ImageButton("restart_btn", (ImTextureID)(intptr_t)m_RestartIcon.id, ImVec2(20, 20)))
 	{
-		b_IsPlaying = false;
-		m_GameEngine.ResetMap();
+        b_IsPlaying = false;
+        // Attempt hot reload of GameLogic.dll, fallback to reset if it fails
+        if (!ReloadGameLogic())
+        {
+            m_GameEngine.ResetMap();
+        }
 	}
 
 	// Status indicator
@@ -246,4 +277,70 @@ void GameEditor::LoadMap(std::unique_ptr<GameMap>& game_map)
 	{
 		m_GameEngine.SetMap(std::make_unique<GameMap>());
 	}
+}
+
+bool GameEditor::LoadGameLogic(const char* dllPath)
+{
+    m_GameLogicPath = dllPath ? dllPath : "";
+
+    // 1) Load new DLL
+    DllHandle newDll = LoadDll(dllPath);
+    if (!newDll.handle)
+    {
+        std::cerr << "Failed to load GameLogic DLL: " << dllPath << std::endl;
+        return false;
+    }
+
+    // 2) Get factory
+    CreateGameMapFunc newFactory = reinterpret_cast<CreateGameMapFunc>(GetDllSymbol(newDll, "CreateGameMap"));
+    if (!newFactory)
+    {
+        std::cerr << "Failed to get CreateGameMap from DLL" << std::endl;
+        UnloadDll(newDll);
+        return false;
+    }
+
+    // 3) Create the new map before disturbing current state
+    std::unique_ptr<GameMap> newMap(newFactory());
+    if (!newMap)
+    {
+        std::cerr << "CreateGameMap returned null" << std::endl;
+        UnloadDll(newDll);
+        return false;
+    }
+
+    // 4) Destroy current map to release old DLL code before unloading
+    m_GameEngine.SetMap(nullptr);
+
+    // 5) Unload old DLL (if any)
+    if (m_GameLogicDll.handle)
+    {
+        UnloadDll(m_GameLogicDll);
+        m_GameLogicDll = {};
+        m_CreateGameMap = nullptr;
+    }
+
+    // 6) Swap in new DLL and map
+    m_GameLogicDll = newDll;
+    m_CreateGameMap = newFactory;
+    m_GameEngine.SetMap(std::move(newMap));
+
+    // Update watched timestamp (watch the original DLL path, not the shadow)
+    std::error_code ec;
+    m_LastLogicWriteTime = std::filesystem::last_write_time(std::filesystem::u8path(m_GameLogicPath), ec);
+    return true;
+}
+
+bool GameEditor::ReloadGameLogic()
+{
+    if (m_GameLogicPath.empty())
+    {
+        return false;
+    }
+
+    bool wasPlaying = b_IsPlaying;
+    b_IsPlaying = false;
+    bool ok = LoadGameLogic(m_GameLogicPath.c_str());
+    b_IsPlaying = wasPlaying;
+    return ok;
 }

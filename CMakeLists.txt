@@ -82,3 +82,9 @@ add_custom_command(TARGET main POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             $<TARGET_FILE:raylib>
             $<TARGET_FILE_DIR:main>)
+
+# When building GameLogic alone, also copy it next to the main executable
+add_custom_command(TARGET GameLogic POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:GameLogic>
+            ${CMAKE_BINARY_DIR})
