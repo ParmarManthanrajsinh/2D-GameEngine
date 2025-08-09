@@ -49,7 +49,6 @@ void GameEditor::Init(int width, int height, std::string title)
 
 	m_RaylibTexture = LoadRenderTexture(1280, 720);
 	m_LastSize = { 1280, 720 };
-	SetTextureFilter(m_RaylibTexture.texture, TEXTURE_FILTER_BILINEAR);
 
 	// Load icon textures
 	LoadIconTextures();
