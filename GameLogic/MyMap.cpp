@@ -3,7 +3,6 @@
 MyMap::MyMap() 
 {
 	std::cout << "MyMap constructed!" << std::endl;
-	position = { 0, 0 };
 }
 
 MyMap::~MyMap() 
@@ -13,18 +12,17 @@ MyMap::~MyMap()
 
 void MyMap::Initialize() 
 {
-	position = { 400, 300 };
+	bp.position = { 300, 300 };
 }
 
 void MyMap::Update(float dt)
 {
-	// Example logic
-	position.x += 100 * dt;	
+	bp.Update(dt);
 }
 
 void MyMap::Draw()
-{
-	DrawCircle((int)position.x, (int)position.y, 50, YELLOW);
+{	
+	bp.Draw();
 }
 
 extern "C" __declspec(dllexport) GameMap* CreateGameMap() 
