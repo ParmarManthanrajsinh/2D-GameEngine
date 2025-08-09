@@ -312,8 +312,8 @@ void GameEditor::DrawSceneWindow()
 		ImGui::GetContentRegionAvail(),
 		ImVec2(0, 1),  // Bottom-left UV
 		ImVec2(1, 0),   // Top-right UV (flipped vertically)
-		ImVec4(1, 1, 1, 1),  // Tint color (no change)
-		ImVec4(0, 0, 0, 0)   // No border
+		ImVec4(1, 1, 1, 1), // Tint color (no change)
+		ImVec4(0, 0, 0, 0)  // No border
 	);
 
 	ImGui::End();
@@ -340,8 +340,8 @@ bool GameEditor::b_LoadGameLogic(const char* dll_path)
 	if (!new_dll.handle)
 	{
 		std::cerr << "Failed to load GameLogic DLL: " 
-			<< dll_path 
-			<< std::endl;
+				  << dll_path 
+				  << std::endl;
 
 		return false;
 	}
