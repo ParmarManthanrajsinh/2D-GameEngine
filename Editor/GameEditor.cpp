@@ -328,29 +328,29 @@ void GameEditor::LoadMap(std::unique_ptr<GameMap>& game_map)
 	}
 }
 
-bool GameEditor::b_LoadGameLogic(const char* dllPath)
+bool GameEditor::b_LoadGameLogic(const char* dll_path)
 {
-	m_GameLogicPath = dllPath ? dllPath : "";
+	m_GameLogicPath = dll_path ? dll_path : "";
 
 	// 1) Load new DLL
-	DllHandle new_dll = LoadDll(dllPath);
+	DllHandle new_dll = LoadDll(dll_path);
 	if (!new_dll.handle)
 	{
 		std::cerr << "Failed to load GameLogic DLL: " 
-			<< dllPath 
+			<< dll_path 
 			<< std::endl;
 
 		return false;
 	}
 
 	// 2) Get factory
-	CreateGameMapFunc new_factory = 
+	CreateGameMapFunc NewFactory = 
 	reinterpret_cast<CreateGameMapFunc>
 	(
 		GetDllSymbol(new_dll, "CreateGameMap")
 	);
 
-	if (!new_factory)
+	if (!NewFactory)
 	{
 		std::cerr << "Failed to get CreateGameMap from DLL" << std::endl;
 		UnloadDll(new_dll);
@@ -358,7 +358,7 @@ bool GameEditor::b_LoadGameLogic(const char* dllPath)
 	}
 
 	// 3) Create the new map before disturbing current state
-	std::unique_ptr<GameMap> new_map(new_factory());
+	std::unique_ptr<GameMap> new_map(NewFactory());
 	if (!new_map)
 	{
 		std::cerr << "CreateGameMap returned null" << std::endl;
@@ -379,7 +379,7 @@ bool GameEditor::b_LoadGameLogic(const char* dllPath)
 
 	// 6) Swap in new DLL and map
 	m_GameLogicDll = new_dll;
-	m_CreateGameMap = new_factory;
+	m_CreateGameMap = NewFactory;
 	m_GameEngine.SetMap(std::move(new_map));
 
 	// Update watched timestamp 

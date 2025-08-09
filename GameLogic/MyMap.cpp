@@ -19,13 +19,12 @@ void MyMap::Initialize()
 void MyMap::Update(float dt)
 {
 	// Example logic
-	position.x += 100 * dt;
-	
+	position.x += 100 * dt;	
 }
 
 void MyMap::Draw()
 {
-	DrawCircle((int)position.x, (int)position.y, 50, RED);
+	DrawCircle((int)position.x, (int)position.y, 50, YELLOW);
 }
 
 extern "C" __declspec(dllexport) GameMap* CreateGameMap() 
