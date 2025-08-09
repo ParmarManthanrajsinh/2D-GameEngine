@@ -95,9 +95,9 @@ void UnloadDll(DllHandle dll)
     }
 }
 
-void* GetDllSymbol(DllHandle dll, const char* symbolName) 
+void* GetDllSymbol(DllHandle dll, const char* SYMBOL_NAME) 
 {
-    if (!dll.handle) 
+    if (!dll.handle)
     {
         return nullptr;
     }
@@ -105,8 +105,8 @@ void* GetDllSymbol(DllHandle dll, const char* symbolName)
     (
         GetProcAddress
         (
-            reinterpret_cast<HMODULE>(dll.handle), 
-            symbolName
+            reinterpret_cast<HMODULE>(dll.handle),
+            SYMBOL_NAME
         )
     );
 }
