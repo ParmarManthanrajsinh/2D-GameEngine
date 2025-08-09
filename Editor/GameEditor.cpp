@@ -306,7 +306,8 @@ void GameEditor::DrawSceneWindow()
 	ImGui::PopStyleVar(3);
 
 	// Draw the texture to ImGui
-	ImGui::Image(
+	ImGui::Image
+	(
 		(ImTextureID)(intptr_t)m_RaylibTexture.texture.id,
 		ImGui::GetContentRegionAvail(),
 		ImVec2(0, 1),  // Bottom-left UV
@@ -314,7 +315,6 @@ void GameEditor::DrawSceneWindow()
 		ImVec4(1, 1, 1, 1),  // Tint color (no change)
 		ImVec4(0, 0, 0, 0)   // No border
 	);
-
 
 	ImGui::End();
 }
