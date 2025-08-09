@@ -49,6 +49,7 @@ void GameEditor::Init(int width, int height, std::string title)
 
 	m_RaylibTexture = LoadRenderTexture(1280, 720);
 	m_LastSize = { 1280, 720 };
+	SetTextureFilter(m_RaylibTexture.texture, TEXTURE_FILTER_BILINEAR);
 
 	// Load icon textures
 	LoadIconTextures();
@@ -305,13 +306,15 @@ void GameEditor::DrawSceneWindow()
 	ImGui::PopStyleVar(3);
 
 	// Draw the texture to ImGui
-	ImGui::Image
-	(
+	ImGui::Image(
 		(ImTextureID)(intptr_t)m_RaylibTexture.texture.id,
 		ImGui::GetContentRegionAvail(),
-		ImVec2(0, 1),
-		ImVec2(1, 0)
+		ImVec2(0, 1),  // Bottom-left UV
+		ImVec2(1, 0),   // Top-right UV (flipped vertically)
+		ImVec4(1, 1, 1, 1),  // Tint color (no change)
+		ImVec4(0, 0, 0, 0)   // No border
 	);
+
 
 	ImGui::End();
 }
