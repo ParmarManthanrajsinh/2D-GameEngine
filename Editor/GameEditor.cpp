@@ -346,7 +346,6 @@ void GameEditor::DrawSceneWindow()
 			(available_region.y - m_CachedImageSize.y) * 0.5f
 		);
 
-		// Update cached values
 		m_LastAvailableSize = available_region;
 		m_LastTextureAspect = texture_aspect;
 	}
