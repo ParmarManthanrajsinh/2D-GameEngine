@@ -52,6 +52,7 @@ void GameEditor::Init(int width, int height, std::string title)
 	m_Viewport = ImGui::GetMainViewport();
 
 	m_RaylibTexture = LoadRenderTexture(1280, 720);
+
 	m_LastSize = { 1280, 720 };
 	SetTextureFilter(m_RaylibTexture.texture, TEXTURE_FILTER_BILINEAR);
 
@@ -355,15 +356,17 @@ void GameEditor::DrawSceneWindow()
 	ImGui::SetCursorPos(ImVec2(cursor_pos.x + m_CachedOffset.x, cursor_pos.y + m_CachedOffset.y));
 
 	// Draw the texture to ImGui with cached size
-	ImGui::Image
-	(
-		(ImTextureID)(intptr_t)m_RaylibTexture.texture.id,
-		m_CachedImageSize,
-		ImVec2(0, 1),		// Bottom-left UV
-		ImVec2(1, 0),		// Top-right UV (flipped vertically)
-		ImVec4(1, 1, 1, 1), // Tint color (no change)
-		ImVec4(0, 0, 0, 0)  // No border
-	);
+	//ImGui::Image
+	//(
+	//	(ImTextureID)(intptr_t)m_RaylibTexture.texture.id,
+	//	m_CachedImageSize,
+	//	ImVec2(0, 1),		// Bottom-left UV
+	//	ImVec2(1, 0),		// Top-right UV (flipped vertically)
+	//	ImVec4(1, 1, 1, 1), // Tint color (no change)
+	//	ImVec4(0, 0, 0, 0)  // No border
+	//);
+
+	rlImGuiImageRenderTexture(&m_RaylibTexture);
 
 	ImGui::End();
 }
