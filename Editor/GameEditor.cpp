@@ -309,8 +309,8 @@ void GameEditor::DrawSceneWindow()
 	(
 		(ImTextureID)(intptr_t)m_RaylibTexture.texture.id,
 		ImGui::GetContentRegionAvail(),
-		ImVec2(0, 1),  // Bottom-left UV
-		ImVec2(1, 0),   // Top-right UV (flipped vertically)
+		ImVec2(0, 1),		// Bottom-left UV
+		ImVec2(1, 0),		// Top-right UV (flipped vertically)
 		ImVec4(1, 1, 1, 1), // Tint color (no change)
 		ImVec4(0, 0, 0, 0)  // No border
 	);
