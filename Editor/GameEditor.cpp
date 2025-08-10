@@ -1,22 +1,21 @@
 ﻿#include "GameEditor.h"
 using Clock = std::chrono::steady_clock;
 
-
 GameEditor::GameEditor()
 	: m_Viewport(nullptr),
-	m_RaylibTexture({ 0 }),
-	m_LastSize({ 1280, 720 }),
-	b_IsPlaying(false),
-	m_PlayIcon({ 0 }),
-	m_PauseIcon({ 0 }),
-	m_RestartIcon({ 0 }),
-	m_bIconsLoaded(false),
-	m_GameLogicDll{},
-	m_CreateGameMap(nullptr),
-	m_LastAvailableSize({ 0, 0 }),
-	m_CachedImageSize({ 0, 0 }),
-	m_CachedOffset({ 0, 0 }),
-	m_LastTextureAspect(0.0f)
+	  m_RaylibTexture({ 0 }),
+	  m_LastSize({ 1280, 720 }),
+	  b_IsPlaying(false),
+	  m_PlayIcon({ 0 }),
+	  m_PauseIcon({ 0 }),
+	  m_RestartIcon({ 0 }),
+	  m_bIconsLoaded(false),
+	  m_GameLogicDll{},
+	  m_CreateGameMap(nullptr),
+	  m_LastAvailableSize({ 0, 0 }),
+	  m_CachedImageSize({ 0, 0 }),
+	  m_CachedOffset({ 0, 0 }),
+	  m_LastTextureAspect(0.0f)
 {
 }
 
@@ -163,7 +162,7 @@ void GameEditor::Run()
 		BeginDrawing();
 
 		BeginTextureMode(m_RaylibTexture);
-		ClearBackground(WHITE);
+		ClearBackground(RAYWHITE);
 
 		m_GameEngine.DrawMap();
 		EndTextureMode();
@@ -248,13 +247,14 @@ void GameEditor::DrawSceneWindow()
 	if (b_IsPlaying)
 	{
 		if
-			(ImGui::ImageButton
+		(
+			ImGui::ImageButton
 			(
 				"pause_btn",
 				(ImTextureID)(intptr_t)m_PauseIcon.id,
 				ImVec2(20, 20)
 			)
-				)
+		)
 		{
 			b_IsPlaying = false;
 		}
@@ -262,14 +262,14 @@ void GameEditor::DrawSceneWindow()
 	else
 	{
 		if
+		(
+			ImGui::ImageButton
 			(
-				ImGui::ImageButton
-				(
-					"play_btn",
-					(ImTextureID)(intptr_t)m_PlayIcon.id,
-					ImVec2(20, 20)
-				)
-				)
+				"play_btn",
+				(ImTextureID)(intptr_t)m_PlayIcon.id,
+				ImVec2(20, 20)
+			)
+		)
 		{
 			b_IsPlaying = true;
 		}
@@ -277,14 +277,14 @@ void GameEditor::DrawSceneWindow()
 
 	ImGui::SameLine();
 	if
+	(
+		ImGui::ImageButton
 		(
-			ImGui::ImageButton
-			(
-				"restart_btn",
-				(ImTextureID)(intptr_t)m_RestartIcon.id,
-				ImVec2(20, 20)
-			)
-			)
+			"restart_btn",
+			(ImTextureID)(intptr_t)m_RestartIcon.id,
+			ImVec2(20, 20)
+		)
+	)
 	{
 		b_IsPlaying = false;
 
@@ -313,14 +313,14 @@ void GameEditor::DrawSceneWindow()
 	// Optimized aspect ratio calculation
 	ImVec2 available_region = ImGui::GetContentRegionAvail();
 
-	float texture_width = (float)m_RaylibTexture.texture.width;
-	float texture_height = (float)m_RaylibTexture.texture.height;
+	float texture_width = static_cast<float>(m_RaylibTexture.texture.width);
+	float texture_height = static_cast<float>(m_RaylibTexture.texture.height);
 	float texture_aspect = texture_width / texture_height;
 
 	// Only recalculate when size changes or texture aspect changes
-	if (available_region.x != m_LastAvailableSize.x ||
-		available_region.y != m_LastAvailableSize.y ||
-		texture_aspect != m_LastTextureAspect)
+	if (available_region.x != m_LastAvailableSize.x 
+		|| available_region.y != m_LastAvailableSize.y 
+		|| texture_aspect != m_LastTextureAspect)
 	{
 		float available_aspect = available_region.x / available_region.y;
 
@@ -352,7 +352,14 @@ void GameEditor::DrawSceneWindow()
 
 	// Apply the cached offset
 	ImVec2 cursor_pos = ImGui::GetCursorPos();
-	ImGui::SetCursorPos(ImVec2(cursor_pos.x + m_CachedOffset.x, cursor_pos.y + m_CachedOffset.y));
+	ImGui::SetCursorPos
+	(
+		ImVec2
+		(
+			cursor_pos.x + m_CachedOffset.x, 
+			cursor_pos.y + m_CachedOffset.y
+		)
+	);
 
 	// Draw the texture to ImGui with cached size
 	//ImGui::Image
@@ -391,18 +398,18 @@ bool GameEditor::b_LoadGameLogic(const char* dll_path)
 	if (!new_dll.handle)
 	{
 		std::cerr << "Failed to load GameLogic DLL: "
-			<< dll_path
-			<< std::endl;
+				  << dll_path
+				  << std::endl;
 
 		return false;
 	}
 
 	// 2) Get factory
 	CreateGameMapFunc NewFactory =
-		reinterpret_cast<CreateGameMapFunc>
-		(
-			GetDllSymbol(new_dll, "CreateGameMap")
-			);
+	reinterpret_cast<CreateGameMapFunc>
+	(
+		GetDllSymbol(new_dll, "CreateGameMap")
+	);
 
 	if (!NewFactory)
 	{
