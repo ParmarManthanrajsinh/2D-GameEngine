@@ -4,15 +4,19 @@ using Clock = std::chrono::steady_clock;
 
 GameEditor::GameEditor()
 	: m_Viewport(nullptr),
-	  m_RaylibTexture({ 0 }),
-	  m_LastSize({ 1280, 720 }),
-	  b_IsPlaying(false),
-	  m_PlayIcon({ 0 }),
-	  m_PauseIcon({ 0 }),
-	  m_RestartIcon({ 0 }),
-	  m_bIconsLoaded(false),
-	  m_GameLogicDll{},
-	  m_CreateGameMap(nullptr)
+	m_RaylibTexture({ 0 }),
+	m_LastSize({ 1280, 720 }),
+	b_IsPlaying(false),
+	m_PlayIcon({ 0 }),
+	m_PauseIcon({ 0 }),
+	m_RestartIcon({ 0 }),
+	m_bIconsLoaded(false),
+	m_GameLogicDll{},
+	m_CreateGameMap(nullptr),
+	m_LastAvailableSize({ 0, 0 }),
+	m_CachedImageSize({ 0, 0 }),
+	m_CachedOffset({ 0, 0 }),
+	m_LastTextureAspect(0.0f)
 {
 }
 
@@ -120,9 +124,9 @@ void GameEditor::Run()
 		// Periodically check for GameLogic.dll changes (e.g., every 0.5s)
 		auto current_time = Clock::now();
 		auto elapsed_time = std::chrono::duration<float>
-		(
-			current_time - s_LastReloadCheckTime
-		).count();
+			(
+				current_time - s_LastReloadCheckTime
+			).count();
 
 		if (elapsed_time > 0.5f && !m_GameLogicPath.empty())
 		{
@@ -130,7 +134,7 @@ void GameEditor::Run()
 			std::error_code ec;
 
 			// cache path once per check
-			const std::filesystem::path PATH(m_GameLogicPath); 
+			const std::filesystem::path PATH(m_GameLogicPath);
 			auto now_write = std::filesystem::last_write_time(PATH, ec);
 
 			if (!ec)
@@ -200,7 +204,7 @@ void GameEditor::DrawExploreWindow()
 	ImGui::End();
 }
 
-void DrawToolbarBackground()
+void GameEditor::DrawToolbarBackground()
 {
 	// Get current window's draw list
 	ImDrawList* draw_list = ImGui::GetWindowDrawList();
@@ -242,44 +246,44 @@ void GameEditor::DrawSceneWindow()
 	// Play/Pause button with PNG icon
 	if (b_IsPlaying)
 	{
-		if 
-		(	ImGui::ImageButton
+		if
+			(ImGui::ImageButton
 			(
-				"pause_btn", 
-				(ImTextureID)(intptr_t)m_PauseIcon.id, 
+				"pause_btn",
+				(ImTextureID)(intptr_t)m_PauseIcon.id,
 				ImVec2(20, 20)
 			)
-		)
+				)
 		{
 			b_IsPlaying = false;
 		}
 	}
 	else
 	{
-		if 
-		(
-			ImGui::ImageButton
+		if
 			(
-				"play_btn", 
-				(ImTextureID)(intptr_t)m_PlayIcon.id, 
-				ImVec2(20, 20)
-			)
-		)
+				ImGui::ImageButton
+				(
+					"play_btn",
+					(ImTextureID)(intptr_t)m_PlayIcon.id,
+					ImVec2(20, 20)
+				)
+				)
 		{
 			b_IsPlaying = true;
 		}
 	}
 
 	ImGui::SameLine();
-	if 
-	(
-		ImGui::ImageButton
+	if
 		(
-			"restart_btn", 
-			(ImTextureID)(intptr_t)m_RestartIcon.id, 
-			ImVec2(20, 20)
-		)
-	)
+			ImGui::ImageButton
+			(
+				"restart_btn",
+				(ImTextureID)(intptr_t)m_RestartIcon.id,
+				ImVec2(20, 20)
+			)
+			)
 	{
 		b_IsPlaying = false;
 
@@ -305,11 +309,56 @@ void GameEditor::DrawSceneWindow()
 	}
 	ImGui::PopStyleVar(3);
 
-	// Draw the texture to ImGui
+	// Optimized aspect ratio calculation
+	ImVec2 available_region = ImGui::GetContentRegionAvail();
+
+	float texture_width = (float)m_RaylibTexture.texture.width;
+	float texture_height = (float)m_RaylibTexture.texture.height;
+	float texture_aspect = texture_width / texture_height;
+
+	// Only recalculate when size changes or texture aspect changes
+	if (available_region.x != m_LastAvailableSize.x ||
+		available_region.y != m_LastAvailableSize.y ||
+		texture_aspect != m_LastTextureAspect)
+	{
+		float available_aspect = available_region.x / available_region.y;
+
+		if (available_aspect > texture_aspect)
+		{
+			// Available region is wider than texture aspect ratio
+			// Fit by height
+			m_CachedImageSize.y = available_region.y;
+			m_CachedImageSize.x = m_CachedImageSize.y * texture_aspect;
+		}
+		else
+		{
+			// Available region is taller than texture aspect ratio
+			// Fit by width
+			m_CachedImageSize.x = available_region.x;
+			m_CachedImageSize.y = m_CachedImageSize.x / texture_aspect;
+		}
+
+		// Calculate centering offset
+		m_CachedOffset = ImVec2
+		(
+			(available_region.x - m_CachedImageSize.x) * 0.5f,
+			(available_region.y - m_CachedImageSize.y) * 0.5f
+		);
+
+		// Update cached values
+		m_LastAvailableSize = available_region;
+		m_LastTextureAspect = texture_aspect;
+	}
+
+	// Apply the cached offset
+	ImVec2 cursor_pos = ImGui::GetCursorPos();
+	ImGui::SetCursorPos(ImVec2(cursor_pos.x + m_CachedOffset.x, cursor_pos.y + m_CachedOffset.y));
+
+	// Draw the texture to ImGui with cached size
 	ImGui::Image
 	(
 		(ImTextureID)(intptr_t)m_RaylibTexture.texture.id,
-		ImGui::GetContentRegionAvail(),
+		m_CachedImageSize,
 		ImVec2(0, 1),		// Bottom-left UV
 		ImVec2(1, 0),		// Top-right UV (flipped vertically)
 		ImVec4(1, 1, 1, 1), // Tint color (no change)
@@ -339,19 +388,19 @@ bool GameEditor::b_LoadGameLogic(const char* dll_path)
 	DllHandle new_dll = LoadDll(dll_path);
 	if (!new_dll.handle)
 	{
-		std::cerr << "Failed to load GameLogic DLL: " 
-				  << dll_path 
-				  << std::endl;
+		std::cerr << "Failed to load GameLogic DLL: "
+			<< dll_path
+			<< std::endl;
 
 		return false;
 	}
 
 	// 2) Get factory
-	CreateGameMapFunc NewFactory = 
-	reinterpret_cast<CreateGameMapFunc>
-	(
-		GetDllSymbol(new_dll, "CreateGameMap")
-	);
+	CreateGameMapFunc NewFactory =
+		reinterpret_cast<CreateGameMapFunc>
+		(
+			GetDllSymbol(new_dll, "CreateGameMap")
+			);
 
 	if (!NewFactory)
 	{
@@ -389,12 +438,12 @@ bool GameEditor::b_LoadGameLogic(const char* dll_path)
 	// (watch the original DLL path, not the shadow)
 	std::error_code ec;
 
-	m_LastLogicWriteTime = 
-	std::filesystem::last_write_time
-	(
-		std::filesystem::path(m_GameLogicPath), 
-		ec
-	);
+	m_LastLogicWriteTime =
+		std::filesystem::last_write_time
+		(
+			std::filesystem::path(m_GameLogicPath),
+			ec
+		);
 
 	return true;
 }

@@ -28,6 +28,7 @@ public:
     bool b_LoadGameLogic(const char* dllPath);
     // Unload and reload the DLL, then recreate the GameMap
     bool b_ReloadGameLogic();
+
 	void Run();
 private:
     void Close() const;
@@ -47,13 +48,21 @@ private:
     Texture2D m_RestartIcon;
     bool m_bIconsLoaded;
     void LoadIconTextures();
-    friend void DrawToolbarBackground();
+    void DrawToolbarBackground();
 
     // Hot-reload state
     DllHandle m_GameLogicDll;
     using CreateGameMapFunc = GameMap * (*)();
     CreateGameMapFunc m_CreateGameMap = nullptr;
+
     std::string m_GameLogicPath;
     std::filesystem::file_time_type m_LastLogicWriteTime{};
+
     float m_ReloadCheckAccum = 0.0f;
+
+	// Scene Rendering
+    ImVec2 m_LastAvailableSize;
+    ImVec2 m_CachedImageSize;
+    ImVec2 m_CachedOffset;
+    float m_LastTextureAspect;
 };
