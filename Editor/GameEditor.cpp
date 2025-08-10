@@ -163,7 +163,7 @@ void GameEditor::Run()
 		BeginDrawing();
 
 		BeginTextureMode(m_RaylibTexture);
-		ClearBackground(RAYWHITE);
+		ClearBackground(WHITE);
 
 		m_GameEngine.DrawMap();
 		EndTextureMode();
