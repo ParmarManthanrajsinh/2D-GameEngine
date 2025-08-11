@@ -1,4 +1,5 @@
 #pragma once
+#include "Bubble.h"
 #include "GameMap.h"
 #include <iostream>
 
@@ -11,6 +12,8 @@ class MyMap : public GameMap
     int sWidth;
     int sHeight;
     short direction;
+
+    Bubble b;
 
 public:
     MyMap();

@@ -20,6 +20,9 @@ void MyMap::Initialize()
 
     sWidth = GetScreenWidth();
     sHeight = GetScreenHeight();
+
+    b.position = { 400, 400 };
+    b.b_LoadTexture("C:/Users/LENOVO/Documents/Game Engine/2D-GameEngine/Assets/Bubble.png");
 }
 
 void MyMap::Update(float dt)
@@ -38,11 +41,15 @@ void MyMap::Update(float dt)
     {
         velocity.y *= -1.0f;
     }
+
+    b.Update(dt);
 }
 
 void MyMap::Draw()
 {	
 	DrawCircle(static_cast<int>(postition.x), static_cast<int>(postition.y), radius, MAGENTA);
+
+    b.Draw();
 }
 
 extern "C" __declspec(dllexport) GameMap* CreateGameMap() 
