@@ -9,8 +9,6 @@ class MyMap : public GameMap
     Vector2 velocity;
     float radius;
     float speed;
-    int sWidth;
-    int sHeight;
     short direction;
 
     Bubble b;

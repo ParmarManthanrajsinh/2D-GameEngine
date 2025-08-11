@@ -18,11 +18,8 @@ void MyMap::Initialize()
 	direction = -1;
     velocity = { 200.0f, 150.0f };
 
-    sWidth = GetScreenWidth();
-    sHeight = GetScreenHeight();
-
     b.position = { 400, 400 };
-    b.b_LoadTexture("C:/Users/LENOVO/Documents/Game Engine/2D-GameEngine/Assets/Bubble.png");
+    b.b_LoadTexture("Assets\\Bubble.png");
 }
 
 void MyMap::Update(float dt)
@@ -31,13 +28,13 @@ void MyMap::Update(float dt)
     postition.y += velocity.y * speed * dt;
 
     // Bounce horizontally
-    if (postition.x - radius <= 0.0f || postition.x + radius >= static_cast<float>(sWidth))
+    if (postition.x - radius <= 0.0f || postition.x + radius >= static_cast<float>(GetScreenWidth()))
     {
         velocity.x *= -1.0f;
     }
 
     // Bounce vertically
-    if (postition.y - radius <= 0.0f || postition.y + radius >= static_cast<float>(sHeight))
+    if (postition.y - radius <= 0.0f || postition.y + radius >= static_cast<float>(GetScreenHeight()))
     {
         velocity.y *= -1.0f;
     }
