@@ -22,4 +22,5 @@ public:
     void SetMapName(const std::string& map_name);
     std::string GetMapName() const;
     void SetSceneBounds(float width, float height);
+	Vector2 GetSceneBounds() const;
 };

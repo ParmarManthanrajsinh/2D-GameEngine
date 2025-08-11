@@ -40,3 +40,8 @@ void GameMap::SetSceneBounds(float width, float height)
     m_SceneWidth = width;
     m_SceneHeight = height;
 }
+
+Vector2 GameMap::GetSceneBounds() const
+{
+	return Vector2(m_SceneWidth, m_SceneHeight);
+}

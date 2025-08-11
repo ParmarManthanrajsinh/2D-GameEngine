@@ -3,10 +3,11 @@
 MyMap::MyMap() 
 {
 	postition = { 0, 0 };
-    radius = 0;
-	speed = 0.0f;
+    scene_dimension = { 0, 0 };
+	velocity = { 0, 0 };
     direction = 0;
-	velocity = { 0.0f, 0.0f };
+	speed = 0.0f;
+    radius = 0;
 
 	std::cout << "MyMap constructed!" << std::endl;
 }
@@ -24,6 +25,7 @@ void MyMap::Initialize()
 	direction = -1;
     velocity = { 200.0f, 150.0f };
 
+
     bubble_particle.position = { 400, 400 };
     bubble_particle.b_LoadTexture("Assets\\Bubble.png");
 }
@@ -33,14 +35,16 @@ void MyMap::Update(float DeltaTime)
     postition.x += velocity.x * speed * DeltaTime;
     postition.y += velocity.y * speed * DeltaTime;
 
+    scene_dimension = GetSceneBounds();
+
     // Bounce horizontally
-    if (postition.x - radius <= 0.0f || postition.x + radius >= static_cast<float>(GetScreenWidth()))
+    if (postition.x - radius <= 0.0f || postition.x + radius >= static_cast<float>(scene_dimension.x))
     {
         velocity.x *= -1.0f;
     }
 
     // Bounce vertically
-    if (postition.y - radius <= 0.0f || postition.y + radius >= static_cast<float>(GetScreenHeight()))
+    if (postition.y - radius <= 0.0f || postition.y + radius >= static_cast<float>(scene_dimension.y))
     {
         velocity.y *= -1.0f;
     }

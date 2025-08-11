@@ -7,6 +7,7 @@ class MyMap : public GameMap
 {
     Vector2 postition;
     Vector2 velocity;
+    Vector2 scene_dimension;
     float radius;
     float speed;
     short direction;
