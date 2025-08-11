@@ -1,11 +1,17 @@
 #pragma once
-#include "Blood_fountain.h"
 #include "GameMap.h"
 #include <iostream>
 
 class MyMap : public GameMap 
 {
-    BloodParticle bp;
+    Vector2 postition;
+    Vector2 velocity;
+    float radius;
+    float speed;
+    int sWidth;
+    int sHeight;
+    short direction;
+
 public:
     MyMap();
     ~MyMap() override;
