@@ -3,19 +3,16 @@ using Clock = std::chrono::steady_clock;
 
 GameEditor::GameEditor()
 	: m_Viewport(nullptr),
-	  m_RaylibTexture({ 0 }),
-	  m_LastSize({ 1280, 720 }),
-	  b_IsPlaying(false),
-	  m_PlayIcon({ 0 }),
-	  m_PauseIcon({ 0 }),
-	  m_RestartIcon({ 0 }),
-	  m_bIconsLoaded(false),
-	  m_GameLogicDll{},
-	  m_CreateGameMap(nullptr),
-	  m_LastAvailableSize({ 0, 0 }),
-	  m_CachedImageSize({ 0, 0 }),
-	  m_CachedOffset({ 0, 0 }),
-	  m_LastTextureAspect(0.0f)
+	m_RaylibTexture({ 0 }),
+	m_DisplayTexture({ 0 }),
+	b_IsPlaying(false),
+	m_PlayIcon({ 0 }),
+	m_PauseIcon({ 0 }),
+	m_RestartIcon({ 0 }),
+	m_bIconsLoaded(false),
+	m_GameLogicDll{},
+	m_CreateGameMap(nullptr),
+	m_OpaqueShader({ 0 })
 {
 }
 
@@ -52,9 +49,42 @@ void GameEditor::Init(int width, int height, std::string title)
 	m_Viewport = ImGui::GetMainViewport();
 
 	m_RaylibTexture = LoadRenderTexture(1280, 720);
+	m_DisplayTexture = LoadRenderTexture(1280, 720);
 
-	m_LastSize = { 1280, 720 };
 	SetTextureFilter(m_RaylibTexture.texture, TEXTURE_FILTER_BILINEAR);
+	SetTextureFilter(m_DisplayTexture.texture, TEXTURE_FILTER_BILINEAR);
+
+	// Setup opaque-pass shader to strip alpha before ImGui composition
+	{
+		static const char* OpaqueVS = R"(
+#version 330
+in vec3 vertexPosition;
+in vec2 vertexTexCoord;
+in vec4 vertexColor;
+out vec2 fragTexCoord;
+out vec4 fragColor;
+uniform mat4 mvp;
+void main()
+{
+    fragTexCoord = vertexTexCoord;
+    fragColor = vertexColor;
+    gl_Position = mvp * vec4(vertexPosition, 1.0);
+}
+)";
+		static const char* OpaqueFS = R"(
+#version 330
+in vec2 fragTexCoord;
+in vec4 fragColor;
+out vec4 finalColor;
+uniform sampler2D texture0;
+void main()
+{
+    vec4 c = texture(texture0, fragTexCoord) * fragColor;
+    finalColor = vec4(c.rgb, 1.0);
+}
+)";
+		m_OpaqueShader = LoadShaderFromMemory(OpaqueVS, OpaqueFS);
+	}
 
 	// Load icon textures
 	LoadIconTextures();
@@ -125,9 +155,9 @@ void GameEditor::Run()
 		// Periodically check for GameLogic.dll changes (e.g., every 0.5s)
 		auto current_time = Clock::now();
 		auto elapsed_time = std::chrono::duration<float>
-			(
-				current_time - s_LastReloadCheckTime
-			).count();
+		(
+			current_time - s_LastReloadCheckTime
+		).count();
 
 		if (elapsed_time > 0.5f && !m_GameLogicPath.empty())
 		{
@@ -168,6 +198,21 @@ void GameEditor::Run()
 		m_GameEngine.DrawMap();
 		EndTextureMode();
 
+		Texture2D source_tex = m_RaylibTexture.texture;
+
+		// Opaque pass to strip alpha before presenting via ImGui
+		if (m_bUseOpaquePass)
+		{
+			BeginTextureMode(m_DisplayTexture);
+			ClearBackground(BLANK);
+			BeginShaderMode(m_OpaqueShader);
+			Rectangle src = { 0, 0, (float)source_tex.width, -(float)source_tex.height };
+			DrawTextureRec(source_tex, src, { 0.0f, 0.0f }, WHITE);
+			EndShaderMode();
+			EndTextureMode();
+			source_tex = m_DisplayTexture.texture;
+		}
+
 		rlImGuiBegin();
 
 		ImGui::DockSpaceOverViewport(0, m_Viewport);
@@ -191,7 +236,14 @@ void GameEditor::Close() const
 		UnloadTexture(m_PauseIcon);
 		UnloadTexture(m_RestartIcon);
 	}
+
 	UnloadRenderTexture(m_RaylibTexture);
+
+	if (m_DisplayTexture.id != 0)
+	{
+		UnloadRenderTexture(m_DisplayTexture);
+	}
+
 	rlImGuiShutdown();
 	CloseWindow();
 }
@@ -311,8 +363,14 @@ void GameEditor::DrawSceneWindow()
 	}
 	ImGui::PopStyleVar(3);
 
-    // Fit the render texture into the available region and center it
-    rlImGuiImageRenderTextureFit(&m_RaylibTexture, true);
+	if (m_bUseOpaquePass)
+	{
+		rlImGuiImageRenderTextureFit(&m_DisplayTexture, true);
+	}
+	else
+	{
+		rlImGuiImageRenderTextureFit(&m_RaylibTexture, true);
+	}
 
 	ImGui::End();
 }
@@ -338,8 +396,8 @@ bool GameEditor::b_LoadGameLogic(const char* dll_path)
 	if (!new_dll.handle)
 	{
 		std::cerr << "Failed to load GameLogic DLL: "
-				  << dll_path
-				  << std::endl;
+			<< dll_path
+			<< std::endl;
 
 		return false;
 	}
@@ -388,11 +446,11 @@ bool GameEditor::b_LoadGameLogic(const char* dll_path)
 	std::error_code ec;
 
 	m_LastLogicWriteTime =
-		std::filesystem::last_write_time
-		(
-			std::filesystem::path(m_GameLogicPath),
-			ec
-		);
+	std::filesystem::last_write_time
+	(
+		std::filesystem::path(m_GameLogicPath),
+		ec
+	);
 
 	return true;
 }

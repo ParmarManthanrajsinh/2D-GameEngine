@@ -37,7 +37,7 @@ private:
     ImGuiViewport* m_Viewport;
 
     RenderTexture2D m_RaylibTexture;
-    Vector2 m_LastSize;
+    RenderTexture2D m_DisplayTexture;
 
 	void DrawExploreWindow();
 	void DrawSceneWindow();
@@ -60,9 +60,7 @@ private:
 
     float m_ReloadCheckAccum = 0.0f;
 
-	// Scene Rendering
-    ImVec2 m_LastAvailableSize;
-    ImVec2 m_CachedImageSize;
-    ImVec2 m_CachedOffset;
-    float m_LastTextureAspect;
+    // Opaque pass to remove alpha so ImGui composition doesn't darken the scene
+    Shader m_OpaqueShader;
+    bool m_bUseOpaquePass = true;
 };
