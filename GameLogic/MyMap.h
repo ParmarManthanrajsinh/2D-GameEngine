@@ -11,13 +11,13 @@ class MyMap : public GameMap
     float speed;
     short direction;
 
-    Bubble b;
+    Bubble bubble_particle;
 
 public:
     MyMap();
     ~MyMap() override;
 	void Initialize() override;
-    void Update(float dt) override;
+    void Update(float DeltaTime) override;
 	void Draw() override;
 };
 

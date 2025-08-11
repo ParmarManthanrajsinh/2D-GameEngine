@@ -2,6 +2,12 @@
 
 MyMap::MyMap() 
 {
+	postition = { 0, 0 };
+    radius = 0;
+	speed = 0.0f;
+    direction = 0;
+	velocity = { 0.0f, 0.0f };
+
 	std::cout << "MyMap constructed!" << std::endl;
 }
 
@@ -18,14 +24,14 @@ void MyMap::Initialize()
 	direction = -1;
     velocity = { 200.0f, 150.0f };
 
-    b.position = { 400, 400 };
-    b.b_LoadTexture("Assets\\Bubble.png");
+    bubble_particle.position = { 400, 400 };
+    bubble_particle.b_LoadTexture("Assets\\Bubble.png");
 }
 
-void MyMap::Update(float dt)
+void MyMap::Update(float DeltaTime)
 {
-    postition.x += velocity.x * speed * dt;
-    postition.y += velocity.y * speed * dt;
+    postition.x += velocity.x * speed * DeltaTime;
+    postition.y += velocity.y * speed * DeltaTime;
 
     // Bounce horizontally
     if (postition.x - radius <= 0.0f || postition.x + radius >= static_cast<float>(GetScreenWidth()))
@@ -39,14 +45,14 @@ void MyMap::Update(float dt)
         velocity.y *= -1.0f;
     }
 
-    b.Update(dt);
+    bubble_particle.Update(DeltaTime);
 }
 
 void MyMap::Draw()
 {	
 	DrawCircle(static_cast<int>(postition.x), static_cast<int>(postition.y), radius, MAGENTA);
 
-    b.Draw();
+    bubble_particle.Draw();
 }
 
 extern "C" __declspec(dllexport) GameMap* CreateGameMap() 
