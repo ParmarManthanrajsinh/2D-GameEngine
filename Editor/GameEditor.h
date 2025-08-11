@@ -1,12 +1,17 @@
 #pragma once
 
-#include <rlImGui.h>
-#include <raylib.h>
+#include <chrono>
+#include <filesystem>
+#include <system_error>
+
 #include <imgui.h>
+#include <raylib.h>
+#include <rlImGui.h>
 #include <tinyfiledialogs.h>
 
-#include "GameEditorTheme.h"
+#include "DllLoader.h"
 #include "GameEditorLayout.h"
+#include "GameEditorTheme.h"
 #include "GameEngine.h"
 
 class GameEditor 
@@ -18,15 +23,21 @@ public:
     bool b_IsPlaying;
     void Init(int width, int height, std::string title);
     void LoadMap(std::unique_ptr<GameMap>& game_map);
+
+    // Load the game logic DLL and create/set a new GameMap from it
+    bool b_LoadGameLogic(const char* dllPath);
+    // Unload and reload the DLL, then recreate the GameMap
+    bool b_ReloadGameLogic();
+
 	void Run();
 private:
     void Close() const;
 
 	GameEngine m_GameEngine;
-    ImGuiViewport* m_viewport;
+    ImGuiViewport* m_Viewport;
 
     RenderTexture2D m_RaylibTexture;
-    Vector2 m_LastSize;
+    RenderTexture2D m_DisplayTexture;
 
 	void DrawExploreWindow();
 	void DrawSceneWindow();
@@ -35,7 +46,21 @@ private:
     Texture2D m_PlayIcon;
     Texture2D m_PauseIcon;
     Texture2D m_RestartIcon;
-    bool m_IconsLoaded;
+    bool m_bIconsLoaded;
     void LoadIconTextures();
-    friend void DrawToolbarBackground();
+    void DrawToolbarBackground();
+
+    // Hot-reload state
+    DllHandle m_GameLogicDll;
+    using CreateGameMapFunc = GameMap * (*)();
+    CreateGameMapFunc m_CreateGameMap = nullptr;
+
+    std::string m_GameLogicPath;
+    std::filesystem::file_time_type m_LastLogicWriteTime{};
+
+    float m_ReloadCheckAccum = 0.0f;
+
+    // Opaque pass to remove alpha so ImGui composition doesn't darken the scene
+    Shader m_OpaqueShader;
+    bool m_bUseOpaquePass = true;
 };

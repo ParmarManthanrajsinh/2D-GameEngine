@@ -2,8 +2,8 @@
 
 GameEngine::GameEngine()
 {
-	m_WindowWidth = 800;
-	m_WindowHeight = 600;
+	m_WindowWidth = 1280;
+	m_WindowHeight = 720;
 	m_WindowTitle = "Game Window";
 }
 
@@ -17,14 +17,14 @@ void GameEngine::LaunchWindow(int width, int height, std::string title)
 	m_WindowHeight = height;
 	m_WindowTitle = title;
 
-	std::cout << "Window initialized: " 
-	<< title 
-	<< " (" 
-	<< width 
-	<< "x" 
-	<< height 
-	<< ")" 
-	<< std::endl;
+	std::cout << "Window initialized: "
+		<< title
+		<< " ("
+		<< width
+		<< "x"
+		<< height
+		<< ")"
+		<< std::endl;
 
 	InitWindow(width, height, title.c_str());
 }
@@ -32,7 +32,7 @@ void GameEngine::LaunchWindow(int width, int height, std::string title)
 void GameEngine::SetMap(std::unique_ptr<GameMap> game_map)
 {
 	m_GameMap = std::move(game_map);
-	if(m_GameMap)
+	if (m_GameMap)
 	{
 		m_GameMap->Initialize();
 	}
@@ -40,7 +40,7 @@ void GameEngine::SetMap(std::unique_ptr<GameMap> game_map)
 
 void GameEngine::DrawMap() const
 {
-	if(m_GameMap)
+	if (m_GameMap)
 	{
 		m_GameMap->Draw();
 	}
@@ -48,13 +48,13 @@ void GameEngine::DrawMap() const
 
 void GameEngine::UpdateMap(float DeltaTime) const
 {
-	if(m_GameMap)
+	if (m_GameMap)
 	{
 		m_GameMap->Update(DeltaTime);
 	}
 }
 
 void GameEngine::ResetMap()
-{	
+{
 	m_GameMap->Initialize();
 }

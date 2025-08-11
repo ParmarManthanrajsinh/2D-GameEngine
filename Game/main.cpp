@@ -1,40 +1,16 @@
 #include "GameEditor.h"
 #include "GameEngine.h"
+#include "GameMap.h"
 
-class MyMap : public GameMap
-{
-	Vector2 position;
-public:
-	MyMap() : GameMap("MyMap") 
-	{
-		position = { 0, 0 };
-	}
-	~MyMap() = default;
-	
-	void Initialize() override
-	{
-		position = { 400, 300 };
-	}
-
-	void Draw() override
-	{
-		DrawCircle(int(position.x), int(position.y), 50, RED);
-	}
-
-	void Update(float dt) override
-	{
-		position.x += 100 * dt;
-	}
-};
-
+// DLL loading now handled by GameEditor for hot-reload
 int main()
 {
-	printf("Game Engine Starting...\n");
-	std::unique_ptr<GameMap> my_map = std::make_unique<MyMap>();
-	GameEditor editor;
-	editor.Init(1200,700,"My Game");
-	editor.LoadMap(my_map);
-	editor.Run();
-    
+    printf("Game Engine Starting...\n");
+    GameEditor editor;
+    editor.Init(1280,720,"My Game");
+
+    // Load logic DLL and create the map (will show default map if load fails)
+    editor.b_LoadGameLogic("GameLogic.dll");
+    editor.Run();
     return 0;
 }
