@@ -37,6 +37,7 @@ GameEditor::~GameEditor()
 void GameEditor::Init(int width, int height, std::string title)
 {
 	m_GameEngine.LaunchWindow(width, height, title);
+	SetWindowState(FLAG_WINDOW_RESIZABLE);
 	rlImGuiSetup(true);
 
 	ImGuiIO& io = ImGui::GetIO();
@@ -310,69 +311,8 @@ void GameEditor::DrawSceneWindow()
 	}
 	ImGui::PopStyleVar(3);
 
-	// Optimized aspect ratio calculation
-	ImVec2 available_region = ImGui::GetContentRegionAvail();
-
-	float texture_width = static_cast<float>(m_RaylibTexture.texture.width);
-	float texture_height = static_cast<float>(m_RaylibTexture.texture.height);
-	float texture_aspect = texture_width / texture_height;
-
-	// Only recalculate when size changes or texture aspect changes
-	if (available_region.x != m_LastAvailableSize.x 
-		|| available_region.y != m_LastAvailableSize.y 
-		|| texture_aspect != m_LastTextureAspect)
-	{
-		float available_aspect = available_region.x / available_region.y;
-
-		if (available_aspect > texture_aspect)
-		{
-			// Available region is wider than texture aspect ratio
-			// Fit by height
-			m_CachedImageSize.y = available_region.y;
-			m_CachedImageSize.x = m_CachedImageSize.y * texture_aspect;
-		}
-		else
-		{
-			// Available region is taller than texture aspect ratio
-			// Fit by width
-			m_CachedImageSize.x = available_region.x;
-			m_CachedImageSize.y = m_CachedImageSize.x / texture_aspect;
-		}
-
-		// Calculate centering offset
-		m_CachedOffset = ImVec2
-		(
-			(available_region.x - m_CachedImageSize.x) * 0.5f,
-			(available_region.y - m_CachedImageSize.y) * 0.5f
-		);
-
-		m_LastAvailableSize = available_region;
-		m_LastTextureAspect = texture_aspect;
-	}
-
-	// Apply the cached offset
-	ImVec2 cursor_pos = ImGui::GetCursorPos();
-	ImGui::SetCursorPos
-	(
-		ImVec2
-		(
-			cursor_pos.x + m_CachedOffset.x, 
-			cursor_pos.y + m_CachedOffset.y
-		)
-	);
-
-	// Draw the texture to ImGui with cached size
-	//ImGui::Image
-	//(
-	//	(ImTextureID)(intptr_t)m_RaylibTexture.texture.id,
-	//	m_CachedImageSize,
-	//	ImVec2(0, 1),		// Bottom-left UV
-	//	ImVec2(1, 0),		// Top-right UV (flipped vertically)
-	//	ImVec4(1, 1, 1, 1), // Tint color (no change)
-	//	ImVec4(0, 0, 0, 0)  // No border
-	//);
-
-	rlImGuiImageRenderTexture(&m_RaylibTexture);
+    // Fit the render texture into the available region and center it
+    rlImGuiImageRenderTextureFit(&m_RaylibTexture, true);
 
 	ImGui::End();
 }
