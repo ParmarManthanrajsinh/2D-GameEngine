@@ -12,17 +12,44 @@ MyMap::~MyMap()
 
 void MyMap::Initialize() 
 {
-	bp.position = { 300, 300 };
+	postition = {100, 100};
+	radius = 30;
+    speed = 3.0f;
+	direction = -1;
+    velocity = { 200.0f, 150.0f };
+
+    sWidth = GetScreenWidth();
+    sHeight = GetScreenHeight();
+
+    b.position = { 400, 400 };
+    b.b_LoadTexture("C:/Users/LENOVO/Documents/Game Engine/2D-GameEngine/Assets/Bubble.png");
 }
 
 void MyMap::Update(float dt)
 {
-	bp.Update(dt);
+    postition.x += velocity.x * speed * dt;
+    postition.y += velocity.y * speed * dt;
+
+    // Bounce horizontally
+    if (postition.x - radius <= 0.0f || postition.x + radius >= static_cast<float>(sWidth))
+    {
+        velocity.x *= -1.0f;
+    }
+
+    // Bounce vertically
+    if (postition.y - radius <= 0.0f || postition.y + radius >= static_cast<float>(sHeight))
+    {
+        velocity.y *= -1.0f;
+    }
+
+    b.Update(dt);
 }
 
 void MyMap::Draw()
 {	
-	bp.Draw();
+	DrawCircle(static_cast<int>(postition.x), static_cast<int>(postition.y), radius, MAGENTA);
+
+    b.Draw();
 }
 
 extern "C" __declspec(dllexport) GameMap* CreateGameMap() 
