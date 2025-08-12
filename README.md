@@ -60,7 +60,7 @@ cmake --build out/build/x64-debug --config Debug --target GameLogic
 
 ---
 
-## Troubleshooting
+## Troubleshooting  
 
 ### LNK1168: cannot open main.exe for writing
 Close the app (stop debugging) before rebuilding `main`. Rebuilding `GameLogic` is safe while running.
