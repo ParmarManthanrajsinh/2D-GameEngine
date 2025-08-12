@@ -337,6 +337,10 @@ void GameEditor::DrawSceneWindow()
 			(ImTextureID)(intptr_t)m_RestartIcon.id,
 			ImVec2(20, 20)
 		)
+
+		||
+
+		IsWindowResized()
 	)
 	{
 		b_IsPlaying = false;
