@@ -24,6 +24,7 @@ void MyMap::Initialize()
     speed = 3.0f;
 	direction = -1;
     velocity = { 200.0f, 150.0f };
+    scene_dimension = GetSceneBounds();
 
 
     bubble_particle.position = { 400, 400 };
@@ -35,7 +36,6 @@ void MyMap::Update(float DeltaTime)
     postition.x += velocity.x * speed * DeltaTime;
     postition.y += velocity.y * speed * DeltaTime;
 
-    scene_dimension = GetSceneBounds();
 
     // Bounce horizontally
     if (postition.x - radius <= 0.0f || postition.x + radius >= static_cast<float>(scene_dimension.x))
