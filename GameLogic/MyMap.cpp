@@ -37,13 +37,15 @@ void MyMap::Update(float DeltaTime)
 
 
     // Bounce horizontally
-    if (postition.x - radius <= 0.0f || postition.x + radius >= static_cast<float>(scene_dimension.x))
+    if (postition.x - radius <= 0.0f 
+        || postition.x + radius >= static_cast<float>(scene_dimension.x))
     {
         velocity.x *= -1.0f;
     }
 
     // Bounce vertically
-    if (postition.y - radius <= 0.0f || postition.y + radius >= static_cast<float>(scene_dimension.y))
+    if (postition.y - radius <= 0.0f 
+        || postition.y + radius >= static_cast<float>(scene_dimension.y))
     {
         velocity.y *= -1.0f;
     }
@@ -53,7 +55,13 @@ void MyMap::Update(float DeltaTime)
 
 void MyMap::Draw()
 {	
-	DrawCircle(static_cast<int>(postition.x), static_cast<int>(postition.y), radius, MAGENTA);
+	DrawCircle
+    (
+        static_cast<int>(postition.x), 
+        static_cast<int>(postition.y), 
+        radius, 
+        MAGENTA
+    );
 
     bubble_particle.Draw();
 }
