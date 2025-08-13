@@ -11,7 +11,7 @@ GameEngine::~GameEngine()
 {
 }
 
-void GameEngine::LaunchWindow(int width, int height, std::string title)
+void GameEngine::LaunchWindow(int width, int height, const char* title)
 {
 	m_WindowWidth = width;
 	m_WindowHeight = height;
@@ -26,7 +26,7 @@ void GameEngine::LaunchWindow(int width, int height, std::string title)
 		<< ")"
 		<< std::endl;
 
-	InitWindow(width, height, title.c_str());
+	InitWindow(width, height, title);
 }
 
 void GameEngine::SetMap(std::unique_ptr<GameMap> game_map)

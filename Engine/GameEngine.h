@@ -19,7 +19,7 @@ public:
     GameEngine();
     ~GameEngine();
 
-	void LaunchWindow(int width, int height, std::string title);
+	void LaunchWindow(int width, int height, const char* title);
 	void SetMap(std::unique_ptr<GameMap> game_map);
 	void DrawMap() const;
 	void UpdateMap(float DeltaTime) const;
