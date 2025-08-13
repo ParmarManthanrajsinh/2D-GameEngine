@@ -1,8 +1,8 @@
 #pragma once
-#include <raylib.h>
-#include <vector>
 #include <random>
+#include <raylib.h>
 #include <raymath.h>
+#include <vector>
 
 struct t_Particle
 {

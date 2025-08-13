@@ -25,7 +25,6 @@ void MyMap::Initialize()
 	direction = -1;
     velocity = { 200.0f, 150.0f };
 
-
     bubble_particle.position = { 400, 400 };
     bubble_particle.b_LoadTexture("Assets\\Bubble.png");
 }

@@ -21,8 +21,8 @@ public:
     ~GameEditor();
 
     bool b_IsPlaying;
-    void Init(int width, int height, std::string title);
-    void LoadMap(std::unique_ptr<GameMap>& game_map);
+    void Init(int width, int height, const char* title);
+    void LoadMap(std::unique_ptr<GameMap> &game_map);
 
     // Load the game logic DLL and create/set a new GameMap from it
     bool b_LoadGameLogic(const char* dllPath);
@@ -59,7 +59,6 @@ private:
     std::filesystem::file_time_type m_LastLogicWriteTime{};
 
     float m_ReloadCheckAccum = 0.0f;
-
     // Opaque pass to remove alpha so ImGui composition doesn't darken the scene
     Shader m_OpaqueShader;
     bool m_bUseOpaquePass = true;
