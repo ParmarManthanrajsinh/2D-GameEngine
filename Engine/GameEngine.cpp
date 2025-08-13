@@ -34,8 +34,8 @@ void GameEngine::SetMap(std::unique_ptr<GameMap> game_map)
 	m_GameMap = std::move(game_map);
 	if (m_GameMap)
 	{
-		m_GameMap->Initialize();
 		m_GameMap->SetSceneBounds(m_WindowWidth, m_WindowHeight);
+		m_GameMap->Initialize();
 	}
 }
 
