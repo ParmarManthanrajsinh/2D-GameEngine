@@ -14,6 +14,8 @@
 #include "GameEditorTheme.h"
 #include "GameEngine.h"
 
+namespace fs = std::filesystem;
+
 class GameEditor 
 {
 public:
@@ -40,12 +42,18 @@ private:
     RenderTexture2D m_DisplayTexture;
 
 	void DrawExploreWindow();
+    void DrawDirectoryTree(const fs::path& directory_path);
 	void DrawSceneWindow();
 
     // New icon texture members
     Texture2D m_PlayIcon;
     Texture2D m_PauseIcon;
     Texture2D m_RestartIcon;
+    Texture2D m_folder_texture;
+    Texture2D m_file_texture;
+    Texture2D m_image_texture;
+    Texture2D m_text_texture ;
+
     bool m_bIconsLoaded;
     void LoadIconTextures();
     void DrawToolbarBackground();
