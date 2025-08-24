@@ -330,7 +330,7 @@ void GameEditor::DrawDirectoryTree(const fs::path& directory_path)
 					ImGui::TreePop();
 				}
 			}
-			else if (Texture2D* icon_texture = nullptr; 
+			else if (Texture2D* icon_texture = nullptr; // For declaration
 				entry.is_regular_file())
 			{
 				// Get file extension
