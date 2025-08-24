@@ -3,20 +3,20 @@ using Clock = std::chrono::steady_clock;
 
 GameEditor::GameEditor()
 	: m_Viewport(nullptr),
-	m_RaylibTexture({ 0 }),
-	m_DisplayTexture({ 0 }),
-	b_IsPlaying(false),
-	m_PlayIcon({ 0 }),
-	m_PauseIcon({ 0 }),
-	m_RestartIcon({ 0 }),
-	m_folder_texture ({0}),
-	m_file_texture({0}),
-	m_image_texture({0}),
-	m_text_texture({0}),
-	m_bIconsLoaded(false),
-	m_GameLogicDll{},
-	m_CreateGameMap(nullptr),
-	m_OpaqueShader({ 0 })
+	  m_RaylibTexture({ 0 }),
+	  m_DisplayTexture({ 0 }),
+	  b_IsPlaying(false),
+	  m_PlayIcon({ 0 }),
+	  m_PauseIcon({ 0 }),
+	  m_RestartIcon({ 0 }),
+	  m_folder_texture ({0}),
+	  m_file_texture({0}),
+	  m_image_texture({0}),
+	  m_text_texture({0}),
+	  m_bIconsLoaded(false),
+	  m_GameLogicDll{},
+	  m_CreateGameMap(nullptr),
+	  m_OpaqueShader({ 0 })
 {
 }
 
@@ -330,13 +330,14 @@ void GameEditor::DrawDirectoryTree(const fs::path& directory_path)
 					ImGui::TreePop();
 				}
 			}
-			else if (entry.is_regular_file())
+			else if (Texture2D* icon_texture = nullptr; 
+				entry.is_regular_file())
 			{
 				// Get file extension
 				std::string extension = entry.path().extension().string();
 
 				// Choose appropriate icon and color
-				Texture2D* icon_texture = nullptr;
+				//Texture2D* icon_texture = nullptr;
 
 				if (extension == ".png" || extension == ".jpg" || extension == ".jpeg" ||
 					extension == ".bmp" || extension == ".tga" || extension == ".gif")
@@ -448,11 +449,7 @@ void GameEditor::DrawSceneWindow()
 			"restart_btn",
 			(ImTextureID)(intptr_t)m_RestartIcon.id,
 			ImVec2(20, 20)
-		)
-
-		||
-
-		IsWindowResized()
+		) || IsWindowResized()
 	)
 	{
 		b_IsPlaying = false;
