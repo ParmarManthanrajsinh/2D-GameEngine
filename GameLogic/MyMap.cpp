@@ -27,7 +27,7 @@ void MyMap::Initialize()
     scene_dimension = GetSceneBounds();
 
     bubble_particle.position = { 400, 400 };
-    bubble_particle.b_LoadTexture("Assets\\Bubble.png");
+    bubble_particle.b_LoadTexture("Assets/Bubble.png");
 }
 
 void MyMap::Update(float DeltaTime)

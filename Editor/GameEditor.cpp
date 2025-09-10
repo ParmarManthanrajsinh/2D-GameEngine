@@ -58,39 +58,11 @@ void GameEditor::Init(int width, int height, const char* title)
 	SetTextureFilter(m_RaylibTexture.texture, TEXTURE_FILTER_BILINEAR);
 	SetTextureFilter(m_DisplayTexture.texture, TEXTURE_FILTER_BILINEAR);
 
-	// Setup opaque-pass shader to strip alpha before ImGui composition
-	{
-		static const char* OpaqueVS = 
-		R"(
-			#version 330
-			in vec3 vertexPosition;
-			in vec2 vertexTexCoord;
-			in vec4 vertexColor;
-			out vec2 fragTexCoord;
-			out vec4 fragColor;
-			uniform mat4 mvp;
-			void main()
-			{
-			    fragTexCoord = vertexTexCoord;
-			    fragColor = vertexColor;
-			    gl_Position = mvp * vec4(vertexPosition, 1.0);
-			}
-		)";
-		static const char* OpaqueFS = 
-		R"(
-			#version 330
-			in vec2 fragTexCoord;
-			in vec4 fragColor;
-			out vec4 finalColor;
-			uniform sampler2D texture0;
-			void main()
-			{
-			    vec4 c = texture(texture0, fragTexCoord) * fragColor;
-			    finalColor = vec4(c.rgb, 1.0);
-			}
-		)";
-		m_OpaqueShader = LoadShaderFromMemory(OpaqueVS, OpaqueFS);
-	}
+	m_OpaqueShader = LoadShader
+	(
+		"Assets/Shaders/Opaque.vert", 
+		"Assets/Shaders/Opaque.frag"
+	);
 
 	// Load icon textures
 	LoadIconTextures();
