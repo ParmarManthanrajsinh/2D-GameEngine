@@ -22,9 +22,11 @@ GameEditor::GameEditor()
 
 GameEditor::~GameEditor()
 {
-	// Ensure any GameMap instance (potentially from the DLL) is destroyed
-	// BEFORE unloading the DLL, otherwise vtable/function code may be gone
-	// when the map's destructor runs.
+	/* 
+		Ensure any GameMap instance(potentially from the DLL) is destroyed
+		BEFORE unloading the DLL, otherwise vtable/function code may be gone
+		when the map's destructor runs.
+	*/
 	m_GameEngine.SetMap(nullptr);
 
 	if (m_GameLogicDll.handle)
@@ -309,14 +311,25 @@ void GameEditor::DrawDirectoryTree(const fs::path& directory_path)
 				std::string extension = entry.path().extension().string();
 
 				// Choose appropriate icon and color
-				//Texture2D* icon_texture = nullptr;
 
-				if (extension == ".png" || extension == ".jpg" || extension == ".jpeg" ||
-					extension == ".bmp" || extension == ".tga" || extension == ".gif")
+				if 
+				(	
+					extension == ".png"  || 
+					extension == ".jpg"  || 
+					extension == ".jpeg" ||
+					extension == ".bmp"  || 
+					extension == ".tga"  || 
+					extension == ".gif"
+				)
 				{
 					icon_texture = &m_image_texture;
 				}
-				else if (extension == ".txt" || extension == ".md" || extension == ".log")
+				else if
+				(
+					extension == ".txt" || 
+					extension == ".md"	|| 
+					extension == ".log"
+				)
 				{
 					icon_texture = &m_text_texture;
 				}
