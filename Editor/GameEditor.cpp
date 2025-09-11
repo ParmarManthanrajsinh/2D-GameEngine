@@ -1,4 +1,6 @@
-﻿#include "GameEditor.h"
+#include "GameEditor.h"
+#include "../Game/DllLoader.h"
+#include "../Engine/MapManager.h"
 using Clock = std::chrono::steady_clock;
 
 GameEditor::GameEditor()
@@ -28,6 +30,7 @@ GameEditor::~GameEditor()
 		when the map's destructor runs.
 	*/
 	m_GameEngine.SetMap(nullptr);
+	m_GameEngine.SetMapManager(nullptr); // Also clear the MapManager
 
 	if (m_GameLogicDll.handle)
 	{
@@ -475,14 +478,26 @@ void GameEditor::DrawSceneWindow()
 
 void GameEditor::LoadMap(std::unique_ptr<GameMap>& game_map)
 {
-	if (game_map)
-	{
-		m_GameEngine.SetMap(std::move(game_map));
-	}
-	else
-	{
-		m_GameEngine.SetMap(std::make_unique<GameMap>());
-	}
+    if (game_map)
+    {
+        // Check if the loaded map is a MapManager
+        MapManager* mapManager = dynamic_cast<MapManager*>(game_map.get());
+        if (mapManager)
+        {
+            // If it's a MapManager, set it using the dedicated method
+            std::unique_ptr<MapManager> ownedMapManager(static_cast<MapManager*>(game_map.release()));
+            m_GameEngine.SetMapManager(std::move(ownedMapManager));
+        }
+        else
+        {
+            // Otherwise, use the regular SetMap method
+            m_GameEngine.SetMap(std::move(game_map));
+        }
+    }
+    else
+    {
+        m_GameEngine.SetMap(std::make_unique<GameMap>());
+    }
 }
 
 bool GameEditor::b_LoadGameLogic(const char* dll_path)
@@ -525,6 +540,7 @@ bool GameEditor::b_LoadGameLogic(const char* dll_path)
 
 	// 4) Destroy current map to release old DLL code before unloading
 	m_GameEngine.SetMap(nullptr);
+	m_GameEngine.SetMapManager(nullptr);
 
 	// 5) Unload old DLL (if any)
 	if (m_GameLogicDll.handle)
@@ -537,7 +553,20 @@ bool GameEditor::b_LoadGameLogic(const char* dll_path)
 	// 6) Swap in new DLL and map
 	m_GameLogicDll = new_dll;
 	m_CreateGameMap = NewFactory;
-	m_GameEngine.SetMap(std::move(new_map));
+	
+	// Check if the loaded map is a MapManager
+	MapManager* mapManager = dynamic_cast<MapManager*>(new_map.get());
+	if (mapManager)
+	{
+		// If it's a MapManager, set it using the dedicated method
+		std::unique_ptr<MapManager> ownedMapManager(static_cast<MapManager*>(new_map.release()));
+		m_GameEngine.SetMapManager(std::move(ownedMapManager));
+	}
+	else
+	{
+		// Otherwise, use the regular SetMap method
+		m_GameEngine.SetMap(std::move(new_map));
+	}
 
 	// Update watched timestamp 
 	// (watch the original DLL path, not the shadow)

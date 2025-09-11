@@ -14,6 +14,9 @@
 #include "GameEditorTheme.h"
 #include "GameEngine.h"
 
+// Forward declaration for MapManager
+class MapManager;
+
 namespace fs = std::filesystem;
 
 class GameEditor 

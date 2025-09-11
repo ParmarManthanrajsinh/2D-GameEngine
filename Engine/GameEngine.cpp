@@ -1,4 +1,5 @@
 #include "GameEngine.h"
+#include "MapManager.h"
 
 GameEngine::GameEngine()
 {
@@ -45,7 +46,13 @@ void GameEngine::SetMap(std::unique_ptr<GameMap> game_map)
 
 void GameEngine::DrawMap() const
 {
-	if (m_GameMap)
+	// First check if we have a MapManager
+	if (m_MapManager)
+	{
+		m_MapManager->Draw();
+	}
+	// Otherwise, use the regular GameMap
+	else if (m_GameMap)
 	{
 		m_GameMap->Draw();
 	}
@@ -53,7 +60,13 @@ void GameEngine::DrawMap() const
 
 void GameEngine::UpdateMap(float DeltaTime) const
 {
-	if (m_GameMap)
+	// First check if we have a MapManager
+	if (m_MapManager)
+	{
+		m_MapManager->Update(DeltaTime);
+	}
+	// Otherwise, use the regular GameMap
+	else if (m_GameMap)
 	{
 		m_GameMap->Update(DeltaTime);
 	}
@@ -61,5 +74,32 @@ void GameEngine::UpdateMap(float DeltaTime) const
 
 void GameEngine::ResetMap()
 {
-	m_GameMap->Initialize();
+    if (m_GameMap)
+    {
+        m_GameMap->Initialize();
+    }
+}
+
+void GameEngine::SetMapManager(std::unique_ptr<MapManager> map_manager)
+{
+	m_MapManager = std::move(map_manager);
+	if (m_MapManager)
+	{
+		m_MapManager->SetSceneBounds
+		(
+			static_cast<float>(m_WindowWidth), 
+			static_cast<float>(m_WindowHeight)
+		);
+		m_MapManager->Initialize();
+	}
+}
+
+MapManager* GameEngine::GetMapManager() const
+{
+	return m_MapManager.get();
+}
+
+bool GameEngine::HasMapManager() const
+{
+	return m_MapManager != nullptr;
 }
