@@ -558,7 +558,10 @@ void GameEditor::LoadMap(std::unique_ptr<GameMap>& game_map)
         if (mapManager)
         {
             // If it's a MapManager, set it using the dedicated method
-            std::unique_ptr<MapManager> OwnedMapManager(static_cast<MapManager*>(game_map.release()));
+            std::unique_ptr<MapManager> OwnedMapManager
+			(
+				static_cast<MapManager*>(game_map.release())
+			);
 
             m_GameEngine.SetMapManager(std::move(OwnedMapManager));
             
@@ -638,8 +641,11 @@ bool GameEditor::b_LoadGameLogic(const char* dll_path)
 	if (mapManager)
 	{
 		// If it's a MapManager, set it using the dedicated method
-		std::unique_ptr<MapManager> ownedMapManager(static_cast<MapManager*>(new_map.release()));
-		m_GameEngine.SetMapManager(std::move(ownedMapManager));
+		std::unique_ptr<MapManager> OwnedMapManager
+		(
+			static_cast<MapManager*>(new_map.release())
+		);
+		m_GameEngine.SetMapManager(std::move(OwnedMapManager));
 		
 		// Store reference for map selection UI
 		m_MapManager = m_GameEngine.GetMapManager();
