@@ -6,7 +6,6 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-class DefaultMap;
 
 /**
  * @brief Developer-friendly MapManager for easy game map management
@@ -79,12 +78,15 @@ public:
     );
     bool b_GotoMap(const std::string& map_id, bool force_reload = false);
     bool b_IsCurrentMap(const std::string& map_id) const;
+    bool b_IsMapRegistered(const std::string& map_id) const;
+    bool b_ReloadCurrentMap();
+
     const std::string& GetCurrentMapId() const { return m_CurrentMapId; }
     std::vector<std::string> GetAvailableMaps() const;
-    bool b_IsMapRegistered(const std::string& map_id) const;
+
     void UnloadCurrentMap();
-    bool b_ReloadCurrentMap();
     std::string GetDebugInfo() const;
+
     
 private:
 

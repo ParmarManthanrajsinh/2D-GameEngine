@@ -12,6 +12,10 @@ class DefaultMap : public GameMap
 {
 private:
     float m_TimeAlive;
+    int center_x = 0;
+    int content_y = 140;
+    int margin_left = 80;
+    int step_spacing = 80;
 
 public:
     DefaultMap();

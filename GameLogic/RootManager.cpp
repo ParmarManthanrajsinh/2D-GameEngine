@@ -16,7 +16,7 @@ extern "C" __declspec(dllexport) GameMap* CreateGameMap()
     auto available_maps = manager->GetAvailableMaps();
     if (!available_maps.empty()) 
     {
-        manager->b_GotoMap(available_maps.at(1));
+        manager->b_GotoMap(available_maps.at(0));
     }
     
     return manager;
