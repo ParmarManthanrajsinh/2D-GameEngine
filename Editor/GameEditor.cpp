@@ -705,12 +705,20 @@ void GameEditor::DrawMapSelectionUI()
 				bool b_IsSelected = (s_SelectedIndex == i);
 				bool b_IsCurrent = (available_maps[i] == curr_map_id);
 
-				// Highlight current map in green
+				// Highlight current map in red
 				if (b_IsCurrent)
 				{
 					ImGui::PushStyleColor
 					(
-						ImGuiCol_Text, ImVec4(0.2f, 0.8f, 0.2f, 1.0f)
+						ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f) // Red color
+					);
+				}
+				// Highlight MainMap (index 0) in a special way
+				else if (i == 0)
+				{
+					ImGui::PushStyleColor
+					(
+						ImGuiCol_Text, ImVec4(1.0f, 0.8f, 0.2f, 1.0f) // Yellow/gold color
 					);
 				}
 
@@ -732,7 +740,8 @@ void GameEditor::DrawMapSelectionUI()
 					ImGui::SetItemDefaultFocus();
 				}
 
-				if (b_IsCurrent)
+				// Pop style color if we pushed it
+				if (b_IsCurrent || i == 0)
 				{
 					ImGui::PopStyleColor();
 				}
@@ -744,30 +753,56 @@ void GameEditor::DrawMapSelectionUI()
 
 		// Quick access buttons for each map
 		ImGui::Text("Quick Access:");
-		for (const auto& map_id : available_maps)
+		for (int i = 0; i < available_maps.size(); i++)
 		{
+			const auto& map_id = available_maps[i];
 			bool b_IsCurrent = (map_id == curr_map_id);
 
-			// Style current map button differently
+			// Style current map button with red color
 			if (b_IsCurrent)
 			{
 				ImGui::PushStyleColor
 				(
-					ImGuiCol_Button, ImVec4(0.2f, 0.6f, 0.2f, 0.6f)
+					ImGuiCol_Button, ImVec4(0.7f, 0.2f, 0.2f, 0.6f) // Dark red
 				);
 
 				ImGui::PushStyleColor
 				(
-					ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.7f, 0.3f, 0.8f)
+					ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.3f, 0.3f, 0.8f) // Light red
 				);
 
 				ImGui::PushStyleColor
 				(
-					ImGuiCol_ButtonActive, ImVec4(0.1f, 0.5f, 0.1f, 1.0f)
+					ImGuiCol_ButtonActive, ImVec4(0.5f, 0.1f, 0.1f, 1.0f) // Darker red
+				);
+			}
+			// Style MainMap (index 0) button differently to make it stand out
+			else if (i == 0)
+			{
+				ImGui::PushStyleColor
+				(
+					ImGuiCol_Button, ImVec4(0.8f, 0.6f, 0.0f, 0.7f) // Dark gold
+				);
+
+				ImGui::PushStyleColor
+				(
+					ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.8f, 0.2f, 0.9f) // Light gold
+				);
+
+				ImGui::PushStyleColor
+				(
+					ImGuiCol_ButtonActive, ImVec4(0.6f, 0.4f, 0.0f, 1.0f) // Darker gold
 				);
 			}
 
-			if (ImGui::Button(map_id.c_str(), ImVec2(-1, 0)))
+			// Add a special label for MainMap
+			std::string button_label = map_id;
+			if (i == 0)
+			{
+				button_label += " (Main)";
+			}
+
+			if (ImGui::Button(button_label.c_str(), ImVec2(-1, 0)))
 			{
 				if (map_id != curr_map_id)
 				{
@@ -775,7 +810,8 @@ void GameEditor::DrawMapSelectionUI()
 				}
 			}
 
-			if (b_IsCurrent)
+			// Pop style colors if we pushed them
+			if (b_IsCurrent || i == 0)
 			{
 				ImGui::PopStyleColor(3);
 			}
