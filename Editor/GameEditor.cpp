@@ -11,6 +11,7 @@ GameEditor::GameEditor()
 	  m_PlayIcon({ 0 }),
 	  m_PauseIcon({ 0 }),
 	  m_RestartIcon({ 0 }),
+	  m_RestoreIcon({ 0 }),
 	  m_folder_texture ({0}),
 	  m_file_texture({0}),
 	  m_image_texture({0}),
@@ -80,6 +81,7 @@ void GameEditor::LoadIconTextures()
 	// Load PNG icons (replace paths with your actual icon files)
 	Image play_img = LoadImage("Assets/icons/play.png");
 	Image pause_img = LoadImage("Assets/icons/pause.png");
+	Image restore_img = LoadImage("Assets/icons/restore.png");
 	Image restart_img = LoadImage("Assets/icons/restart.png");
 	Image folder_img = LoadImage("Assets/icons/folder.png");
 	Image file_img = LoadImage("Assets/icons/file.png");
@@ -133,29 +135,42 @@ void GameEditor::LoadIconTextures()
 
 	if (restart_img.data == nullptr)
 	{
-		restart_img = GenImageColor(20, 20, BLUE);
+		restart_img = GenImageColor(20, 20, RED);
+		// Draw a simple restart symbol (circle with arrow)
+		ImageDrawCircle(&restart_img, 10, 10, 8, BLANK);
+		ImageDrawCircle(&restart_img, 10, 10, 6, RED);
+		ImageDrawRectangle(&restart_img, 12, 6, 4, 2, BLANK);
+		ImageDrawRectangle(&restart_img, 14, 8, 2, 2, BLANK);
+	}
+
+	if (restore_img.data == nullptr)
+	{
+		restore_img = GenImageColor(20, 20, BLUE);
 
 		// Draw a simple restart symbol (circle with arrow)
-		ImageDrawCircle(&restart_img, 10, 10, 8, DARKBLUE);
-		ImageDrawCircle(&restart_img, 10, 10, 6, BLUE);
-		ImageDrawRectangle(&restart_img, 12, 6, 4, 2, DARKBLUE);
-		ImageDrawRectangle(&restart_img, 14, 8, 2, 2, DARKBLUE);
+		ImageDrawCircle(&restore_img, 10, 10, 8, DARKBLUE);
+		ImageDrawCircle(&restore_img, 10, 10, 6, BLUE);
+		ImageDrawRectangle(&restore_img, 12, 6, 4, 2, DARKBLUE);
+		ImageDrawRectangle(&restore_img, 14, 8, 2, 2, DARKBLUE);
 	}
 
 	// Resize to consistent size
 	ImageResize(&play_img, 20, 20);
 	ImageResize(&pause_img, 20, 20);
 	ImageResize(&restart_img, 20, 20);
+	ImageResize(&restore_img, 20, 20);
 
 	// Convert to textures
 	m_PlayIcon = LoadTextureFromImage(play_img);
 	m_PauseIcon = LoadTextureFromImage(pause_img);
 	m_RestartIcon = LoadTextureFromImage(restart_img);
+	m_RestoreIcon = LoadTextureFromImage(restore_img);
 
 	// Cleanup temporary images
 	UnloadImage(play_img);
 	UnloadImage(pause_img);
 	UnloadImage(restart_img);
+	UnloadImage(restore_img);
 
 	m_bIconsLoaded = true;
 }
@@ -249,7 +264,7 @@ void GameEditor::Close() const
 	{
 		UnloadTexture(m_PlayIcon);
 		UnloadTexture(m_PauseIcon);
-		UnloadTexture(m_RestartIcon);
+		UnloadTexture(m_RestoreIcon);
 	}
 
 	UnloadRenderTexture(m_RaylibTexture);
@@ -432,6 +447,7 @@ void GameEditor::DrawSceneWindow()
 		}
 	}
 
+	// Restart button with PNG icon
 	ImGui::SameLine();
 	if
 	(
@@ -444,13 +460,9 @@ void GameEditor::DrawSceneWindow()
 	)
 	{
 		b_IsPlaying = false;
-
-		// Attempt hot reload of GameLogic.dll, fallback to reset if it fails
-		if (!b_ReloadGameLogic())
-		{
-			m_GameEngine.ResetMap();
-		}
+		m_MapManager->b_ReloadCurrentMap();
 	}
+
 
 	// Status indicator
 	ImGui::SameLine();
@@ -464,6 +476,28 @@ void GameEditor::DrawSceneWindow()
 	else
 	{
 		ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "STOPPED");
+	}
+
+	// Restore button with PNG icon
+	ImGui::SameLine();
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 12);
+	if
+	(
+		ImGui::ImageButton
+		(
+			"restore_btn",
+			(ImTextureID)(intptr_t)m_RestoreIcon.id,
+			ImVec2(20, 20)
+		)
+	)
+	{
+		b_IsPlaying = false;
+
+		// Attempt hot reload of GameLogic.dll, fallback to reset if it fails
+		if (!b_ReloadGameLogic())
+		{
+			m_GameEngine.ResetMap();
+		}
 	}
 	ImGui::PopStyleVar(3);
 
@@ -613,7 +647,7 @@ bool GameEditor::b_ReloadGameLogic()
 void GameEditor::DrawMapSelectionUI()
 {
 	// Only show map selection when game is paused and we have a MapManager
-	if (!m_MapManager || b_IsPlaying)
+	if (!m_MapManager)
 	{
 		return;
 	}
@@ -656,7 +690,7 @@ void GameEditor::DrawMapSelectionUI()
 		}
 
 		// Create combo box
-		if 
+		if
 		(
 			ImGui::BeginCombo
 			(
@@ -750,11 +784,6 @@ void GameEditor::DrawMapSelectionUI()
 		ImGui::Spacing();
 		ImGui::Separator();
 		ImGui::Spacing();
-
-		if (ImGui::Button("Reload Current Map", ImVec2(-1, 0)))
-		{
-			m_MapManager->b_ReloadCurrentMap();
-		}
 	}
 
 	ImGui::End();

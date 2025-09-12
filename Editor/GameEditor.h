@@ -49,7 +49,8 @@ private:
     // New icon texture members
     Texture2D m_PlayIcon;
     Texture2D m_PauseIcon;
-    Texture2D m_RestartIcon;
+	Texture2D m_RestartIcon;
+    Texture2D m_RestoreIcon;
     Texture2D m_folder_texture;
     Texture2D m_file_texture;
     Texture2D m_image_texture;
