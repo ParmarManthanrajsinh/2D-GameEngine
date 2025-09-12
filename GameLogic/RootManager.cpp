@@ -4,7 +4,6 @@
 
 extern "C" __declspec(dllexport) GameMap* CreateGameMap()
 {
-    // Create and configure your MapManager
     MapManager* manager = new MapManager();
     
     // Register your game maps
@@ -14,7 +13,7 @@ extern "C" __declspec(dllexport) GameMap* CreateGameMap()
 
     // Automatically load the first registered map
     auto available_maps = manager->GetAvailableMaps();
-    if (!available_maps.empty()) 
+    if (!available_maps.empty())
     {
         manager->b_GotoMap(available_maps.at(1));
     }
