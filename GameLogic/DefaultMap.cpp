@@ -1,6 +1,7 @@
 #include "DefaultMap.h"
 
-namespace Colors {
+namespace Colors 
+{
     constexpr Color SoftBackground{ 25, 30, 40, 255 };
     constexpr Color HeaderBackground{ 35, 40, 50, 255 };
     constexpr Color HeaderText{ 255, 255, 255, 255 };
