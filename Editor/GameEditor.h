@@ -13,8 +13,6 @@
 #include "GameEditorLayout.h"
 #include "GameEditorTheme.h"
 #include "GameEngine.h"
-
-class MapManager;
 namespace fs = std::filesystem;
 
 class GameEditor 
@@ -46,6 +44,7 @@ private:
 	void DrawExploreWindow();
     void DrawDirectoryTree(const fs::path& directory_path);
 	void DrawSceneWindow();
+    void DrawMapSelectionUI();
 
     // New icon texture members
     Texture2D m_PlayIcon;
@@ -71,4 +70,8 @@ private:
     float m_ReloadCheckAccum = 0.0f;
     Shader m_OpaqueShader;
     bool m_bUseOpaquePass = true;
+    
+    // Map selection UI
+    MapManager* m_MapManager = nullptr;
+    std::string m_SelectedMapId;
 };

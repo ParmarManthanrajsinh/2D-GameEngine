@@ -18,7 +18,8 @@ GameEditor::GameEditor()
 	  m_bIconsLoaded(false),
 	  m_GameLogicDll{},
 	  m_CreateGameMap(nullptr),
-	  m_OpaqueShader({ 0 })
+	  m_OpaqueShader({ 0 }),
+	  m_MapManager(nullptr)
 {
 }
 
@@ -29,6 +30,7 @@ GameEditor::~GameEditor()
 		BEFORE unloading the DLL, otherwise vtable/function code may be gone
 		when the map's destructor runs.
 	*/
+	m_MapManager = nullptr; // Clear MapManager reference first
 	m_GameEngine.SetMap(nullptr);
 	m_GameEngine.SetMapManager(nullptr); // Also clear the MapManager
 
@@ -231,6 +233,7 @@ void GameEditor::Run()
 
 		DrawExploreWindow();
 		DrawSceneWindow();
+		DrawMapSelectionUI();
 
 		rlImGuiEnd();
 		EndDrawing();
@@ -487,16 +490,21 @@ void GameEditor::LoadMap(std::unique_ptr<GameMap>& game_map)
             // If it's a MapManager, set it using the dedicated method
             std::unique_ptr<MapManager> ownedMapManager(static_cast<MapManager*>(game_map.release()));
             m_GameEngine.SetMapManager(std::move(ownedMapManager));
+            
+            // Store reference for map selection UI
+            m_MapManager = m_GameEngine.GetMapManager();
         }
         else
         {
             // Otherwise, use the regular SetMap method
             m_GameEngine.SetMap(std::move(game_map));
+            m_MapManager = nullptr; // No MapManager available
         }
     }
     else
     {
         m_GameEngine.SetMap(std::make_unique<GameMap>());
+        m_MapManager = nullptr;
     }
 }
 
@@ -561,11 +569,15 @@ bool GameEditor::b_LoadGameLogic(const char* dll_path)
 		// If it's a MapManager, set it using the dedicated method
 		std::unique_ptr<MapManager> ownedMapManager(static_cast<MapManager*>(new_map.release()));
 		m_GameEngine.SetMapManager(std::move(ownedMapManager));
+		
+		// Store reference for map selection UI
+		m_MapManager = m_GameEngine.GetMapManager();
 	}
 	else
 	{
 		// Otherwise, use the regular SetMap method
 		m_GameEngine.SetMap(std::move(new_map));
+		m_MapManager = nullptr; // No MapManager available
 	}
 
 	// Update watched timestamp 
@@ -575,7 +587,7 @@ bool GameEditor::b_LoadGameLogic(const char* dll_path)
 	m_LastLogicWriteTime =
 	std::filesystem::last_write_time
 	(
-		std::filesystem::path(m_GameLogicPath),
+		std::filesystem::path(m_GameLogicPath),	
 		ec
 	);
 
@@ -596,4 +608,154 @@ bool GameEditor::b_ReloadGameLogic()
 	b_IsPlaying = b_WasPlaying;
 
 	return b_Ok;
+}
+
+void GameEditor::DrawMapSelectionUI()
+{
+	// Only show map selection when game is paused and we have a MapManager
+	if (!m_MapManager || b_IsPlaying)
+	{
+		return;
+	}
+
+	ImGui::Begin("Map Selection", nullptr, ImGuiWindowFlags_NoCollapse);
+
+	ImGui::Text("Current Map: %s", m_MapManager->GetCurrentMapId().c_str());
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	// Get available maps
+	auto available_maps = m_MapManager->GetAvailableMaps();
+
+	if (available_maps.empty())
+	{
+		ImGui::TextColored
+		(
+			ImVec4(1.0f, 0.6f, 0.6f, 1.0f), 
+			"No maps registered in MapManager"
+		);
+		ImGui::Text("Register maps using RegisterMap<YourMap>(\"map_id\")");
+	}
+	else
+	{
+		ImGui::Text("Available Maps:");
+		ImGui::Spacing();
+
+		// Create a combo box for map selection
+		static int s_SelectedIndex = 0;
+		std::string curr_map_id = m_MapManager->GetCurrentMapId();
+
+		// Find current map index
+		for (int i = 0; i < available_maps.size(); i++)
+		{
+			if (available_maps[i] == curr_map_id)
+			{
+				s_SelectedIndex = i;
+				break;
+			}
+		}
+
+		// Create combo box
+		if 
+		(
+			ImGui::BeginCombo
+			(
+				"Select Map", 
+				curr_map_id.empty() ? 
+				"No map loaded" : curr_map_id.c_str()
+			)
+		)
+		{
+			for (int i = 0; i < available_maps.size(); i++)
+			{
+				bool b_IsSelected = (s_SelectedIndex == i);
+				bool b_IsCurrent = (available_maps[i] == curr_map_id);
+
+				// Highlight current map in green
+				if (b_IsCurrent)
+				{
+					ImGui::PushStyleColor
+					(
+						ImGuiCol_Text, ImVec4(0.2f, 0.8f, 0.2f, 1.0f)
+					);
+				}
+
+				if(ImGui::Selectable(available_maps[i].c_str(), b_IsSelected))
+				{
+					s_SelectedIndex = i;
+					m_SelectedMapId = available_maps[i];
+
+					// Switch to selected map
+					if (m_SelectedMapId != curr_map_id)
+					{
+						m_MapManager->b_GotoMap(m_SelectedMapId);
+					}
+				}
+
+				// If the item is focused, set it as the default
+				if (b_IsSelected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+
+				if (b_IsCurrent)
+				{
+					ImGui::PopStyleColor();
+				}
+			}
+			ImGui::EndCombo();
+		}
+
+		ImGui::Spacing();
+
+		// Quick access buttons for each map
+		ImGui::Text("Quick Access:");
+		for (const auto& map_id : available_maps)
+		{
+			bool b_IsCurrent = (map_id == curr_map_id);
+
+			// Style current map button differently
+			if (b_IsCurrent)
+			{
+				ImGui::PushStyleColor
+				(
+					ImGuiCol_Button, ImVec4(0.2f, 0.6f, 0.2f, 0.6f)
+				);
+
+				ImGui::PushStyleColor
+				(
+					ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.7f, 0.3f, 0.8f)
+				);
+
+				ImGui::PushStyleColor
+				(
+					ImGuiCol_ButtonActive, ImVec4(0.1f, 0.5f, 0.1f, 1.0f)
+				);
+			}
+
+			if (ImGui::Button(map_id.c_str(), ImVec2(-1, 0)))
+			{
+				if (map_id != curr_map_id)
+				{
+					m_MapManager->b_GotoMap(map_id);
+				}
+			}
+
+			if (b_IsCurrent)
+			{
+				ImGui::PopStyleColor(3);
+			}
+		}
+
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		if (ImGui::Button("Reload Current Map", ImVec2(-1, 0)))
+		{
+			m_MapManager->b_ReloadCurrentMap();
+		}
+	}
+
+	ImGui::End();
 }
