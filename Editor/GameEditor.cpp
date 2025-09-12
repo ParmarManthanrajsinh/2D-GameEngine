@@ -136,6 +136,7 @@ void GameEditor::LoadIconTextures()
 	if (restart_img.data == nullptr)
 	{
 		restart_img = GenImageColor(20, 20, RED);
+
 		// Draw a simple restart symbol (circle with arrow)
 		ImageDrawCircle(&restart_img, 10, 10, 8, BLANK);
 		ImageDrawCircle(&restart_img, 10, 10, 6, RED);
@@ -204,7 +205,9 @@ void GameEditor::Run()
 					if (now_write != m_LastLogicWriteTime)
 					{
 						b_ReloadGameLogic();
-						m_LastLogicWriteTime = now_write;  // update after reload
+
+						// update after reload
+						m_LastLogicWriteTime = now_write;  
 					}
 				}
 				else
@@ -235,7 +238,13 @@ void GameEditor::Run()
 			BeginTextureMode(m_DisplayTexture);
 			ClearBackground(BLANK);
 			BeginShaderMode(m_OpaqueShader);
-			Rectangle src = { 0, 0, (float)source_tex.width, -(float)source_tex.height };
+			Rectangle src = 
+			{
+				0, 
+				0, 
+				static_cast<float>(source_tex.width), 
+				-static_cast<float>(source_tex.height) 
+			};
 			DrawTextureRec(source_tex, src, { 0.0f, 0.0f }, WHITE);
 			EndShaderMode();
 			EndTextureMode();
@@ -293,7 +302,10 @@ void GameEditor::DrawExploreWindow()
 	}
 	else
 	{
-		ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.6f, 1.0f), "Assets directory not found.");
+		ImGui::TextColored
+		(
+			ImVec4(1.0f, 0.6f, 0.6f, 1.0f), "Assets directory not found."
+		);
 	}
 	ImGui::End();
 }
@@ -311,28 +323,38 @@ void GameEditor::DrawDirectoryTree(const fs::path& directory_path)
 				// Draw folder icon if available
 				if (m_folder_texture.id != 0)
 				{
-					ImGui::Image((void*)(intptr_t)m_folder_texture.id, ImVec2(16, 16));
+					ImGui::Image
+					(
+						reinterpret_cast<void*>
+						(
+							(intptr_t)m_folder_texture.id
+						), 
+						ImVec2(16, 16)
+					);
 					ImGui::SameLine(0.0f, 4.0f); // Small spacing
 				}
 
 				// Use TreeNodeEx for better control
-				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
-				bool node_open = ImGui::TreeNodeEx(filename.c_str(), flags);
+				ImGuiTreeNodeFlags flags = 
+				ImGuiTreeNodeFlags_OpenOnArrow | 
+				ImGuiTreeNodeFlags_OpenOnDoubleClick;
 
-				if (node_open)
+				bool b_NodeOpen = 
+					ImGui::TreeNodeEx(filename.c_str(), flags);
+
+				if (b_NodeOpen)
 				{
 					DrawDirectoryTree(entry.path());
 					ImGui::TreePop();
 				}
 			}
 			else if (Texture2D* icon_texture = nullptr; // For declaration
-				entry.is_regular_file())
+								entry.is_regular_file())
 			{
 				// Get file extension
 				std::string extension = entry.path().extension().string();
 
 				// Choose appropriate icon and color
-
 				if 
 				(	
 					extension == ".png"  || 
@@ -362,17 +384,30 @@ void GameEditor::DrawDirectoryTree(const fs::path& directory_path)
 				// Draw icon if available
 				if (icon_texture != nullptr && icon_texture->id != 0)
 				{
-					ImGui::Image((void*)(intptr_t)icon_texture->id, ImVec2(16, 16));
-					ImGui::SameLine(0.0f, 2.0f); // Reduce spacing to 2 pixels
+					ImGui::Image
+					(
+						reinterpret_cast<void*>
+						(
+							(intptr_t)icon_texture->id
+						), 
+						ImVec2(16, 16)
+					);
+					ImGui::SameLine(0.0f, 2.0f); 
 				}
 
-				ImGui::Text(filename.c_str()); // Changed from BulletText to Text
+				// Changed from BulletText to Text
+				ImGui::Text(filename.c_str());
 			}
 		}
 	}
 	catch (const fs::filesystem_error& ex)
 	{
-		ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.5f, 1.0f), "Error reading directory: %s", ex.what());
+		ImGui::TextColored
+		(
+			ImVec4(1.0f, 0.5f, 0.5f, 1.0f), 
+			"Error reading directory: %s", 
+			ex.what()
+		);
 	}
 }
 
@@ -519,11 +554,16 @@ void GameEditor::LoadMap(std::unique_ptr<GameMap>& game_map)
     {
         // Check if the loaded map is a MapManager
         MapManager* mapManager = dynamic_cast<MapManager*>(game_map.get());
+
         if (mapManager)
         {
             // If it's a MapManager, set it using the dedicated method
-            std::unique_ptr<MapManager> ownedMapManager(static_cast<MapManager*>(game_map.release()));
-            m_GameEngine.SetMapManager(std::move(ownedMapManager));
+            std::unique_ptr<MapManager> OwnedMapManager
+			(
+				static_cast<MapManager*>(game_map.release())
+			);
+
+            m_GameEngine.SetMapManager(std::move(OwnedMapManager));
             
             // Store reference for map selection UI
             m_MapManager = m_GameEngine.GetMapManager();
@@ -551,8 +591,8 @@ bool GameEditor::b_LoadGameLogic(const char* dll_path)
 	if (!new_dll.handle)
 	{
 		std::cerr << "Failed to load GameLogic DLL: "
-			<< dll_path
-			<< std::endl;
+				  << dll_path
+				  << std::endl;
 
 		return false;
 	}
@@ -601,8 +641,11 @@ bool GameEditor::b_LoadGameLogic(const char* dll_path)
 	if (mapManager)
 	{
 		// If it's a MapManager, set it using the dedicated method
-		std::unique_ptr<MapManager> ownedMapManager(static_cast<MapManager*>(new_map.release()));
-		m_GameEngine.SetMapManager(std::move(ownedMapManager));
+		std::unique_ptr<MapManager> OwnedMapManager
+		(
+			static_cast<MapManager*>(new_map.release())
+		);
+		m_GameEngine.SetMapManager(std::move(OwnedMapManager));
 		
 		// Store reference for map selection UI
 		m_MapManager = m_GameEngine.GetMapManager();
