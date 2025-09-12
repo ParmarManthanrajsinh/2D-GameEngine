@@ -47,28 +47,26 @@ void GameEngine::SetMap(std::unique_ptr<GameMap> game_map)
 void GameEngine::DrawMap() const
 {
 	// First check if we have a MapManager
+	// Otherwise, use the regular GameMap
 	if (m_MapManager)
 	{
 		m_MapManager->Draw();
 	}
-	// Otherwise, use the regular GameMap
 	else if (m_GameMap)
 	{
 		m_GameMap->Draw();
 	}
 }
 
-void GameEngine::UpdateMap(float DeltaTime) const
+void GameEngine::UpdateMap(float dt) const
 {
-	// First check if we have a MapManager
 	if (m_MapManager)
 	{
-		m_MapManager->Update(DeltaTime);
+		m_MapManager->Update(dt);
 	}
-	// Otherwise, use the regular GameMap
 	else if (m_GameMap)
 	{
-		m_GameMap->Update(DeltaTime);
+		m_GameMap->Update(dt);
 	}
 }
 
@@ -99,7 +97,7 @@ MapManager* GameEngine::GetMapManager() const
 	return m_MapManager.get();
 }
 
-bool GameEngine::HasMapManager() const
+bool GameEngine::b_HasMapManager() const
 {
 	return m_MapManager != nullptr;
 }

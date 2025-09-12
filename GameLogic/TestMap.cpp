@@ -25,10 +25,10 @@ void TestMap::Initialize()
     m_SceneDimension = GetSceneBounds();
 }
 
-void TestMap::Update(float deltaTime)
+void TestMap::Update(float dt)
 {
-    m_Position.x += m_Velocity.x * m_Speed * deltaTime;
-    m_Position.y += m_Velocity.y * m_Speed * deltaTime;
+    m_Position.x += m_Velocity.x * m_Speed * dt;
+    m_Position.y += m_Velocity.y * m_Speed * dt;
 
 
     // Bounce horizontally

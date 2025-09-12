@@ -18,6 +18,6 @@ public:
     ~DefaultMap() override = default;
 
     void Initialize() override;
-    void Update(float deltaTime) override;
+    void Update(float delta_time) override;
     void Draw() override;
 };

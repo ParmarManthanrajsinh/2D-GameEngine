@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
-#include <string>
 #include <raylib.h>
+#include <string>
 
 class GameMap
 {
@@ -16,7 +16,7 @@ public:
     virtual ~GameMap() = default;  
 
     virtual void Initialize();
-    virtual void Update(float DeltaTime);
+    virtual void Update(float delta_time);
     virtual void Draw();
     
     void SetMapName(const std::string& map_name);

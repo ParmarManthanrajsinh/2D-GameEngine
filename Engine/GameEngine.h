@@ -1,17 +1,15 @@
 #pragma once
 
-#include <raylib.h>
+#include "GameMap.h"
 #include <iostream>
 #include <memory>
-#include "GameMap.h"
-
-// Forward declaration for MapManager
+#include <raylib.h>
 class MapManager;
 
 class GameEngine
 {
     bool m_bIsRunning = false;
-    bool bIsRunning() const { return m_bIsRunning; }
+    bool b_IsRunning() const { return m_bIsRunning; }
 
 	// The window dimensions
     int m_WindowWidth;
@@ -29,11 +27,11 @@ public:
 	void LaunchWindow(int width, int height, const char* title);
 	void SetMap(std::unique_ptr<GameMap> game_map);
 	void DrawMap() const;
-	void UpdateMap(float DeltaTime) const;
+	void UpdateMap(float delta_time) const;
 	void ResetMap();
 	
 	// MapManager integration methods
 	void SetMapManager(std::unique_ptr<MapManager> map_manager);
 	MapManager* GetMapManager() const;
-	bool HasMapManager() const;
+	bool b_HasMapManager() const;
 };

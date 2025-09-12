@@ -1,6 +1,6 @@
-#include "GameEditor.h"
-#include "../Game/DllLoader.h"
 #include "../Engine/MapManager.h"
+#include "../Game/DllLoader.h"
+#include "GameEditor.h"
 using Clock = std::chrono::steady_clock;
 
 GameEditor::GameEditor()

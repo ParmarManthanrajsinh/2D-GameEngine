@@ -14,9 +14,7 @@
 #include "GameEditorTheme.h"
 #include "GameEngine.h"
 
-// Forward declaration for MapManager
 class MapManager;
-
 namespace fs = std::filesystem;
 
 class GameEditor 
@@ -31,6 +29,7 @@ public:
 
     // Load the game logic DLL and create/set a new GameMap from it
     bool b_LoadGameLogic(const char* dllPath);
+
     // Unload and reload the DLL, then recreate the GameMap
     bool b_ReloadGameLogic();
 
@@ -70,7 +69,6 @@ private:
     std::filesystem::file_time_type m_LastLogicWriteTime{};
 
     float m_ReloadCheckAccum = 0.0f;
-    // Opaque pass to remove alpha so ImGui composition doesn't darken the scene
     Shader m_OpaqueShader;
     bool m_bUseOpaquePass = true;
 };
