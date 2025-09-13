@@ -37,8 +37,8 @@ inline void SetEngineTheme(const std::string& path = "Assets/Roboto-Regular.ttf"
     ImVec4 text_primary = ImVec4(0.90f, 0.90f, 0.90f, 1.00f);
     ImVec4 text_disabled = ImVec4(0.40f, 0.40f, 0.40f, 1.00f);
 
-    // Hover/active/select overlays
-    ImVec4 hover = ImVec4(0.95f, 0.20f, 0.30f, 0.25f);
+    // Hover/active/select overlays - Updated gray hover
+    ImVec4 hover = ImVec4(0.22f, 0.22f, 0.22f, 1.00f);  // Solid gray that matches black theme
     ImVec4 active = ImVec4(0.95f, 0.20f, 0.30f, 0.70f);
     ImVec4 select = ImVec4(0.95f, 0.20f, 0.30f, 0.40f);
 
@@ -60,25 +60,25 @@ inline void SetEngineTheme(const std::string& path = "Assets/Roboto-Regular.ttf"
 
     // Buttons
     style.Colors[ImGuiCol_Button] = bg_2;
-    style.Colors[ImGuiCol_ButtonHovered] = red_secondary;
+    style.Colors[ImGuiCol_ButtonHovered] = hover;  // Updated to use gray hover
     style.Colors[ImGuiCol_ButtonActive] = red_primary;
 
     // Tabs
     style.Colors[ImGuiCol_Tab] = bg_2;
-    style.Colors[ImGuiCol_TabHovered] = red_secondary;
+    style.Colors[ImGuiCol_TabHovered] = hover;  // Updated to use gray hover
     style.Colors[ImGuiCol_TabActive] = red_primary;
     style.Colors[ImGuiCol_TabUnfocused] = bg_2;
     style.Colors[ImGuiCol_TabUnfocusedActive] = red_secondary;
 
     // Headers
     style.Colors[ImGuiCol_Header] = bg_3;
-    style.Colors[ImGuiCol_HeaderHovered] = red_secondary;
+    style.Colors[ImGuiCol_HeaderHovered] = hover;  // Updated to use gray hover
     style.Colors[ImGuiCol_HeaderActive] = red_primary;
 
     // Scrollbars
     style.Colors[ImGuiCol_ScrollbarBg] = bg_1;
     style.Colors[ImGuiCol_ScrollbarGrab] = bg_3;
-    style.Colors[ImGuiCol_ScrollbarGrabHovered] = red_secondary;
+    style.Colors[ImGuiCol_ScrollbarGrabHovered] = hover;  // Updated to use gray hover
     style.Colors[ImGuiCol_ScrollbarGrabActive] = red_primary;
 
     // Highlights
@@ -109,13 +109,17 @@ inline void SetEngineTheme(const std::string& path = "Assets/Roboto-Regular.ttf"
     style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
     style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
 
-    // --- STRICT BLACK FOCUS / SELECTION FIX ---
+    // --- PERFECT BLACK FOCUS / SELECTION / INTERACTION FIX ---
     style.Colors[ImGuiCol_NavHighlight] = ImVec4(0.0f, 0.0f, 0.0f, 0.80f); // black focus
     style.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(0.0f, 0.0f, 0.0f, 0.85f); // black overlay for selected window
     style.Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.60f); // dim background in black
     style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.70f); // modal dim in black
 
-    // Active states also black (instead of red/blue)
+    // Window title bars - smooth state transitions
+    style.Colors[ImGuiCol_TitleBg] = bg_1;
     style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
-    style.Colors[ImGuiCol_TabActive] = red_primary;
+    style.Colors[ImGuiCol_TitleBgCollapsed] = bg_0;
+
+    // Menu bar
+    style.Colors[ImGuiCol_MenuBarBg] = bg_1;
 }
