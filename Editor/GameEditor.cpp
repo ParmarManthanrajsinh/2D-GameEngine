@@ -711,7 +711,7 @@ void GameEditor::DrawMapSelectionUI()
 			ImVec4(1.0f, 0.6f, 0.6f, 1.0f), 
 			"No maps registered in MapManager"
 		);
-		ImGui::Text("Register maps using RegisterMap<YourMap>(\"map_id\")");
+		ImGui::Text("Register maps using RegisterMap<YourMap>(\"MAP_ID\")");
 	}
 	else
 	{
@@ -798,8 +798,8 @@ void GameEditor::DrawMapSelectionUI()
 		ImGui::Text("Quick Access:");
 		for (int i = 0; i < available_maps.size(); i++)
 		{
-			const auto& map_id = available_maps[i];
-			bool b_IsCurrent = (map_id == curr_map_id);
+			const auto& MAP_ID = available_maps[i];
+			bool b_IsCurrent = (MAP_ID == curr_map_id);
 
 			// Style current map button with red color
 			if (b_IsCurrent)
@@ -839,7 +839,7 @@ void GameEditor::DrawMapSelectionUI()
 			}
 
 			// Add a special label for MainMap
-			std::string button_label = map_id;
+			std::string button_label = MAP_ID;
 			if (i == 0)
 			{
 				button_label += " (Main)";
@@ -847,9 +847,9 @@ void GameEditor::DrawMapSelectionUI()
 
 			if (ImGui::Button(button_label.c_str(), ImVec2(-1, 0)))
 			{
-				if (map_id != curr_map_id)
+				if (MAP_ID != curr_map_id)
 				{
-					m_MapManager->b_GotoMap(map_id);
+					m_MapManager->b_GotoMap(MAP_ID);
 				}
 			}
 
