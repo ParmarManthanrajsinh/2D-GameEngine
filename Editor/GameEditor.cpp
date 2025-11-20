@@ -31,9 +31,9 @@ GameEditor::~GameEditor()
 		BEFORE unloading the DLL, otherwise vtable/function code may be gone
 		when the map's destructor runs.
 	*/
-	m_MapManager = nullptr; // Clear MapManager reference first
+	m_MapManager = nullptr; 
 	m_GameEngine.SetMap(nullptr);
-	m_GameEngine.SetMapManager(nullptr); // Also clear the MapManager
+	m_GameEngine.SetMapManager(nullptr); 
 
 	if (m_GameLogicDll.handle)
 	{
