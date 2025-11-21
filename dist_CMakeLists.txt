@@ -52,14 +52,17 @@ set_target_properties(GameLogic PROPERTIES
 add_custom_command(TARGET GameLogic POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             $<TARGET_FILE:GameLogic>
-            ${CMAKE_SOURCE_DIR}/GameLogic.dll)
+            ${CMAKE_SOURCE_DIR}/
+    COMMENT "Copying GameLogic DLL to source directory")
 
 # Optional: Copy raylib DLL if building from source
 if(TARGET raylib)
+    # Get the actual raylib DLL path using generator expression
     add_custom_command(TARGET GameLogic POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 $<TARGET_FILE:raylib>
-                ${CMAKE_SOURCE_DIR}/raylib.dll)
+                ${CMAKE_SOURCE_DIR}/
+        COMMENT "Copying raylib DLL to source directory")
 endif()
 
 message(STATUS "GameLogic build configured")
