@@ -1,0 +1,66 @@
+# CMakeLists.txt for GameLogic Distribution
+# This file is used to build the GameLogic.dll for hot-reloading in the game engine
+
+cmake_minimum_required(VERSION 3.10)
+project(GameLogic)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Build as shared library for hot-reloading
+set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries" FORCE)
+
+# Find raylib - users need to have raylib installed or provide path
+find_package(raylib QUIET)
+if (NOT raylib_FOUND)
+    # Fallback: fetch raylib from source (same version as main project)
+    include(FetchContent)
+    FetchContent_Declare(
+        raylib
+        URL https://github.com/raysan5/raylib/archive/refs/tags/5.5.tar.gz
+        DOWNLOAD_EXTRACT_TIMESTAMP True
+    )
+    FetchContent_MakeAvailable(raylib)
+endif()
+
+# Collect all GameLogic source files
+file(GLOB_RECURSE GAMELOGIC_SRC "GameLogic/*.cpp" "GameLogic/*.c")
+
+# Collect Engine source files (needed for linking)
+file(GLOB ENGINE_SRC "Engine/*.cpp")
+
+# Create the GameLogic shared library (including Engine sources)
+add_library(GameLogic SHARED ${GAMELOGIC_SRC} ${ENGINE_SRC})
+
+# Include directories
+target_include_directories(GameLogic PRIVATE 
+    ${CMAKE_SOURCE_DIR}/Engine
+    ${CMAKE_SOURCE_DIR}/GameLogic
+)
+
+# Link raylib
+target_link_libraries(GameLogic PRIVATE raylib)
+
+# Set output directory to current directory for easy testing
+set_target_properties(GameLogic PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
+
+# Copy the built DLL to current directory for immediate use
+add_custom_command(TARGET GameLogic POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:GameLogic>
+            ${CMAKE_SOURCE_DIR}/GameLogic.dll)
+
+# Optional: Copy raylib DLL if building from source
+if(TARGET raylib)
+    add_custom_command(TARGET GameLogic POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_FILE:raylib>
+                ${CMAKE_SOURCE_DIR}/raylib.dll)
+endif()
+
+message(STATUS "GameLogic build configured")
+message(STATUS "Use 'cmake --build . --target GameLogic' to build the DLL")
