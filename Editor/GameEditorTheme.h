@@ -14,8 +14,8 @@ inline void SetEngineTheme(const std::string& path = "Assets/Roboto-Regular.ttf"
     font_config.PixelSnapH = true;
     font_config.RasterizerMultiply = 1.15f;
 
-    io.Fonts->AddFontFromFileTTF(path.c_str(), 16.0f, &font_config);
     io.Fonts->AddFontFromFileTTF(path.c_str(), 20.0f, &font_config);
+    io.Fonts->AddFontFromFileTTF(path.c_str(), 26.0f, &font_config);
 
     rlImGuiReloadFonts();
 
@@ -100,8 +100,8 @@ inline void SetEngineTheme(const std::string& path = "Assets/Roboto-Regular.ttf"
     style.TabBorderSize = 1.0f;
 
     style.WindowPadding = ImVec2(10.0f, 8.0f);
-    style.FramePadding = ImVec2(8.0f, 6.0f);
-    style.ItemSpacing = ImVec2(8.0f, 6.0f);
+    style.FramePadding = ImVec2(10.0f, 8.0f);
+    style.ItemSpacing = ImVec2(10.0f, 8.0f);
     style.ItemInnerSpacing = ImVec2(5.0f, 4.0f);
     style.ScrollbarSize = 14.0f;
     style.GrabMinSize = 12.0f;
