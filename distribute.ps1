@@ -25,6 +25,7 @@ New-Item -ItemType Directory -Path $DistPath -Force | Out-Null
 New-Item -ItemType Directory -Path "$DistPath/GameLogic" -Force | Out-Null
 New-Item -ItemType Directory -Path "$DistPath/Assets" -Force | Out-Null
 New-Item -ItemType Directory -Path "$DistPath/Engine" -Force | Out-Null
+New-Item -ItemType Directory -Path "$DistPath/Documentation" -Force | Out-Null
 
 Write-Host "Copying executable and dependencies..." -ForegroundColor Yellow
 
@@ -51,7 +52,8 @@ Copy-Item "Engine/*.cpp" "$DistPath/Engine/"
 Copy-Item "dist_CMakeLists.txt" "$DistPath/CMakeLists.txt"
 
 # Copy distribution documentation
-Copy-Item "README_DISTRIBUTION.md" "$DistPath/"
+Copy-Item "Documentation/README_DISTRIBUTION.md" "$DistPath/Documentation/"
+Copy-Item "Documentation/DISTRIBUTION_GUIDE.md" "$DistPath/Documentation/"
 
 # Copy build helper script
 Copy-Item "build_gamelogic.bat" "$DistPath/"
@@ -69,4 +71,4 @@ Write-Host "- build_gamelogic.bat (quick build helper)" -ForegroundColor White
 Write-Host "- GameLogic/ (source code for game development)" -ForegroundColor White
 Write-Host "- Engine/ (engine headers)" -ForegroundColor White
 Write-Host "- Assets/ (game assets)" -ForegroundColor White
-Write-Host "- README_DISTRIBUTION.md (usage instructions)" -ForegroundColor White
+Write-Host "- Documentation/ (user guides and documentation)" -ForegroundColor White

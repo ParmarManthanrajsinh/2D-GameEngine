@@ -1,87 +1,180 @@
-## 2D-GameEngine (Windows) — Hot-reloadable GameLogic
+# 2D Game Engine (Windows)
 
-This Raylib + ImGui editor loads your game code from `GameLogic.dll` and supports rebuilding and hot‑reloading while the editor is running.
+A simple Raylib-based game engine with **hot-reloading** support. Edit your game code and see changes instantly without restarting!
 
-### Why this is needed
-- Windows locks a DLL when loaded. Rebuilding `GameLogic.dll` used to fail or show no changes because the file was locked by `main.exe`.
-- The loader now loads a unique shadow copy of the DLL, keeping the original unlocked for rebuilds.
+## ✨ Features
 
-### How hot‑reload works
-- `Game/DllLoader`: copies `GameLogic.dll` to a unique temp filename and loads that copy; deletes it on unload.
-- `Editor/GameEditor`:
-  - `LoadGameLogic(path)`: loads the DLL and creates a new `GameMap`.
-  - `ReloadGameLogic()`: destroys the current map, unloads old DLL, loads new DLL, creates a fresh map.
-  - Checks the timestamp of `GameLogic.dll` about every 0.5s; if changed, reloads automatically.
-  - The Restart toolbar button also forces a reload.
+- 🔥 **Hot-Reload** - Edit code and see changes in ~0.5 seconds
+- 🎮 **Pure Raylib** - Write normal Raylib code, no complex abstractions
+- 🖼️ **Visual Editor** - ImGui-based editor with file browser
+- 🗺️ **Map System** - Easy scene/level switching with MapManager
+- 📦 **Easy Distribution** - Share your engine with other developers
 
-Reloading recreates the `GameMap` instance, so its runtime state resets.
+## 🚀 Quick Start
 
----
+### Requirements
+- Windows 10/11
+- Visual Studio Build Tools (MSVC)
+- CMake 3.10+
+- Developer Command Prompt for VS
 
-## Build and run
+### Build and Run
 
-Requirements
-- Windows + Visual Studio Build Tools (MSVC), CMake 3.10+, Ninja.
-- Use a “Developer Command Prompt for VS” so `cl.exe` is on PATH.
+1. **Open Developer Command Prompt for VS**
 
-Commands
+2. **Build the project:**
+   ```powershell
+   cmake --preset x64-debug
+   cmake --build out/build/x64-debug --config Debug --target main
+   ```
 
-PowerShell:
+3. **Run the editor:**
+   ```powershell
+   out/build/x64-debug/main.exe
+   ```
 
-```
-cmake --preset x64-debug
-cmake --build out/build/x64-debug --config Debug --target main
-out/build/x64-debug/main.exe
-```
+## 🎯 How It Works
 
-Assets are copied to the build directory during configure.
+### Hot-Reloading System
+Your game code lives in `GameLogic.dll`, which the editor loads at runtime. When you rebuild the DLL, the editor automatically detects the change and reloads it.
 
----
+**Why this works:**
+- Windows locks DLLs when loaded
+- Our loader creates a shadow copy of the DLL
+- The original file stays unlocked for rebuilding
+- Editor watches for file changes and reloads automatically
 
-## Rebuild GameLogic while editor is running
+### Rebuild GameLogic While Running
 
-PowerShell:
-
-```
+```powershell
 cmake --build out/build/x64-debug --config Debug --target GameLogic
 ```
 
-- The editor auto‑reloads within ~0.5s or you can click Restart.
-- To rebuild `main`, close the app first (otherwise LNK1168 because `main.exe` is in use).
+The editor will auto-reload within ~0.5 seconds, or click the **Restart** button.
 
----
+> **Note:** To rebuild `main.exe`, close the app first (otherwise you'll get LNK1168 error).
 
-## Project layout
-- `Engine/`: core engine (`GameEngine`, `GameMap`)
-- `Editor/`: ImGui editor and glue
-- `Game/`: program entry and DLL loader wrapper
-- `GameLogic/`: your game code (built as `GameLogic.dll`)
-- `Assets/`: images, fonts, etc.
+## 📁 Project Structure
 
----
+```
+2D-GameEngine/
+├── Engine/          # Core engine (GameEngine, GameMap, MapManager)
+├── Editor/          # ImGui editor and UI
+├── Game/            # Program entry and DLL loader
+├── GameLogic/       # Your game code (built as GameLogic.dll)
+│   ├── RootManager.cpp    # DLL entry point
+│   ├── DefaultMap.cpp     # Example map
+│   └── TestMap.cpp        # Example map
+└── Assets/          # Images, fonts, shaders, etc.
+```
 
-## Troubleshooting  
+## 🗺️ Map System
+
+The engine includes a **MapManager** for easy scene/level management:
+
+### Creating Maps
+
+```cpp
+// YourMap.h
+#include "../Engine/GameMap.h"
+
+class YourMap : public GameMap {
+    Vector2 playerPos{0.0f, 0.0f};
+    
+public:
+    void Update(float deltaTime) override {
+        if (IsKeyDown(KEY_RIGHT)) playerPos.x += 100.0f * deltaTime;
+    }
+    
+    void Draw() override {
+        DrawCircleV(playerPos, 20.0f, RED);
+    }
+};
+```
+
+### Registering Maps
+
+```cpp
+// GameLogic/RootManager.cpp
+#include "../Engine/MapManager.h"
+#include "YourMap.h"
+
+extern "C" __declspec(dllexport) GameMap* CreateGameMap() {
+    MapManager* manager = new MapManager();
+    
+    // Register your maps
+    manager->RegisterMap<YourMap>("your_map");
+    manager->RegisterMap<Level1>("level_1");
+    
+    // Load the first map
+    auto maps = manager->GetAvailableMaps();
+    if (!maps.empty()) {
+        manager->GoToMap(maps[0]);
+    }
+    
+    return manager;
+}
+```
+
+### Switching Maps
+
+```cpp
+// In your game code
+manager->GoToMap("level_1");
+
+// Check current map
+if (manager->IsCurrentMap("boss_fight")) {
+    // Boss fight logic
+}
+```
+
+## 🛠️ Troubleshooting
 
 ### LNK1168: cannot open main.exe for writing
-Close the app (stop debugging) before rebuilding `main`. Rebuilding `GameLogic` is safe while running.
+**Solution:** Close the app before rebuilding `main.exe`. Rebuilding `GameLogic.dll` is safe while running.
 
-### Access violation on exit
-Happens if a map object outlives the DLL. The editor now destroys the map before unloading the DLL and frees GPU resources before closing the window.
+### DLL not reloading
+**Solution:** 
+- Check that the build completed successfully
+- Verify `GameLogic.dll` timestamp changed
+- Click the **Restart** button in the editor
 
 ### Compiler not found
-Use a Developer Command Prompt for VS so `cl.exe` is on PATH before running CMake.
+**Solution:** Use **Developer Command Prompt for VS** so `cl.exe` is on PATH.
 
-### Filesystem deprecation warnings
-Replaced `std::filesystem::u8path` with `std::filesystem::path`. Clean rebuild if warnings persist.
+### Access violation on exit
+**Solution:** This has been fixed. The editor now properly destroys the map before unloading the DLL.
 
-### Type conversion/member init warnings in `MyMap`
-- Initialize members (e.g., `Vector2 position{0.0f, 0.0f};`).
-- Prefer `DrawCircleV(...)` or cast explicitly when calling integer overloads.
+## 📦 Distribution
+
+Want to share your engine with others? See [Distribution Guide](Documentation/DISTRIBUTION_GUIDE.md) for detailed instructions.
+
+**Quick distribution:**
+```cmd
+create_distribution.bat
+```
+
+This creates a complete package in the `dist/` folder with everything needed for others to develop games.
+
+## 📚 Documentation
+
+- **[Distribution Guide](Documentation/DISTRIBUTION_GUIDE.md)** - How to create distribution packages
+- **[Distribution README](Documentation/README_DISTRIBUTION.md)** - User guide for distributed packages
+
+## 🎮 Development Workflow
+
+1. **Run the editor** - `main.exe`
+2. **Edit your game code** - Modify files in `GameLogic/`
+3. **Rebuild GameLogic** - `cmake --build out/build/x64-debug --target GameLogic`
+4. **See changes instantly** - Editor auto-reloads your code
+
+## 💡 Tips
+
+- Use the **File Explorer** in the editor to browse assets
+- The **Restart** button forces a reload if auto-reload doesn't trigger
+- Game state resets on reload (this is intentional)
+- Write pure Raylib code - no complex abstractions needed
 
 ---
 
-## CMake notes
-- `main` links against `Engine` (which links Raylib).
-- After building `main`, CMake copies `GameLogic.dll` and Raylib’s runtime DLL next to the exe.
-- Building only `GameLogic` updates the DLL the editor watches and reloads.
-
+**Happy Game Development! 🎮**
