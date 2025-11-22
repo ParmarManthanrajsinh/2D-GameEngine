@@ -146,7 +146,4 @@ void Level2::Draw()
 
     // Draw Player (Red Cube)
     DrawRectangle((int)m_PlayerPos.x, (int)m_PlayerPos.y, (int)PLAYER_SIZE, (int)PLAYER_SIZE, RED);
-
-    // Draw Instructions
-    DrawText("Level 2 - Reach the end!", 10, 10, 20, WHITE);
 }

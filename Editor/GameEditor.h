@@ -42,8 +42,6 @@ private:
     RenderTexture2D m_RaylibTexture;
     RenderTexture2D m_DisplayTexture;
 
-	void DrawExploreWindow();
-    void DrawDirectoryTree(const fs::path& directory_path);
 	void DrawSceneWindow();
     void DrawMapSelectionUI();
 
@@ -52,10 +50,6 @@ private:
     Texture2D m_PauseIcon;
 	Texture2D m_RestartIcon;
     Texture2D m_RestoreIcon;
-    Texture2D m_folder_texture;
-    Texture2D m_file_texture;
-    Texture2D m_image_texture;
-    Texture2D m_text_texture ;
 
     bool m_bIconsLoaded;
     void LoadIconTextures();

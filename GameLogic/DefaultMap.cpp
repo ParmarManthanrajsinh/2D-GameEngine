@@ -167,8 +167,4 @@ void DefaultMap::Draw()
 
     // Draw Player (Red Cube)
     DrawRectangle((int)m_PlayerPos.x, (int)m_PlayerPos.y, (int)PLAYER_SIZE, (int)PLAYER_SIZE, RED);
-
-    // Draw Instructions
-    DrawText("Controls: A/D to Move, SPACE to Jump", 10, 10, 20, WHITE);
-    DrawText("Reach the top to win!", 10, 30, 20, YELLOW);
 }
