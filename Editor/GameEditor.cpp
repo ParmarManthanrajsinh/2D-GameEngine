@@ -129,6 +129,16 @@ void GameEditor::LoadIconTextures()
 		ImageDrawRectangle(&restore_img, 14, 8, 2, 2, DARKBLUE);
 	}
 
+	if (compile_img.data == nullptr)
+	{
+		compile_img = GenImageColor(20, 20, LIME);
+
+		// Draw a simple compile symbol
+		ImageDrawRectangle(&compile_img, 8, 4, 4, 12, DARKGREEN);
+		ImageDrawRectangle(&compile_img, 4, 8, 12, 4, DARKGREEN);
+		ImageDrawRectangle(&compile_img, 6, 6, 8, 8, LIME);
+	}
+
 	// Resize to consistent size
 	ImageResize(&play_img, 20, 20);
 	ImageResize(&pause_img, 20, 20);
@@ -350,21 +360,6 @@ void GameEditor::DrawSceneWindow()
 		b_IsPlaying = false;
 		m_MapManager->b_ReloadCurrentMap();
 	}
-	
-	// Compile button with PNG icon
-	ImGui::SameLine();
-	if
-	(
-		ImGui::ImageButton
-		(
-			"compile_btn",
-			(ImTextureID)(intptr_t)m_CompileIcon.id,
-			ImVec2(20, 20)
-		)
-	)
-	{
-
-	}
 
 	// Status indicator
 	ImGui::SameLine();
@@ -407,24 +402,32 @@ void GameEditor::DrawSceneWindow()
 			m_GameEngine.ResetMap();
 		}
 	}
-	ImGui::PopStyleVar(3);
 
-
-
-	/*ImGui::SameLine();
-	if (ImGui::Button("Run"))
+	ImGui::SameLine();
+	ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
+	if
+	(
+		ImGui::ImageButton
+        (
+			"compile_btn",
+			(ImTextureID)(intptr_t)m_CompileIcon.id,
+			ImVec2(20, 20)
+		)
+	)
 	{
 		std::thread
 		(
-			[]() 
+			[]()
 			{
 				system
 				(
-					"build_gamelogic.bat"
-				);	
+					"create_distribution.bat"
+				);
 			}
-		).detach(); 
-	}*/
+		).detach();
+	}
+
+	ImGui::PopStyleVar(3);
 
 	if (m_bUseOpaquePass)
 	{
@@ -443,9 +446,9 @@ void GameEditor::LoadMap(std::unique_ptr<GameMap>& game_map)
     if (game_map)
     {
         // Check if the loaded map is a MapManager
-        MapManager* mapManager = dynamic_cast<MapManager*>(game_map.get());
+        MapManager* map_manager = dynamic_cast<MapManager*>(game_map.get());
 
-        if (mapManager)
+        if (map_manager)
         {
             // If it's a MapManager, set it using the dedicated method
             std::unique_ptr<MapManager> OwnedMapManager
