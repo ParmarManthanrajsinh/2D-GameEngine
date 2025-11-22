@@ -301,31 +301,54 @@ void GameEditor::DrawToolbarBackground()
 
 static void DrawSpinner(float radius, float thickness, const ImU32& color)
 {
+	// Group all float variables together for cache locality
+	alignas(16) struct {
+		float time;
+		float start;
+		float a_min;
+		float a_max;
+		float centre_x;
+		float centre_y;
+		float time_x8;
+		float inv_num_segments;
+		float angle_range;
+	} vars{};
+
 	ImVec2 pos = ImGui::GetCursorScreenPos();
 	ImGui::Dummy(ImVec2(radius * 2, radius * 2));
 
 	ImDrawList* DrawList = ImGui::GetWindowDrawList();
 	DrawList->PathClear();
 
-	float time = static_cast<float>(ImGui::GetTime());
-	int num_segments = 30;
-	float start = fabsf(sinf(time * 1.8f) * (num_segments - 5));
+	vars.time = static_cast<float>(ImGui::GetTime());
+	constexpr int NUM_SEGMENTS = 30;
+	vars.start = fabsf(sinf(vars.time * 1.8f) * (NUM_SEGMENTS - 5));
 
-	const float a_min = 3.14159f * 2.0f * (static_cast<float>(start)) / static_cast<float>(num_segments);
+	// Precompute invariant values
+	vars.inv_num_segments = 1.0f / static_cast<float>(NUM_SEGMENTS);
+	vars.time_x8 = vars.time * 8.0f;
 
-	const float a_max = 3.14159f * 2.0f * (static_cast<float>(num_segments - 3)) / static_cast<float>(num_segments);
+	vars.a_min = 3.14159f * 2.0f * vars.start * vars.inv_num_segments;
+	vars.a_max = 3.14159f * 2.0f * static_cast<float>(NUM_SEGMENTS - 3) * vars.inv_num_segments;
+	vars.angle_range = vars.a_max - vars.a_min;
 
 	const ImVec2 centre = ImVec2(pos.x + radius, pos.y + radius);
+	vars.centre_x = centre.x;
+	vars.centre_y = centre.y;
 
-	for (int i = 0; i < num_segments; i++)
+	// Pre-allocate path memory
+	for (int i = 0; i < NUM_SEGMENTS; i++)
 	{
-		const float a = a_min + (static_cast<float>(i) / static_cast<float>(num_segments)) * (a_max - a_min);
+		const float a = vars.a_min + (static_cast<float>(i) * vars.inv_num_segments) * vars.angle_range;
+
+		const float angle = a + vars.time_x8;
+
 		DrawList->PathLineTo
 		(
 			ImVec2
 			(
-				centre.x + cosf(a + time * 8) * radius,
-				centre.y + sinf(a + time * 8) * radius
+				vars.centre_x + cosf(angle) * radius,
+				vars.centre_y + sinf(angle) * radius
 			)
 		);
 	}
@@ -353,7 +376,6 @@ void GameEditor::DrawSceneWindow()
 	// Play/Pause button with PNG icon
 	if (b_IsPlaying)
 	{
-
 		if
 		(
 			ImGui::ImageButton
@@ -403,8 +425,15 @@ void GameEditor::DrawSceneWindow()
 	ImGui::SameLine();
 	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 12);
 	// Center text vertically in toolbar
-	float text_y_offset = (toolbar_height - ImGui::GetTextLineHeight()) / 2.0f;
-	ImGui::SetCursorPosY(ImGui::GetCursorPosY() - vertical_offset + text_y_offset);
+	float text_y_offset = 
+	(
+		toolbar_height - ImGui::GetTextLineHeight()
+	) / 2.0f;
+
+	ImGui::SetCursorPosY
+	(
+		ImGui::GetCursorPosY() - vertical_offset + text_y_offset
+	);
 
 	if (b_IsPlaying)
 	{
