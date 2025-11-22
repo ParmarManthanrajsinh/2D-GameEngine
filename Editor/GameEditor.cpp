@@ -299,6 +299,39 @@ void GameEditor::DrawToolbarBackground()
 	);
 }
 
+static void DrawSpinner(float radius, float thickness, const ImU32& color)
+{
+	ImVec2 pos = ImGui::GetCursorScreenPos();
+	ImGui::Dummy(ImVec2(radius * 2, radius * 2));
+
+	ImDrawList* DrawList = ImGui::GetWindowDrawList();
+	DrawList->PathClear();
+
+	float time = (float)ImGui::GetTime();
+	int num_segments = 30;
+	float start = fabsf(sinf(time * 1.8f) * (num_segments - 5));
+
+	const float a_min = 3.14159f * 2.0f * ((float)start) / (float)num_segments;
+	const float a_max = 3.14159f * 2.0f * ((float)num_segments - 3) / (float)num_segments;
+
+	const ImVec2 centre = ImVec2(pos.x + radius, pos.y + radius);
+
+	for (int i = 0; i < num_segments; i++)
+	{
+		const float a = a_min + ((float)i / (float)num_segments) * (a_max - a_min);
+		DrawList->PathLineTo
+		(
+			ImVec2
+			(
+				centre.x + cosf(a + time * 8) * radius,
+				centre.y + sinf(a + time * 8) * radius
+			)
+		);
+	}
+
+	DrawList->PathStroke(color, false, thickness);
+}
+
 void GameEditor::DrawSceneWindow()
 {
 	ImGui::Begin("Scene");
@@ -312,6 +345,7 @@ void GameEditor::DrawSceneWindow()
 	// Play/Pause button with PNG icon
 	if (b_IsPlaying)
 	{
+
 		if
 		(
 			ImGui::ImageButton
@@ -371,12 +405,6 @@ void GameEditor::DrawSceneWindow()
 		ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "STOPPED");
 	}
 
-	ImGui::SameLine();
-	if (b_IsCompiling)
-	{
-		ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "COMPILING");
-	}
-
 	// Restore button with PNG icon
 	ImGui::SameLine();
 	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 12);
@@ -400,27 +428,59 @@ void GameEditor::DrawSceneWindow()
 	}
 
 	ImGui::SameLine();
-	ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
+
+	// Compile Button & Status
+	float right_edge = ImGui::GetContentRegionAvail().x;
+	float status_width = b_IsCompiling ? 110.0f : 0.0f;
+	ImGui::SetCursorPosX(right_edge - 40 - status_width);
+
+	if (b_IsCompiling)
+	{
+		DrawSpinner(8.0f, 2.0f, ImGui::GetColorU32(ImVec4(0.2f, 0.8f, 0.2f, 1.0f)));
+		ImGui::SameLine();
+		ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "Compiling...");
+		ImGui::SameLine();
+	}
+
+	bool disabled = b_IsCompiling.load();
+	if (disabled)
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
+	}
+
 	if
 	(
 		ImGui::ImageButton
-        (
+		(
 			"compile_btn",
 			(ImTextureID)(intptr_t)m_CompileIcon.id,
 			ImVec2(20, 20)
 		)
 	)
 	{
-		std::thread
-		(
-			[]()
-			{
-				system
-				(
-					"build_gamelogic.bat"
-				);
-			}
-		).detach();
+		if (!disabled)
+		{
+			b_IsCompiling = true;
+
+			std::thread
+			(
+				[this]()
+				{
+					system("build_gamelogic.bat nopause");
+					b_IsCompiling = false;
+				}
+			).detach();
+		}
+	}
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("Recompile Game Logic DLL");
+	}
+
+	if (disabled)
+	{
+		ImGui::PopStyleVar();
 	}
 
 	ImGui::PopStyleVar(3);

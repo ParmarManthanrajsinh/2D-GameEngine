@@ -19,7 +19,7 @@ if not exist CMakeCache.txt (
     if errorlevel 1 (
         echo ERROR: CMake configuration failed!
         echo Make sure you're running this from a Developer Command Prompt
-        pause
+        if not "%1"=="nopause" pause
         exit /b 1
     )
 )
@@ -29,7 +29,7 @@ echo Building GameLogic target...
 cmake --build . --target GameLogic --config Release
 if errorlevel 1 (
     echo ERROR: Build failed!
-    pause
+    if not "%1"=="nopause" pause
     exit /b 1
 )
 
@@ -38,4 +38,5 @@ echo.
 echo GameLogic.dll built successfully!
 echo The engine will automatically detect and reload the changes.
 echo.
+if "%1"=="nopause" goto :eof
 pause

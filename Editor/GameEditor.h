@@ -9,6 +9,7 @@
 #include <rlImGui.h>
 #include <thread>
 #include <tinyfiledialogs.h>
+#include <atomic>
 
 #include "DllLoader.h"
 #include "GameEditorLayout.h"
@@ -23,7 +24,7 @@ public:
     ~GameEditor();
 
     bool b_IsPlaying;
-    bool b_IsCompiling;
+    std::atomic<bool> b_IsCompiling;
     void Init(int width, int height, const char* title);
     void LoadMap(std::unique_ptr<GameMap>& game_map);
 
