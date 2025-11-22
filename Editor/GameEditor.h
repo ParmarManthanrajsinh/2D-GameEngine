@@ -8,6 +8,7 @@
 #include <raylib.h>
 #include <rlImGui.h>
 #include <tinyfiledialogs.h>
+#include <thread>
 
 #include "DllLoader.h"
 #include "GameEditorLayout.h"
