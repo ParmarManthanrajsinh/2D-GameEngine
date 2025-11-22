@@ -13,20 +13,7 @@ GameEditor::GameEditor()
 	  m_PauseIcon({ 0 }),
 	  m_RestartIcon({ 0 }),
 	  m_RestoreIcon({ 0 }),
-<<<<<<< Updated upstream
-=======
-	  m_FolderIcon ({0}),
-	  m_FileIcon({0}),
-	  m_ImageIcon({0}),
-	  m_TextIcon({0}),
-	  m_CompilerIcon({0}),
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+	  m_CompileIcon({ 0 }),
 	  m_bIconsLoaded(false),
 	  m_GameLogicDll{},
 	  m_CreateGameMap(nullptr),
@@ -92,22 +79,13 @@ void GameEditor::LoadIconTextures()
 	// Load PNG icons (replace paths with your actual icon files)
 	Image play_img = LoadImage("Assets/icons/play.png");
 	Image pause_img = LoadImage("Assets/icons/pause.png");
-	Image restore_img = LoadImage("Assets/icons/restore.png");
 	Image restart_img = LoadImage("Assets/icons/restart.png");
-<<<<<<< Updated upstream
-=======
+	Image restore_img = LoadImage("Assets/icons/restore.png");
 	Image folder_img = LoadImage("Assets/icons/folder.png");
 	Image file_img = LoadImage("Assets/icons/file.png");
 	Image image_img = LoadImage("Assets/icons/image.png");
 	Image text_img = LoadImage("Assets/icons/text.png");
 	Image compile_img = LoadImage("Assets/icons/compile.png");
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 
 	// Create fallback icons if files don't exist
 	if (play_img.data == nullptr)
@@ -163,7 +141,7 @@ void GameEditor::LoadIconTextures()
 	m_PauseIcon = LoadTextureFromImage(pause_img);
 	m_RestartIcon = LoadTextureFromImage(restart_img);
 	m_RestoreIcon = LoadTextureFromImage(restore_img);
-	m_CompilerIcon = LoadTextureFromImage(compile_img);
+	m_CompileIcon = LoadTextureFromImage(compile_img);
 
 	// Cleanup temporary images
 	UnloadImage(play_img);
@@ -272,7 +250,7 @@ void GameEditor::Close() const
 		UnloadTexture(m_PlayIcon);
 		UnloadTexture(m_PauseIcon);
 		UnloadTexture(m_RestoreIcon);
-		UnloadTexture(m_CompilerIcon);
+		UnloadTexture(m_CompileIcon);
 	}
 
 	UnloadRenderTexture(m_RaylibTexture);
@@ -380,7 +358,7 @@ void GameEditor::DrawSceneWindow()
 		ImGui::ImageButton
 		(
 			"compile_btn",
-			(ImTextureID)(intptr_t)m_CompilerIcon.id,
+			(ImTextureID)(intptr_t)m_CompileIcon.id,
 			ImVec2(20, 20)
 		)
 	)
@@ -390,8 +368,8 @@ void GameEditor::DrawSceneWindow()
 
 	// Status indicator
 	ImGui::SameLine();
-	//ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 12);
-	//ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 4);
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 12);
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 4);
 
 	if (b_IsPlaying)
 	{

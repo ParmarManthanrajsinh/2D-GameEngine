@@ -16,7 +16,7 @@
 #include "GameEngine.h"
 namespace fs = std::filesystem;
 
-class GameEditor 
+class GameEditor
 {
 public:
     GameEditor();
@@ -25,7 +25,7 @@ public:
     bool b_IsPlaying;
     bool b_IsCompiling;
     void Init(int width, int height, const char* title);
-    void LoadMap(std::unique_ptr<GameMap> &game_map);
+    void LoadMap(std::unique_ptr<GameMap>& game_map);
 
     // Load the game logic DLL and create/set a new GameMap from it
     bool b_LoadGameLogic(const char* dllPath);
@@ -33,24 +33,25 @@ public:
     // Unload and reload the DLL, then recreate the GameMap
     bool b_ReloadGameLogic();
 
-	void Run();
+    void Run();
 private:
     void Close() const;
 
-	GameEngine m_GameEngine;
+    GameEngine m_GameEngine;
     ImGuiViewport* m_Viewport;
 
     RenderTexture2D m_RaylibTexture;
     RenderTexture2D m_DisplayTexture;
 
-	void DrawSceneWindow();
+    void DrawSceneWindow();
     void DrawMapSelectionUI();
 
     // New icon texture members
     Texture2D m_PlayIcon;
     Texture2D m_PauseIcon;
-	Texture2D m_RestartIcon;
+    Texture2D m_RestartIcon;
     Texture2D m_RestoreIcon;
+    Texture2D m_CompileIcon;
 
     bool m_bIconsLoaded;
     void LoadIconTextures();
@@ -67,7 +68,7 @@ private:
     float m_ReloadCheckAccum = 0.0f;
     Shader m_OpaqueShader;
     bool m_bUseOpaquePass = true;
-    
+
     // Map selection UI
     MapManager* m_MapManager = nullptr;
     std::string m_SelectedMapId;
