@@ -81,10 +81,6 @@ void GameEditor::LoadIconTextures()
 	Image pause_img = LoadImage("Assets/icons/pause.png");
 	Image restart_img = LoadImage("Assets/icons/restart.png");
 	Image restore_img = LoadImage("Assets/icons/restore.png");
-	Image folder_img = LoadImage("Assets/icons/folder.png");
-	Image file_img = LoadImage("Assets/icons/file.png");
-	Image image_img = LoadImage("Assets/icons/image.png");
-	Image text_img = LoadImage("Assets/icons/text.png");
 	Image compile_img = LoadImage("Assets/icons/compile.png");
 
 	// Create fallback icons if files don't exist
