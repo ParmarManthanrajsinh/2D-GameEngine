@@ -332,12 +332,12 @@ inline void FireParticle::Update(float dt)
 
 		if (b_ColorTransition)
 		{
-			p.color.r = Clamp(start_color.r * (1.0f - t) + end_color.r * t, 0, 255);
-			p.color.g = Clamp(start_color.g * (1.0f - t) + end_color.g * t, 0, 255);
-			p.color.b = Clamp(start_color.b * (1.0f - t) + end_color.b * t, 0, 255);
+			p.color.r = static_cast<unsigned char>(Clamp(start_color.r * (1.0f - t) + end_color.r * t, 0, 255));
+			p.color.g = static_cast<unsigned char>(Clamp(start_color.g * (1.0f - t) + end_color.g * t, 0, 255));
+			p.color.b = static_cast<unsigned char>(Clamp(start_color.b * (1.0f - t) + end_color.b * t, 0, 255));
 		}
 
-		p.color.a = Clamp(255.0f * life_ratio, 0, 255);
+		p.color.a = static_cast<unsigned char>(Clamp(255.0f * life_ratio, 0, 255));
 		++i;
 	}
 }
@@ -510,5 +510,5 @@ inline void FireParticle::Clear()
 
 inline int FireParticle::GetParticleCount() const
 {
-	return particles.size();
+	return static_cast<int>(particles.size());
 }

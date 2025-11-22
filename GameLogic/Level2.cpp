@@ -1,39 +1,34 @@
-﻿#include "DefaultMap.h"
+#include "Level2.h"
 #include <iostream>
 
-// Define static member
-MapManager* DefaultMap::s_MapManager = nullptr;
-
-DefaultMap::DefaultMap() : GameMap("Cube Game")
+Level2::Level2() : GameMap("Level 2")
 {
 }
 
-void DefaultMap::Initialize()
+void Level2::Initialize()
 {
-    // Initialize player position to center of screen, slightly above floor
-    m_PlayerPos = { 400.0f, FLOOR_Y - PLAYER_SIZE };
+    // Initialize player position
+    m_PlayerPos = { 100.0f, FLOOR_Y - PLAYER_SIZE };
     m_PlayerVel = { 0.0f, 0.0f };
     m_IsGrounded = true;
     
-    // Initialize Finish Zone (Invisible Collider at the top)
-    m_FinishZone = { 0.0f, 0.0f, (float)GetScreenWidth(), 100.0f }; // Top 100 pixels
-
-    // Initialize Obstacles
+    // Initialize Obstacles (Harder layout)
     m_Obstacles.clear();
-    m_Obstacles.emplace_back(600.0f, 400.0f, 100.0f, 20.0f); // Platform 1
-    m_Obstacles.emplace_back(200.0f, 350.0f, 100.0f, 20.0f); // Platform 2
-    m_Obstacles.emplace_back(400.0f, 250.0f, 100.0f, 20.0f); // Platform 3
-    m_Obstacles.emplace_back(800.0f, FLOOR_Y - 60.0f, 60.0f, 60.0f); // Block on floor
+    m_Obstacles.emplace_back(300.0f, 400.0f, 100.0f, 20.0f);
+    m_Obstacles.emplace_back(500.0f, 300.0f, 100.0f, 20.0f);
+    m_Obstacles.emplace_back(700.0f, 200.0f, 100.0f, 20.0f);
+    m_Obstacles.emplace_back(900.0f, 350.0f, 100.0f, 20.0f); // Tricky jump
+    m_Obstacles.emplace_back(1100.0f, 150.0f, 100.0f, 20.0f); // Goal platform
 
     // Initialize Fire Particles
     m_FireParticles.clear();
-    m_FireParticles.emplace_back(80.0f, FLOOR_Y - 15.0f);
-    m_FireParticles.emplace_back(1200.0f, FLOOR_Y - 15.0f);
+    m_FireParticles.emplace_back(50.0f, FLOOR_Y - 15.0f);
+    m_FireParticles.emplace_back(1150.0f, 150.0f - 15.0f); // Fire on goal
 
-    std::cout << "[DefaultMap] Cube Game Initialized" << std::endl;
+    std::cout << "[Level2] Initialized" << std::endl;
 }
 
-void DefaultMap::Update(float delta_time)
+void Level2::Update(float delta_time)
 {
     // -------------------------
     // Horizontal Movement (X)
@@ -115,25 +110,12 @@ void DefaultMap::Update(float delta_time)
         m_PlayerVel.y = 0.0f;
         m_IsGrounded = true;
     }
-
+    
     // Screen Bounds Clamping (Y - Top)
     if (m_PlayerPos.y < 0)
     {
         m_PlayerPos.y = 0;
         m_PlayerVel.y = 0;
-    }
-
-    // Win Condition & Level Transition
-    // Check collision with Finish Zone
-    Rectangle playerRect = { m_PlayerPos.x, m_PlayerPos.y, PLAYER_SIZE, PLAYER_SIZE };
-    if (CheckCollisionRecs(playerRect, m_FinishZone))
-    {
-        if (s_MapManager)
-        {
-            std::cout << "Level Complete! Switching to Level 2..." << std::endl;
-            s_MapManager->b_GotoMap("Level2");
-            return; // Stop updating this map
-        }
     }
 
     // Update Fire Particles
@@ -143,9 +125,9 @@ void DefaultMap::Update(float delta_time)
     }
 }
 
-void DefaultMap::Draw()
+void Level2::Draw()
 {
-    ClearBackground(GRAY);
+    ClearBackground(SKYBLUE); // Different background for Level 2
 
     // Draw Floor
     DrawRectangle(0, (int)FLOOR_Y, GetScreenWidth(), GetScreenHeight() - (int)FLOOR_Y, Color{ 54, 54, 54, 255 });
@@ -153,7 +135,7 @@ void DefaultMap::Draw()
     // Draw Obstacles
     for (const auto& obstacle : m_Obstacles)
     {
-        DrawRectangleRec(obstacle, DARKGRAY);
+        DrawRectangleRec(obstacle, Color{ 54, 54, 54, 255 });
     }
 
     // Draw Fire Particles
@@ -162,13 +144,9 @@ void DefaultMap::Draw()
         particle.Draw();
     }
 
-    // Draw Finish Zone
-    DrawRectangleRec(m_FinishZone, Color{ 255, 0, 0, 128 }); // Semi-transparent red
-
     // Draw Player (Red Cube)
     DrawRectangle((int)m_PlayerPos.x, (int)m_PlayerPos.y, (int)PLAYER_SIZE, (int)PLAYER_SIZE, RED);
 
     // Draw Instructions
-    DrawText("Controls: A/D to Move, SPACE to Jump", 10, 10, 20, WHITE);
-    DrawText("Reach the top to win!", 10, 30, 20, YELLOW);
+    DrawText("Level 2 - Reach the end!", 10, 10, 20, WHITE);
 }

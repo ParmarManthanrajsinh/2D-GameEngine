@@ -1,16 +1,19 @@
 #include "../Engine/MapManager.h"
 #include "DefaultMap.h"
-#include "TestMap.h"
+#include "Level2.h"
 #include <memory>
 
 extern "C" __declspec(dllexport) GameMap* CreateGameMap()
 {
     MapManager* manager = new MapManager();
     
+    // Initialize static pointer for map transitions
+    DefaultMap::s_MapManager = manager;
+    
     // Register your game maps
     // These are just default - replace with your actual maps
     manager->RegisterMap<DefaultMap>("Default");
-    manager->RegisterMap<TestMap>("test");
+    manager->RegisterMap<Level2>("Level2");
 
     // Automatically load the first registered map
     auto available_maps = manager->GetAvailableMaps();  
