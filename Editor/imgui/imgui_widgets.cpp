@@ -1591,8 +1591,7 @@ void ImGui::Dummy(const ImVec2& size)
 void ImGui::NewLine()
 {
     ImGuiWindow* window = GetCurrentWindow();
-    if (window->SkipItems)
-        return;
+    if (window->SkipItems) return;
 
     ImGuiContext& g = *GImGui;
     const ImGuiLayoutType backup_layout_type = window->DC.LayoutType;
@@ -1612,8 +1611,20 @@ void ImGui::AlignTextToFramePadding()
         return;
 
     ImGuiContext& g = *GImGui;
-    window->DC.CurrLineSize.y = ImMax(window->DC.CurrLineSize.y, g.FontSize + g.Style.FramePadding.y * 2);
-    window->DC.CurrLineTextBaseOffset = ImMax(window->DC.CurrLineTextBaseOffset, g.Style.FramePadding.y);
+
+    window->DC.CurrLineSize.y = 
+    ImMax  
+    (
+        window->DC.CurrLineSize.y, 
+        g.FontSize + g.Style.FramePadding.y * 2
+    );
+
+    window->DC.CurrLineTextBaseOffset = 
+    ImMax
+    (
+        window->DC.CurrLineTextBaseOffset, 
+        g.Style.FramePadding.y
+    );
 }
 
 // Horizontal/vertical separating line

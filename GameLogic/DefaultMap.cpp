@@ -16,7 +16,13 @@ void DefaultMap::Initialize()
     m_bIsGrounded = true;
     
     // Initialize Finish Zone (Invisible Collider at the top)
-    m_FinishZone = { 0.0f, 0.0f, (float)GetScreenWidth(), 100.0f }; // Top 100 pixels
+    m_FinishZone = 
+    { 
+        0.0f, 
+        0.0f, 
+        static_cast<float>(GetScreenWidth()), 
+        100.0f 
+    }; // Top 100 pixels
 
     // Initialize Obstacles
     m_Obstacles.clear();
@@ -52,10 +58,17 @@ void DefaultMap::Update(float delta_time)
 
     // Screen Bounds Clamping (X)
     if (m_PlayerPos.x < 0) m_PlayerPos.x = 0;
-    if (m_PlayerPos.x > GetScreenWidth() - PLAYER_SIZE) m_PlayerPos.x = (float)GetScreenWidth() - PLAYER_SIZE;
+    if (m_PlayerPos.x > GetScreenWidth() - PLAYER_SIZE) 
+        m_PlayerPos.x = static_cast<float>(GetScreenWidth()) - PLAYER_SIZE;
 
     // X-Axis Collision
-    Rectangle playerRectX = { m_PlayerPos.x, m_PlayerPos.y, PLAYER_SIZE, PLAYER_SIZE };
+    Rectangle playerRectX = 
+    { 
+        m_PlayerPos.x, 
+        m_PlayerPos.y, 
+        PLAYER_SIZE, 
+        PLAYER_SIZE 
+    };
     for (const auto& obstacle : m_Obstacles)
     {
         if (CheckCollisionRecs(playerRectX, obstacle))
@@ -70,7 +83,6 @@ void DefaultMap::Update(float delta_time)
             }
         }
     }
-
     // -------------------------
     // Vertical Movement (Y)
     // -------------------------
@@ -89,7 +101,13 @@ void DefaultMap::Update(float delta_time)
     m_PlayerPos.y += m_PlayerVel.y * delta_time;
 
     // Y-Axis Collision
-    Rectangle playerRectY = { m_PlayerPos.x, m_PlayerPos.y, PLAYER_SIZE, PLAYER_SIZE };
+    Rectangle playerRectY = 
+    { 
+        m_PlayerPos.x, 
+        m_PlayerPos.y, 
+        PLAYER_SIZE, 
+        PLAYER_SIZE 
+    };
     for (const auto& obstacle : m_Obstacles)
     {
         if (CheckCollisionRecs(playerRectY, obstacle))
@@ -125,12 +143,20 @@ void DefaultMap::Update(float delta_time)
 
     // Win Condition & Level Transition
     // Check collision with Finish Zone
-    Rectangle playerRect = { m_PlayerPos.x, m_PlayerPos.y, PLAYER_SIZE, PLAYER_SIZE };
+    Rectangle playerRect = 
+    { 
+        m_PlayerPos.x,
+        m_PlayerPos.y, 
+        PLAYER_SIZE, 
+        PLAYER_SIZE
+    };
     if (CheckCollisionRecs(playerRect, m_FinishZone))
     {
         if (s_MapManager)
         {
-            std::cout << "Level Complete! Switching to Level 2..." << std::endl;
+            std::cout << "Level Complete! Switching to Level 2..." 
+                      << std::endl;
+
             s_MapManager->b_GotoMap("Level2");
             return; // Stop updating this map
         }
@@ -148,7 +174,14 @@ void DefaultMap::Draw()
     ClearBackground(GRAY);
 
     // Draw Floor
-    DrawRectangle(0, (int)FLOOR_Y, GetScreenWidth(), GetScreenHeight() - (int)FLOOR_Y, Color{ 54, 54, 54, 255 });
+    DrawRectangle
+    (
+        0, 
+        static_cast<int>(FLOOR_Y), 
+        GetScreenWidth(), 
+        GetScreenHeight() - static_cast<int>(FLOOR_Y), 
+        Color{ 54, 54, 54, 255 }
+    );
 
     // Draw Obstacles
     for (const auto& obstacle : m_Obstacles)
@@ -166,5 +199,12 @@ void DefaultMap::Draw()
     DrawRectangleRec(m_FinishZone, Color{ 255, 0, 0, 128 }); // Semi-transparent red
 
     // Draw Player (Red Cube)
-    DrawRectangle((int)m_PlayerPos.x, (int)m_PlayerPos.y, (int)PLAYER_SIZE, (int)PLAYER_SIZE, RED);
+    DrawRectangle
+    (
+        static_cast<int>(m_PlayerPos.x), 
+        static_cast<int>(m_PlayerPos.y), 
+        static_cast<int>(PLAYER_SIZE), 
+        static_cast<int>(PLAYER_SIZE), 
+        RED
+    );
 }
