@@ -21,6 +21,9 @@ GameEditor::GameEditor()
 	  m_TextIcon({0}),
 	  m_CompilerIcon({0}),
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -99,6 +102,9 @@ void GameEditor::LoadIconTextures()
 	Image text_img = LoadImage("Assets/icons/text.png");
 	Image compile_img = LoadImage("Assets/icons/compile.png");
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
