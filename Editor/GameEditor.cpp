@@ -86,61 +86,61 @@ void GameEditor::LoadIconTextures()
 	// Create fallback icons if files don't exist
 	if (play_img.data == nullptr)
 	{
-		play_img = GenImageColor(20, 20, GREEN);
+		play_img = GenImageColor(28, 28, GREEN); // Updated size
 
 		// Draw a simple play triangle
-		ImageDrawRectangle(&play_img, 6, 4, 2, 12, DARKGREEN);
-		ImageDrawRectangle(&play_img, 8, 6, 2, 8, DARKGREEN);
-		ImageDrawRectangle(&play_img, 10, 8, 2, 4, DARKGREEN);
+		ImageDrawRectangle(&play_img, 8, 6, 3, 16, DARKGREEN);
+		ImageDrawRectangle(&play_img, 11, 9, 3, 10, DARKGREEN);
+		ImageDrawRectangle(&play_img, 14, 12, 3, 4, DARKGREEN);
 	}
 
 	if (pause_img.data == nullptr)
 	{
-		pause_img = GenImageColor(20, 20, ORANGE);
+		pause_img = GenImageColor(28, 28, ORANGE); // Updated size
 
 		// Draw pause bars
-		ImageDrawRectangle(&pause_img, 6, 4, 3, 12, MAROON);
-		ImageDrawRectangle(&pause_img, 11, 4, 3, 12, MAROON);
+		ImageDrawRectangle(&pause_img, 8, 6, 4, 16, MAROON);
+		ImageDrawRectangle(&pause_img, 16, 6, 4, 16, MAROON);
 	}
 
 	if (restart_img.data == nullptr)
 	{
-		restart_img = GenImageColor(20, 20, RED);
+		restart_img = GenImageColor(28, 28, RED); // Updated size
 
 		// Draw a simple restart symbol (circle with arrow)
-		ImageDrawCircle(&restart_img, 10, 10, 8, BLANK);
-		ImageDrawCircle(&restart_img, 10, 10, 6, RED);
-		ImageDrawRectangle(&restart_img, 12, 6, 4, 2, BLANK);
-		ImageDrawRectangle(&restart_img, 14, 8, 2, 2, BLANK);
+		ImageDrawCircle(&restart_img, 14, 14, 10, BLANK);
+		ImageDrawCircle(&restart_img, 14, 14, 8, RED);
+		ImageDrawRectangle(&restart_img, 16, 8, 6, 3, BLANK);
+		ImageDrawRectangle(&restart_img, 18, 11, 3, 3, BLANK);
 	}
 
 	if (restore_img.data == nullptr)
 	{
-		restore_img = GenImageColor(20, 20, BLUE);
+		restore_img = GenImageColor(28, 28, BLUE); // Updated size
 
 		// Draw a simple restart symbol (circle with arrow)
-		ImageDrawCircle(&restore_img, 10, 10, 8, DARKBLUE);
-		ImageDrawCircle(&restore_img, 10, 10, 6, BLUE);
-		ImageDrawRectangle(&restore_img, 12, 6, 4, 2, DARKBLUE);
-		ImageDrawRectangle(&restore_img, 14, 8, 2, 2, DARKBLUE);
+		ImageDrawCircle(&restore_img, 14, 14, 10, DARKBLUE);
+		ImageDrawCircle(&restore_img, 14, 14, 8, BLUE);
+		ImageDrawRectangle(&restore_img, 16, 8, 6, 3, DARKBLUE);
+		ImageDrawRectangle(&restore_img, 18, 11, 3, 3, DARKBLUE);
 	}
 
 	if (compile_img.data == nullptr)
 	{
-		compile_img = GenImageColor(20, 20, LIME);
+		compile_img = GenImageColor(28, 28, LIME); // Updated size
 
 		// Draw a simple compile symbol
-		ImageDrawRectangle(&compile_img, 8, 4, 4, 12, DARKGREEN);
-		ImageDrawRectangle(&compile_img, 4, 8, 12, 4, DARKGREEN);
-		ImageDrawRectangle(&compile_img, 6, 6, 8, 8, LIME);
+		ImageDrawRectangle(&compile_img, 10, 6, 6, 16, DARKGREEN);
+		ImageDrawRectangle(&compile_img, 6, 10, 14, 6, DARKGREEN);
+		ImageDrawRectangle(&compile_img, 8, 8, 10, 10, LIME);
 	}
 
 	// Resize to consistent size
-	ImageResize(&play_img, 20, 20);
-	ImageResize(&pause_img, 20, 20);
-	ImageResize(&restart_img, 20, 20);
-	ImageResize(&restore_img, 20, 20);
-	ImageResize(&compile_img, 20, 20);
+	ImageResize(&play_img, 28, 28);
+	ImageResize(&pause_img, 28, 28);
+	ImageResize(&restart_img, 28, 28);
+	ImageResize(&restore_img, 28, 28);
+	ImageResize(&compile_img, 28, 28);
 
 	// Convert to textures
 	m_PlayIcon = LoadTextureFromImage(play_img);
@@ -277,7 +277,7 @@ void GameEditor::DrawToolbarBackground()
 
 	// Determine position and size of the toolbar
 	ImVec2 toolbar_pos = ImGui::GetCursorScreenPos();
-	ImVec2 toolbar_size = ImVec2(ImGui::GetContentRegionAvail().x, 32.0f);
+	ImVec2 toolbar_size = ImVec2(ImGui::GetContentRegionAvail().x, 40.0f); // Updated from 32.0f to 40.0f
 
 	// Define gradient colors
 	ImU32 toolbar_color_top = IM_COL32(50, 50, 55, 255);
@@ -342,6 +342,13 @@ void GameEditor::DrawSceneWindow()
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 2));
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
 
+	// Calculate vertical centering for toolbar (40px tall)
+	// Button with padding = 28 + 4*2 = 36px
+	float toolbar_height = 40.0f;
+	float button_height = 28.0f + ImGui::GetStyle().FramePadding.y * 2.0f;
+	float vertical_offset = (toolbar_height - button_height) / 2.0f;
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + vertical_offset);
+
 	// Play/Pause button with PNG icon
 	if (b_IsPlaying)
 	{
@@ -352,7 +359,7 @@ void GameEditor::DrawSceneWindow()
 			(
 				"pause_btn",
 				(ImTextureID)(intptr_t)m_PauseIcon.id,
-				ImVec2(20, 20)
+				ImVec2(28, 28)
 			)
 		)
 		{
@@ -367,7 +374,7 @@ void GameEditor::DrawSceneWindow()
 			(
 				"play_btn",
 				(ImTextureID)(intptr_t)m_PlayIcon.id,
-				ImVec2(20, 20)
+				ImVec2(28, 28)
 			)
 		)
 		{
@@ -383,7 +390,7 @@ void GameEditor::DrawSceneWindow()
 		(
 			"restart_btn",
 			(ImTextureID)(intptr_t)m_RestartIcon.id,
-			ImVec2(20, 20)
+			ImVec2(28, 28)
 		) || IsWindowResized()
 	)
 	{
@@ -394,7 +401,9 @@ void GameEditor::DrawSceneWindow()
 	// Status indicator
 	ImGui::SameLine();
 	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 12);
-	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 4);
+	// Center text vertically in toolbar
+	float text_y_offset = (toolbar_height - ImGui::GetTextLineHeight()) / 2.0f;
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() - vertical_offset + text_y_offset);
 
 	if (b_IsPlaying)
 	{
@@ -414,7 +423,7 @@ void GameEditor::DrawSceneWindow()
 		(
 			"restore_btn",
 			(ImTextureID)(intptr_t)m_RestoreIcon.id,
-			ImVec2(20, 20)
+			ImVec2(28, 28)
 		)
 	)
 	{
@@ -430,11 +439,11 @@ void GameEditor::DrawSceneWindow()
 	ImGui::SameLine();
 
 	// Compile Button & Status
-	float button_sz = 20.0f + ImGui::GetStyle().FramePadding.x * 2.0f;
+	float button_sz = 28.0f + ImGui::GetStyle().FramePadding.x * 2.0f;
 	float status_sz = 0.0f;
 	if (b_IsCompiling)
 	{
-		status_sz = 16.0f + ImGui::GetStyle().ItemSpacing.x + ImGui::CalcTextSize("Compiling...").x + ImGui::GetStyle().ItemSpacing.x;
+		status_sz = 20.0f + ImGui::GetStyle().ItemSpacing.x + ImGui::CalcTextSize("Compiling...").x + ImGui::GetStyle().ItemSpacing.x;
 	}
 
 	float avail = ImGui::GetContentRegionAvail().x;
@@ -446,19 +455,17 @@ void GameEditor::DrawSceneWindow()
 
 	if (b_IsCompiling)
 	{
-		// Center spinner vertically relative to the button
-		// Button height = 20 + FramePadding.y * 2
-		// Spinner height = 16
-		float center_off = (20.0f + ImGui::GetStyle().FramePadding.y * 2.0f - 16.0f) / 2.0f;
-		float start_y = ImGui::GetCursorPosY();
-		ImGui::SetCursorPosY(start_y + center_off);
+		// Center spinner and text vertically in toolbar
+		float spinner_height = 20.0f;
+		float spinner_y_offset = (toolbar_height - spinner_height) / 2.0f;
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - vertical_offset + spinner_y_offset);
 
-		DrawSpinner(8.0f, 2.0f, ImGui::GetColorU32(ImVec4(0.2f, 0.8f, 0.2f, 1.0f)));
+		DrawSpinner(10.0f, 2.0f, ImGui::GetColorU32(ImVec4(0.2f, 0.8f, 0.2f, 1.0f)));
 		
-		ImGui::SetCursorPosY(start_y);
 		ImGui::SameLine();
-
-		ImGui::AlignTextToFramePadding();
+		// Center text vertically in toolbar
+		float text_compile_y_offset = (toolbar_height - ImGui::GetTextLineHeight()) / 2.0f;
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - vertical_offset + text_compile_y_offset);
 		ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "Compiling...");
 		ImGui::SameLine();
 	}
@@ -475,7 +482,7 @@ void GameEditor::DrawSceneWindow()
 		(
 			"compile_btn",
 			(ImTextureID)(intptr_t)m_CompileIcon.id,
-			ImVec2(20, 20)
+			ImVec2(28, 28)
 		)
 	)
 	{
