@@ -430,14 +430,35 @@ void GameEditor::DrawSceneWindow()
 	ImGui::SameLine();
 
 	// Compile Button & Status
-	float right_edge = ImGui::GetContentRegionAvail().x;
-	float status_width = b_IsCompiling ? 110.0f : 0.0f;
-	ImGui::SetCursorPosX(right_edge - 40 - status_width);
+	float button_sz = 20.0f + ImGui::GetStyle().FramePadding.x * 2.0f;
+	float status_sz = 0.0f;
+	if (b_IsCompiling)
+	{
+		status_sz = 16.0f + ImGui::GetStyle().ItemSpacing.x + ImGui::CalcTextSize("Compiling...").x + ImGui::GetStyle().ItemSpacing.x;
+	}
+
+	float avail = ImGui::GetContentRegionAvail().x;
+	float pos_x = ImGui::GetCursorPosX() + avail - button_sz - status_sz;
+	if (pos_x > ImGui::GetCursorPosX())
+	{
+		ImGui::SetCursorPosX(pos_x);
+	}
 
 	if (b_IsCompiling)
 	{
+		// Center spinner vertically relative to the button
+		// Button height = 20 + FramePadding.y * 2
+		// Spinner height = 16
+		float center_off = (20.0f + ImGui::GetStyle().FramePadding.y * 2.0f - 16.0f) / 2.0f;
+		float start_y = ImGui::GetCursorPosY();
+		ImGui::SetCursorPosY(start_y + center_off);
+
 		DrawSpinner(8.0f, 2.0f, ImGui::GetColorU32(ImVec4(0.2f, 0.8f, 0.2f, 1.0f)));
+		
+		ImGui::SetCursorPosY(start_y);
 		ImGui::SameLine();
+
+		ImGui::AlignTextToFramePadding();
 		ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "Compiling...");
 		ImGui::SameLine();
 	}
