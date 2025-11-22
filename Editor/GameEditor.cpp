@@ -307,18 +307,19 @@ static void DrawSpinner(float radius, float thickness, const ImU32& color)
 	ImDrawList* DrawList = ImGui::GetWindowDrawList();
 	DrawList->PathClear();
 
-	float time = (float)ImGui::GetTime();
+	float time = static_cast<float>(ImGui::GetTime());
 	int num_segments = 30;
 	float start = fabsf(sinf(time * 1.8f) * (num_segments - 5));
 
-	const float a_min = 3.14159f * 2.0f * ((float)start) / (float)num_segments;
-	const float a_max = 3.14159f * 2.0f * ((float)num_segments - 3) / (float)num_segments;
+	const float a_min = 3.14159f * 2.0f * (static_cast<float>(start)) / static_cast<float>(num_segments);
+
+	const float a_max = 3.14159f * 2.0f * (static_cast<float>(num_segments - 3)) / static_cast<float>(num_segments);
 
 	const ImVec2 centre = ImVec2(pos.x + radius, pos.y + radius);
 
 	for (int i = 0; i < num_segments; i++)
 	{
-		const float a = a_min + ((float)i / (float)num_segments) * (a_max - a_min);
+		const float a = a_min + (static_cast<float>(i) / static_cast<float>(num_segments)) * (a_max - a_min);
 		DrawList->PathLineTo
 		(
 			ImVec2
