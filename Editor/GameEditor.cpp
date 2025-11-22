@@ -13,6 +13,14 @@ GameEditor::GameEditor()
 	  m_PauseIcon({ 0 }),
 	  m_RestartIcon({ 0 }),
 	  m_RestoreIcon({ 0 }),
+<<<<<<< Updated upstream
+=======
+	  m_FolderIcon ({0}),
+	  m_FileIcon({0}),
+	  m_ImageIcon({0}),
+	  m_TextIcon({0}),
+	  m_CompilerIcon({0}),
+>>>>>>> Stashed changes
 	  m_bIconsLoaded(false),
 	  m_GameLogicDll{},
 	  m_CreateGameMap(nullptr),
@@ -80,6 +88,14 @@ void GameEditor::LoadIconTextures()
 	Image pause_img = LoadImage("Assets/icons/pause.png");
 	Image restore_img = LoadImage("Assets/icons/restore.png");
 	Image restart_img = LoadImage("Assets/icons/restart.png");
+<<<<<<< Updated upstream
+=======
+	Image folder_img = LoadImage("Assets/icons/folder.png");
+	Image file_img = LoadImage("Assets/icons/file.png");
+	Image image_img = LoadImage("Assets/icons/image.png");
+	Image text_img = LoadImage("Assets/icons/text.png");
+	Image compile_img = LoadImage("Assets/icons/compile.png");
+>>>>>>> Stashed changes
 
 	// Create fallback icons if files don't exist
 	if (play_img.data == nullptr)
@@ -128,18 +144,21 @@ void GameEditor::LoadIconTextures()
 	ImageResize(&pause_img, 20, 20);
 	ImageResize(&restart_img, 20, 20);
 	ImageResize(&restore_img, 20, 20);
+	ImageResize(&compile_img, 20, 20);
 
 	// Convert to textures
 	m_PlayIcon = LoadTextureFromImage(play_img);
 	m_PauseIcon = LoadTextureFromImage(pause_img);
 	m_RestartIcon = LoadTextureFromImage(restart_img);
 	m_RestoreIcon = LoadTextureFromImage(restore_img);
+	m_CompilerIcon = LoadTextureFromImage(compile_img);
 
 	// Cleanup temporary images
 	UnloadImage(play_img);
 	UnloadImage(pause_img);
 	UnloadImage(restart_img);
 	UnloadImage(restore_img);
+	UnloadImage(compile_img);
 
 	m_bIconsLoaded = true;
 }
@@ -241,6 +260,7 @@ void GameEditor::Close() const
 		UnloadTexture(m_PlayIcon);
 		UnloadTexture(m_PauseIcon);
 		UnloadTexture(m_RestoreIcon);
+		UnloadTexture(m_CompilerIcon);
 	}
 
 	UnloadRenderTexture(m_RaylibTexture);
@@ -341,11 +361,25 @@ void GameEditor::DrawSceneWindow()
 		m_MapManager->b_ReloadCurrentMap();
 	}
 	
+	// Compile button with PNG icon
+	ImGui::SameLine();
+	if
+	(
+		ImGui::ImageButton
+		(
+			"compile_btn",
+			(ImTextureID)(intptr_t)m_CompilerIcon.id,
+			ImVec2(20, 20)
+		)
+	)
+	{
+
+	}
 
 	// Status indicator
 	ImGui::SameLine();
-	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 12);
-	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 4);
+	//ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 12);
+	//ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 4);
 
 	if (b_IsPlaying)
 	{
@@ -385,7 +419,9 @@ void GameEditor::DrawSceneWindow()
 	}
 	ImGui::PopStyleVar(3);
 
-	ImGui::SameLine();
+
+
+	/*ImGui::SameLine();
 	if (ImGui::Button("Run"))
 	{
 		std::thread
@@ -398,7 +434,7 @@ void GameEditor::DrawSceneWindow()
 				);	
 			}
 		).detach(); 
-	}
+	}*/
 
 	if (m_bUseOpaquePass)
 	{
