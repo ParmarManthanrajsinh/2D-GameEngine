@@ -497,7 +497,7 @@ void GameEditor::DrawSceneWindow()
 		b_IsPlaying = false;
 		m_MapManager->b_ReloadCurrentMap();
 	}
-
+	
 
 	// Status indicator
 	ImGui::SameLine();
@@ -535,6 +535,21 @@ void GameEditor::DrawSceneWindow()
 		}
 	}
 	ImGui::PopStyleVar(3);
+
+	ImGui::SameLine();
+	if (ImGui::Button("Run"))
+	{
+		std::thread
+		(
+			[]() 
+			{
+				system
+				(
+					"build_gamelogic.bat"
+				);	
+			}
+		).detach(); 
+	}
 
 	if (m_bUseOpaquePass)
 	{
