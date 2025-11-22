@@ -168,7 +168,4 @@ void Level2::Draw()
         static_cast<int>(PLAYER_SIZE), 
         RED
     );
-
-    // Draw Instructions
-    DrawText("Level 2 - Reach the end!", 10, 10, 20, WHITE);
 }
