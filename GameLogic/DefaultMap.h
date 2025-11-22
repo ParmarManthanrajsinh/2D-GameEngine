@@ -14,7 +14,7 @@ private:
     // Player properties
     Vector2 m_PlayerPos;
     Vector2 m_PlayerVel;
-    bool m_IsGrounded;
+    bool m_bIsGrounded;
 
     // Finish Zone
     Rectangle m_FinishZone;

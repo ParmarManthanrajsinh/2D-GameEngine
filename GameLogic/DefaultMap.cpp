@@ -13,7 +13,7 @@ void DefaultMap::Initialize()
     // Initialize player position to center of screen, slightly above floor
     m_PlayerPos = { 400.0f, FLOOR_Y - PLAYER_SIZE };
     m_PlayerVel = { 0.0f, 0.0f };
-    m_IsGrounded = true;
+    m_bIsGrounded = true;
     
     // Initialize Finish Zone (Invisible Collider at the top)
     m_FinishZone = { 0.0f, 0.0f, (float)GetScreenWidth(), 100.0f }; // Top 100 pixels
@@ -76,10 +76,10 @@ void DefaultMap::Update(float delta_time)
     // -------------------------
     
     // Jumping
-    if ((IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_UP)) && m_IsGrounded)
+    if ((IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_UP)) && m_bIsGrounded)
     {
         m_PlayerVel.y = JUMP_FORCE;
-        m_IsGrounded = false;
+        m_bIsGrounded = false;
     }
 
     // Apply Gravity
@@ -98,7 +98,7 @@ void DefaultMap::Update(float delta_time)
             {
                 m_PlayerPos.y = obstacle.y - PLAYER_SIZE;
                 m_PlayerVel.y = 0.0f;
-                m_IsGrounded = true;
+                m_bIsGrounded = true;
             }
             else if (m_PlayerVel.y < 0) // Jumping up
             {
@@ -113,7 +113,7 @@ void DefaultMap::Update(float delta_time)
     {
         m_PlayerPos.y = FLOOR_Y - PLAYER_SIZE;
         m_PlayerVel.y = 0.0f;
-        m_IsGrounded = true;
+        m_bIsGrounded = true;
     }
 
     // Screen Bounds Clamping (Y - Top)

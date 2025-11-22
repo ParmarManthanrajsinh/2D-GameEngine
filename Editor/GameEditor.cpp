@@ -8,6 +8,7 @@ GameEditor::GameEditor()
 	  m_RaylibTexture({ 0 }),
 	  m_DisplayTexture({ 0 }),
 	  b_IsPlaying(false),
+	  b_IsCompiling(false),
 	  m_PlayIcon({ 0 }),
 	  m_PauseIcon({ 0 }),
 	  m_RestartIcon({ 0 }),
@@ -79,6 +80,31 @@ void GameEditor::LoadIconTextures()
 	Image pause_img = LoadImage("Assets/icons/pause.png");
 	Image restore_img = LoadImage("Assets/icons/restore.png");
 	Image restart_img = LoadImage("Assets/icons/restart.png");
+
+	// Convert to textures
+	if (folder_img.data) 
+	{
+		m_folder_texture = LoadTextureFromImage(folder_img);
+		UnloadImage(folder_img);
+	}
+
+	if (file_img.data) 
+	{
+		m_file_texture = LoadTextureFromImage(file_img);
+		UnloadImage(file_img);
+	}
+
+	if (image_img.data) 
+	{
+		m_image_texture = LoadTextureFromImage(image_img);
+		UnloadImage(image_img);
+	}
+
+	if (text_img.data) 
+	{
+		m_text_texture = LoadTextureFromImage(text_img);
+		UnloadImage(text_img);
+	}
 
 	// Create fallback icons if files don't exist
 	if (play_img.data == nullptr)
@@ -253,6 +279,130 @@ void GameEditor::Close() const
 	CloseWindow();
 }
 
+void GameEditor::DrawExploreWindow()
+{
+	ImGui::Begin("File Explorer");
+
+	ImGui::Text("Project Assets");
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	fs::path assets_path = "Assets";
+	if (fs::exists(assets_path) && fs::is_directory(assets_path))
+	{
+		DrawDirectoryTree(assets_path);
+	}
+	else
+	{
+		ImGui::TextColored
+		(
+			ImVec4(1.0f, 0.6f, 0.6f, 1.0f), "Assets directory not found."
+		);
+	}
+	ImGui::End();
+}
+
+void GameEditor::DrawDirectoryTree(const fs::path& directory_path)
+{
+	try
+	{
+		for (const auto& entry : fs::directory_iterator(directory_path))
+		{
+			std::string filename = entry.path().filename().string();
+
+			if (entry.is_directory())
+			{
+				// Draw folder icon if available
+				if (m_folder_texture.id != 0)
+				{
+					ImGui::Image
+					(
+						reinterpret_cast<void*>
+						(
+							(intptr_t)m_folder_texture.id
+						), 
+						ImVec2(16, 16)
+					);
+					ImGui::SameLine(0.0f, 4.0f); // Small spacing
+				}
+
+				// Use TreeNodeEx for better control
+				ImGuiTreeNodeFlags flags = 
+				ImGuiTreeNodeFlags_OpenOnArrow | 
+				ImGuiTreeNodeFlags_OpenOnDoubleClick;
+
+				bool b_NodeOpen = 
+					ImGui::TreeNodeEx(filename.c_str(), flags);
+
+				if (b_NodeOpen)
+				{
+					DrawDirectoryTree(entry.path());
+					ImGui::TreePop();
+				}
+			}
+			else if (Texture2D* icon_texture = nullptr; // For declaration
+								entry.is_regular_file())
+			{
+				// Get file extension
+				std::string extension = entry.path().extension().string();
+
+				// Choose appropriate icon and color
+				if 
+				(	
+					extension == ".png"  || 
+					extension == ".jpg"  || 
+					extension == ".jpeg" ||
+					extension == ".bmp"  || 
+					extension == ".tga"  || 
+					extension == ".gif"
+				)
+				{
+					icon_texture = &m_image_texture;
+				}
+				else if
+				(
+					extension == ".txt" || 
+					extension == ".md"	|| 
+					extension == ".log"
+				)
+				{
+					icon_texture = &m_text_texture;
+				}
+				else
+				{
+					icon_texture = &m_file_texture;
+				}
+
+				// Draw icon if available
+				if (icon_texture != nullptr && icon_texture->id != 0)
+				{
+					ImGui::Image
+					(
+						reinterpret_cast<void*>
+						(
+							(intptr_t)icon_texture->id
+						), 
+						ImVec2(16, 16)
+					);
+					ImGui::SameLine(0.0f, 2.0f); 
+				}
+
+				// Changed from BulletText to Text
+				ImGui::Text(filename.c_str());
+			}
+		}
+	}
+	catch (const fs::filesystem_error& ex)
+	{
+		ImGui::TextColored
+		(
+			ImVec4(1.0f, 0.5f, 0.5f, 1.0f), 
+			"Error reading directory: %s", 
+			ex.what()
+		);
+	}
+}
+
 void GameEditor::DrawToolbarBackground()
 {
 	// Get current window's draw list
@@ -353,6 +503,12 @@ void GameEditor::DrawSceneWindow()
 	else
 	{
 		ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "STOPPED");
+	}
+
+	ImGui::SameLine();
+	if (b_IsCompiling)
+	{
+		ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "COMPILING");
 	}
 
 	// Restore button with PNG icon

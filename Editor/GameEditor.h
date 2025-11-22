@@ -7,8 +7,8 @@
 #include <imgui.h>
 #include <raylib.h>
 #include <rlImGui.h>
-#include <tinyfiledialogs.h>
 #include <thread>
+#include <tinyfiledialogs.h>
 
 #include "DllLoader.h"
 #include "GameEditorLayout.h"
@@ -23,6 +23,7 @@ public:
     ~GameEditor();
 
     bool b_IsPlaying;
+    bool b_IsCompiling;
     void Init(int width, int height, const char* title);
     void LoadMap(std::unique_ptr<GameMap> &game_map);
 

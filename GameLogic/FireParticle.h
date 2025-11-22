@@ -107,35 +107,35 @@ public:
 // Constructor with current system parameters
 inline FireParticle::FireParticle()
 	: max_particles(1000),
-	rng(std::random_device{}()),
-	dist(0.0f, 1.0f),
-	position({ 672.00f, 504.50f }),
-	e_EmitterType(CIRCLE),
-	e_ParticleType(CIRCULER),
-	particle_texture({}),
-	b_UseTexture(false),
-	emission_rate(50.00f),
-	emission_timer(0.0f),
-	velocity({ 0.00f, -30.00f }),
-	velocity_variation({ 31.91f, 32.14f }),
-	acceleration({ 0.00f, -50.00f }),
-	start_color({ 230, 41, 55, 255 }),
-	end_color({ 255, 161, 0, 255 }),
-	min_life(1.00f),
-	max_life(3.00f),
-	min_size(2.00f),
-	max_size(8.00f),
-	rotation_speed(0.00f),
-	line_length(100.00f),
-	circle_radius(13.81f),
-	rect_size({ 100.00f, 100.00f }),
-	b_Active(true),
-	tex_width(0),
-	tex_height(0),
-	original_tex_width(0),
-	original_tex_height(0),
-	tex_size_percent(100.00f),
-	b_TextureDataCached(false)
+	  rng(std::random_device{}()),
+	  dist(0.0f, 1.0f),
+	  position({ 672.00f, 504.50f }),
+	  e_EmitterType(CIRCLE),
+	  e_ParticleType(CIRCULER),
+	  particle_texture({}),
+	  b_UseTexture(false),
+	  emission_rate(50.00f),
+	  emission_timer(0.0f),
+	  velocity({ 0.00f, -30.00f }),
+	  velocity_variation({ 31.91f, 32.14f }),
+	  acceleration({ 0.00f, -50.00f }),
+	  start_color({ 230, 41, 55, 255 }),
+	  end_color({ 255, 161, 0, 255 }),
+	  min_life(1.00f),
+	  max_life(3.00f),
+	  min_size(2.00f),
+	  max_size(8.00f),
+	  rotation_speed(0.00f),
+	  line_length(100.00f),
+	  circle_radius(13.81f),
+	  rect_size({ 100.00f, 100.00f }),
+	  b_Active(true),
+	  tex_width(0),
+	  tex_height(0),
+	  original_tex_width(0),
+	  original_tex_height(0),
+	  tex_size_percent(100.00f),
+	  b_TextureDataCached(false)
 {
 	particles.reserve(max_particles);
 }
@@ -159,8 +159,15 @@ inline bool FireParticle::b_LoadTexture(const char* filename)
 	original_tex_width = img.width;
 	original_tex_height = img.height;
 
-	new_width = static_cast<int>((original_tex_width * tex_size_percent) / 100);
-	new_height = static_cast<int>((original_tex_height * tex_size_percent) / 100);
+	new_width = static_cast<int>
+	(
+		(original_tex_width * tex_size_percent) / 100
+	);
+
+	new_height = static_cast<int>
+	(
+		(original_tex_height * tex_size_percent) / 100
+	);
 
 	if (new_width > 0 && new_height > 0)
 	{
@@ -270,7 +277,7 @@ inline void FireParticle::EmitParticle()
 	if (particles.size() >= max_particles)
 		return;
 
-	t_Particle p;
+	t_Particle p{};
 	p.position = GetEmissionPoint();
 	p.velocity =
 	{

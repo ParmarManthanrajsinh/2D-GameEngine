@@ -1,8 +1,8 @@
 #pragma once
 #include "../Engine/GameMap.h"
+#include "FireParticle.h"
 #include <raylib.h>
 #include <vector>
-#include "FireParticle.h"
 
 class Level2 : public GameMap
 {
@@ -10,7 +10,7 @@ private:
     // Player properties
     Vector2 m_PlayerPos;
     Vector2 m_PlayerVel;
-    bool m_IsGrounded;
+    bool m_bIsGrounded;
 
     // Obstacles
     std::vector<Rectangle> m_Obstacles;
