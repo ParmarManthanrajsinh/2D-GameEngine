@@ -7,8 +7,8 @@
 #include <imgui.h>
 #include <raylib.h>
 #include <rlImGui.h>
-#include <tinyfiledialogs.h>
 #include <thread>
+#include <tinyfiledialogs.h>
 
 #include "DllLoader.h"
 #include "GameEditorLayout.h"
@@ -23,6 +23,7 @@ public:
     ~GameEditor();
 
     bool b_IsPlaying;
+    bool b_IsCompiling;
     void Init(int width, int height, const char* title);
     void LoadMap(std::unique_ptr<GameMap> &game_map);
 
@@ -52,10 +53,11 @@ private:
     Texture2D m_PauseIcon;
 	Texture2D m_RestartIcon;
     Texture2D m_RestoreIcon;
-    Texture2D m_folder_texture;
-    Texture2D m_file_texture;
-    Texture2D m_image_texture;
-    Texture2D m_text_texture ;
+    Texture2D m_FolderIcon;
+    Texture2D m_FileIcon;
+    Texture2D m_ImageIcon;
+    Texture2D m_TextIcon ;
+    Texture2D m_CompilerIcon;
 
     bool m_bIconsLoaded;
     void LoadIconTextures();

@@ -8,14 +8,15 @@ GameEditor::GameEditor()
 	  m_RaylibTexture({ 0 }),
 	  m_DisplayTexture({ 0 }),
 	  b_IsPlaying(false),
+	  b_IsCompiling(false),
 	  m_PlayIcon({ 0 }),
 	  m_PauseIcon({ 0 }),
 	  m_RestartIcon({ 0 }),
 	  m_RestoreIcon({ 0 }),
-	  m_folder_texture ({0}),
-	  m_file_texture({0}),
-	  m_image_texture({0}),
-	  m_text_texture({0}),
+	  m_FolderIcon ({0}),
+	  m_FileIcon({0}),
+	  m_ImageIcon({0}),
+	  m_TextIcon({0}),
 	  m_bIconsLoaded(false),
 	  m_GameLogicDll{},
 	  m_CreateGameMap(nullptr),
@@ -91,25 +92,25 @@ void GameEditor::LoadIconTextures()
 	// Convert to textures
 	if (folder_img.data) 
 	{
-		m_folder_texture = LoadTextureFromImage(folder_img);
+		m_FolderIcon = LoadTextureFromImage(folder_img);
 		UnloadImage(folder_img);
 	}
 
 	if (file_img.data) 
 	{
-		m_file_texture = LoadTextureFromImage(file_img);
+		m_FileIcon = LoadTextureFromImage(file_img);
 		UnloadImage(file_img);
 	}
 
 	if (image_img.data) 
 	{
-		m_image_texture = LoadTextureFromImage(image_img);
+		m_ImageIcon = LoadTextureFromImage(image_img);
 		UnloadImage(image_img);
 	}
 
 	if (text_img.data) 
 	{
-		m_text_texture = LoadTextureFromImage(text_img);
+		m_TextIcon = LoadTextureFromImage(text_img);
 		UnloadImage(text_img);
 	}
 
@@ -321,13 +322,13 @@ void GameEditor::DrawDirectoryTree(const fs::path& directory_path)
 			if (entry.is_directory())
 			{
 				// Draw folder icon if available
-				if (m_folder_texture.id != 0)
+				if (m_FolderIcon.id != 0)
 				{
 					ImGui::Image
 					(
 						reinterpret_cast<void*>
 						(
-							(intptr_t)m_folder_texture.id
+							(intptr_t)m_FolderIcon.id
 						), 
 						ImVec2(16, 16)
 					);
@@ -365,7 +366,7 @@ void GameEditor::DrawDirectoryTree(const fs::path& directory_path)
 					extension == ".gif"
 				)
 				{
-					icon_texture = &m_image_texture;
+					icon_texture = &m_ImageIcon;
 				}
 				else if
 				(
@@ -374,11 +375,11 @@ void GameEditor::DrawDirectoryTree(const fs::path& directory_path)
 					extension == ".log"
 				)
 				{
-					icon_texture = &m_text_texture;
+					icon_texture = &m_TextIcon;
 				}
 				else
 				{
-					icon_texture = &m_file_texture;
+					icon_texture = &m_FileIcon;
 				}
 
 				// Draw icon if available
@@ -511,6 +512,12 @@ void GameEditor::DrawSceneWindow()
 	else
 	{
 		ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "STOPPED");
+	}
+
+	ImGui::SameLine();
+	if (b_IsCompiling)
+	{
+		ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "COMPILING");
 	}
 
 	// Restore button with PNG icon

@@ -10,7 +10,7 @@ void Level2::Initialize()
     // Initialize player position
     m_PlayerPos = { 100.0f, FLOOR_Y - PLAYER_SIZE };
     m_PlayerVel = { 0.0f, 0.0f };
-    m_IsGrounded = true;
+    m_bIsGrounded = true;
     
     // Initialize Obstacles (Harder layout)
     m_Obstacles.clear();
@@ -47,10 +47,15 @@ void Level2::Update(float delta_time)
 
     // Screen Bounds Clamping (X)
     if (m_PlayerPos.x < 0) m_PlayerPos.x = 0;
-    if (m_PlayerPos.x > GetScreenWidth() - PLAYER_SIZE) m_PlayerPos.x = (float)GetScreenWidth() - PLAYER_SIZE;
-
+    if (m_PlayerPos.x > GetScreenWidth() - PLAYER_SIZE)
+    {
+        m_PlayerPos.x = static_cast<float>(GetScreenWidth() - PLAYER_SIZE);
+    }
     // X-Axis Collision
-    Rectangle playerRectX = { m_PlayerPos.x, m_PlayerPos.y, PLAYER_SIZE, PLAYER_SIZE };
+    Rectangle playerRectX = 
+    { 
+        m_PlayerPos.x, m_PlayerPos.y, PLAYER_SIZE, PLAYER_SIZE 
+    };
     for (const auto& obstacle : m_Obstacles)
     {
         if (CheckCollisionRecs(playerRectX, obstacle))
@@ -71,10 +76,10 @@ void Level2::Update(float delta_time)
     // -------------------------
     
     // Jumping
-    if ((IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_UP)) && m_IsGrounded)
+    if ((IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_UP)) && m_bIsGrounded)
     {
         m_PlayerVel.y = JUMP_FORCE;
-        m_IsGrounded = false;
+        m_bIsGrounded = false;
     }
 
     // Apply Gravity
@@ -84,7 +89,10 @@ void Level2::Update(float delta_time)
     m_PlayerPos.y += m_PlayerVel.y * delta_time;
 
     // Y-Axis Collision
-    Rectangle playerRectY = { m_PlayerPos.x, m_PlayerPos.y, PLAYER_SIZE, PLAYER_SIZE };
+    Rectangle playerRectY = 
+    { 
+        m_PlayerPos.x, m_PlayerPos.y, PLAYER_SIZE, PLAYER_SIZE 
+    };
     for (const auto& obstacle : m_Obstacles)
     {
         if (CheckCollisionRecs(playerRectY, obstacle))
@@ -93,7 +101,7 @@ void Level2::Update(float delta_time)
             {
                 m_PlayerPos.y = obstacle.y - PLAYER_SIZE;
                 m_PlayerVel.y = 0.0f;
-                m_IsGrounded = true;
+                m_bIsGrounded = true;
             }
             else if (m_PlayerVel.y < 0) // Jumping up
             {
@@ -108,7 +116,7 @@ void Level2::Update(float delta_time)
     {
         m_PlayerPos.y = FLOOR_Y - PLAYER_SIZE;
         m_PlayerVel.y = 0.0f;
-        m_IsGrounded = true;
+        m_bIsGrounded = true;
     }
     
     // Screen Bounds Clamping (Y - Top)
@@ -130,7 +138,14 @@ void Level2::Draw()
     ClearBackground(SKYBLUE); // Different background for Level 2
 
     // Draw Floor
-    DrawRectangle(0, (int)FLOOR_Y, GetScreenWidth(), GetScreenHeight() - (int)FLOOR_Y, Color{ 54, 54, 54, 255 });
+    DrawRectangle
+    (
+        0, 
+        static_cast<int>(FLOOR_Y), 
+        GetScreenWidth(), 
+        GetScreenHeight() - static_cast<int>(FLOOR_Y), 
+        Color{ 54, 54, 54, 255 }
+    );
 
     // Draw Obstacles
     for (const auto& obstacle : m_Obstacles)
@@ -145,7 +160,14 @@ void Level2::Draw()
     }
 
     // Draw Player (Red Cube)
-    DrawRectangle((int)m_PlayerPos.x, (int)m_PlayerPos.y, (int)PLAYER_SIZE, (int)PLAYER_SIZE, RED);
+    DrawRectangle
+    (
+        static_cast<int>(m_PlayerPos.x), 
+        static_cast<int>(m_PlayerPos.y), 
+        static_cast<int>(PLAYER_SIZE), 
+        static_cast<int>(PLAYER_SIZE), 
+        RED
+    );
 
     // Draw Instructions
     DrawText("Level 2 - Reach the end!", 10, 10, 20, WHITE);
