@@ -20,6 +20,9 @@ GameEditor::GameEditor()
 	  m_ImageIcon({0}),
 	  m_TextIcon({0}),
 	  m_CompilerIcon({0}),
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 	  m_bIconsLoaded(false),
 	  m_GameLogicDll{},
@@ -95,6 +98,9 @@ void GameEditor::LoadIconTextures()
 	Image image_img = LoadImage("Assets/icons/image.png");
 	Image text_img = LoadImage("Assets/icons/text.png");
 	Image compile_img = LoadImage("Assets/icons/compile.png");
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
 	// Create fallback icons if files don't exist
