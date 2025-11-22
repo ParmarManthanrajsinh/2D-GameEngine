@@ -421,7 +421,7 @@ void GameEditor::DrawSceneWindow()
 			{
 				system
 				(
-					"create_distribution.bat"
+					"build_distribution.bat"
 				);
 			}
 		).detach();
