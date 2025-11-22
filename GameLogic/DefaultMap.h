@@ -1,21 +1,29 @@
 #pragma once
 #include "../Engine/GameMap.h"
-#include <iostream>
+#include "FireParticle.h"
+#include <raylib.h>
+#include <vector>
 
-/**
- * @brief Default fallback map for when no other maps are available
- * 
- * This map provides a basic placeholder when no maps are registered,
- * showing helpful information to developers about how to register maps.
- */
 class DefaultMap : public GameMap
 {
 private:
-    float m_TimeAlive;
-    int center_x = 0;
-    int content_y = 140;
-    int margin_left = 80;
-    int step_spacing = 80;
+    // Player properties
+    Vector2 m_PlayerPos;
+    Vector2 m_PlayerVel;
+    bool m_IsGrounded;
+
+    // Obstacles
+    std::vector<Rectangle> m_Obstacles;
+
+    // Constants
+    const float PLAYER_SIZE = 50.0f;
+    const float GRAVITY = 1000.0f;
+    const float JUMP_FORCE = -600.0f;
+    const float MOVE_SPEED = 300.0f;
+    const float FLOOR_Y = 500.0f;
+    
+    // Fire Particles
+    std::vector<FireParticle> m_FireParticles;
 
 public:
     DefaultMap();

@@ -1,84 +1,141 @@
-#include "DefaultMap.h"
+ï»¿#include "DefaultMap.h"
+#include <iostream>
 
-namespace Colors 
-{
-    constexpr Color SoftBackground{ 25, 30, 40, 255 };
-    constexpr Color HeaderBackground{ 35, 40, 50, 255 };
-    constexpr Color HeaderText{ 255, 255, 255, 255 };
-    constexpr Color StepHeader{ 100, 200, 255, 255 };
-    constexpr Color CodeSnippet{ 150, 255, 150, 255 };
-    constexpr Color CodeImplementation{ 200, 200, 200, 255 };
-    constexpr Color TipsTitle{ 255, 200, 100, 255 };
-    constexpr Color TipsText{ 200, 200, 200, 255 };
-    constexpr Color AnimatedIndicator{ 255, 200, 100, 150 };
-    constexpr Color FooterText{ 150, 150, 150, 255 };
-}
-
-DefaultMap::DefaultMap()
-    : m_TimeAlive(0.0f)
+DefaultMap::DefaultMap() : GameMap("Cube Game")
 {
 }
 
 void DefaultMap::Initialize()
 {
-    SetMapName("Engine Tutorial");
-    m_TimeAlive = 0.0f;
-    std::cout << "[DefaultMap] Engine tutorial initialized" << std::endl;
-    center_x = static_cast<int>(GetSceneBounds().x / 2);
+    // Initialize player position to center of screen, slightly above floor
+    m_PlayerPos = { 400.0f, FLOOR_Y - PLAYER_SIZE };
+    m_PlayerVel = { 0.0f, 0.0f };
+    m_IsGrounded = true;
+    
+    // Initialize Obstacles
+    m_Obstacles.clear();
+    m_Obstacles.emplace_back(600.0f, 400.0f, 100.0f, 20.0f); // Platform 1
+    m_Obstacles.emplace_back(200.0f, 350.0f, 100.0f, 20.0f); // Platform 2
+    m_Obstacles.emplace_back(400.0f, 250.0f, 100.0f, 20.0f); // Platform 3
+    m_Obstacles.emplace_back(800.0f, FLOOR_Y - 60.0f, 60.0f, 60.0f); // Block on floor
+
+    // Initialize Fire Particles
+    m_FireParticles.clear();
+
+    m_FireParticles.emplace_back(80.0f, FLOOR_Y - 15.0f);
+    m_FireParticles.emplace_back(1200.0f, FLOOR_Y - 15.0f);
+
+    std::cout << "[DefaultMap] Cube Game Initialized" << std::endl;
 }
 
-void DefaultMap::Update(float dt)
+void DefaultMap::Update(float delta_time)
 {
-    m_TimeAlive += dt;
+    // -------------------------
+    // Horizontal Movement (X)
+    // -------------------------
+    float move_amount = 0.0f;
+    if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
+    {
+        move_amount -= MOVE_SPEED * delta_time;
+    }
+    if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D))
+    {
+        move_amount += MOVE_SPEED * delta_time;
+    }
+
+    m_PlayerPos.x += move_amount;
+
+    // X-Axis Collision
+    Rectangle playerRectX = { m_PlayerPos.x, m_PlayerPos.y, PLAYER_SIZE, PLAYER_SIZE };
+    for (const auto& obstacle : m_Obstacles)
+    {
+        if (CheckCollisionRecs(playerRectX, obstacle))
+        {
+            if (move_amount > 0) // Moving Right
+            {
+                m_PlayerPos.x = obstacle.x - PLAYER_SIZE;
+            }
+            else if (move_amount < 0) // Moving Left
+            {
+                m_PlayerPos.x = obstacle.x + obstacle.width;
+            }
+        }
+    }
+
+    // -------------------------
+    // Vertical Movement (Y)
+    // -------------------------
+    
+    // Jumping
+    if ((IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_UP)) && m_IsGrounded)
+    {
+        m_PlayerVel.y = JUMP_FORCE;
+        m_IsGrounded = false;
+    }
+
+    // Apply Gravity
+    m_PlayerVel.y += GRAVITY * delta_time;
+
+    // Apply Velocity
+    m_PlayerPos.y += m_PlayerVel.y * delta_time;
+
+    // Y-Axis Collision
+    Rectangle playerRectY = { m_PlayerPos.x, m_PlayerPos.y, PLAYER_SIZE, PLAYER_SIZE };
+    for (const auto& obstacle : m_Obstacles)
+    {
+        if (CheckCollisionRecs(playerRectY, obstacle))
+        {
+            if (m_PlayerVel.y > 0) // Falling down
+            {
+                m_PlayerPos.y = obstacle.y - PLAYER_SIZE;
+                m_PlayerVel.y = 0.0f;
+                m_IsGrounded = true;
+            }
+            else if (m_PlayerVel.y < 0) // Jumping up
+            {
+                m_PlayerPos.y = obstacle.y + obstacle.height;
+                m_PlayerVel.y = 0.0f;
+            }
+        }
+    }
+
+    // Floor Collision
+    if (m_PlayerPos.y >= FLOOR_Y - PLAYER_SIZE)
+    {
+        m_PlayerPos.y = FLOOR_Y - PLAYER_SIZE;
+        m_PlayerVel.y = 0.0f;
+        m_IsGrounded = true;
+    }
+
+    // Update Fire Particles
+    for (auto& particle : m_FireParticles)
+    {
+        particle.Update(delta_time);
+    }
 }
 
 void DefaultMap::Draw()
 {
-    Vector2 screen_size = GetSceneBounds();
+    ClearBackground(GRAY);
 
-    // Soft background
-    DrawRectangle(0, 0, static_cast<int>(screen_size.x), static_cast<int>(screen_size.y), Colors::SoftBackground);
+    // Draw Floor
+    DrawRectangle(0, (int)FLOOR_Y, GetScreenWidth(), GetScreenHeight() - (int)FLOOR_Y, Color{ 54, 54, 54, 255 });
 
-    // Header section
-    DrawRectangle(0, 0, static_cast<int>(screen_size.x), 100, Colors::HeaderBackground);
+    // Draw Obstacles
+    for (const auto& obstacle : m_Obstacles)
+    {
+        DrawRectangleRec(obstacle, DARKGRAY);
+    }
 
-    const char* title = "Welcome to Your 2D Game Engine";
-    int title_width = MeasureText(title, 32);
-    DrawText(title, center_x - title_width / 2, 35, 32, Colors::HeaderText);
+    // Draw Fire Particles
+    for (auto& particle : m_FireParticles)
+    {
+        particle.Draw();
+    }
 
-    content_y = 140;
+    // Draw Player (Red Cube)
+    DrawRectangle((int)m_PlayerPos.x, (int)m_PlayerPos.y, (int)PLAYER_SIZE, (int)PLAYER_SIZE, RED);
 
-    // Step 1
-    DrawText("Step 1: Create Your Map", margin_left, content_y, 24, Colors::StepHeader);
-    DrawText("class MyMap : public GameMap {", margin_left + 20, content_y + 30, 16, Colors::CodeSnippet);
-    DrawText("    // Your map implementation", margin_left + 20, content_y + 50, 16, Colors::CodeImplementation);
-    DrawText("};", margin_left + 20, content_y + 70, 16, Colors::CodeSnippet);
-
-    content_y += step_spacing;
-
-    // Step 2
-    DrawText("Step 2: Register Your Map", margin_left, content_y, 24, Colors::StepHeader);
-    DrawText("mapManager.RegisterMap<MyMap>(\"my_map\");", margin_left + 20, content_y + 30, 16, Colors::CodeSnippet);
-
-    content_y += step_spacing;
-
-    // Step 3
-    DrawText("Step 3: Switch to Your Map", margin_left, content_y, 24, Colors::StepHeader);
-    DrawText("mapManager.GoToMap(\"my_map\");", margin_left + 20, content_y + 30, 16, Colors::CodeSnippet);
-
-    // Tips section
-    content_y += 100;
-    DrawText("Quick Tips:", margin_left, content_y, 20, Colors::TipsTitle);
-    DrawText("• Override Initialize() to setup your map", margin_left + 20, content_y + 30, 16, Colors::TipsText);
-    DrawText("• Override Update() for game logic", margin_left + 20, content_y + 50, 16, Colors::TipsText);
-    DrawText("• Override Draw() to render your game", margin_left + 20, content_y + 70, 16, Colors::TipsText);
-
-    // Animated indicator
-    float bounce = sin(m_TimeAlive * 3.0f) * 5;
-    DrawCircle(50, static_cast<int>(content_y + 40 + bounce), 8, Colors::AnimatedIndicator);
-
-    // Footer
-    const char* footer = "Create your first map to get started!";
-    int footerWidth = MeasureText(footer, 18);
-    DrawText(footer, center_x - footerWidth / 2, static_cast<int>(screen_size.y) - 60, 18, Colors::FooterText);
+    // Draw Instructions
+    DrawText("Controls: A/D to Move, SPACE to Jump", 10, 10, 20, WHITE);
 }

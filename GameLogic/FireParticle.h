@@ -1,8 +1,8 @@
 #pragma once
-#include <random>
 #include <raylib.h>
-#include <raymath.h>
 #include <vector>
+#include <random>
+#include <raymath.h>
 
 struct t_Particle
 {
@@ -34,7 +34,7 @@ enum ParticleType
 	K_CHAR
 };
 
-class Bubble
+class FireParticle
 {
 protected:
 	friend class ParticleSaver;
@@ -86,13 +86,14 @@ protected:
 	void EmitParticle();
 	void DrawEmitterShape() const;
 	void Clear();
-	size_t GetParticleCount() const;
+	int GetParticleCount() const;
 
 public:
 	Vector2 position;
 
-	Bubble(); 
-	~Bubble(); 
+	FireParticle();
+	FireParticle(float x, float y); 
+	~FireParticle(); 
 	void Update(float dt);
 	void Draw();
 
@@ -104,20 +105,20 @@ public:
 };
 
 // Constructor with current system parameters
-Bubble::Bubble()
-	: max_particles(10),
+inline FireParticle::FireParticle()
+	: max_particles(1000),
 	rng(std::random_device{}()),
 	dist(0.0f, 1.0f),
-	position({ 478.10f, 352.50f }),
-	e_EmitterType(POINT),
+	position({ 672.00f, 504.50f }),
+	e_EmitterType(CIRCLE),
 	e_ParticleType(CIRCULER),
 	particle_texture({}),
-	b_UseTexture(true),
-	emission_rate(9.29f),
+	b_UseTexture(false),
+	emission_rate(50.00f),
 	emission_timer(0.0f),
-	velocity({ 0.00f, 0.00f }),
-	velocity_variation({ 100.00f, 100.00f }),
-	acceleration({ 0.00f, 0.00f }),
+	velocity({ 0.00f, -30.00f }),
+	velocity_variation({ 31.91f, 32.14f }),
+	acceleration({ 0.00f, -50.00f }),
 	start_color({ 230, 41, 55, 255 }),
 	end_color({ 255, 161, 0, 255 }),
 	min_life(1.00f),
@@ -126,25 +127,30 @@ Bubble::Bubble()
 	max_size(8.00f),
 	rotation_speed(0.00f),
 	line_length(100.00f),
-	circle_radius(50.00f),
+	circle_radius(13.81f),
 	rect_size({ 100.00f, 100.00f }),
 	b_Active(true),
 	tex_width(0),
 	tex_height(0),
-	original_tex_width(50),
-	original_tex_height(48),
+	original_tex_width(0),
+	original_tex_height(0),
 	tex_size_percent(100.00f),
 	b_TextureDataCached(false)
 {
 	particles.reserve(max_particles);
 }
 
-Bubble::~Bubble()
+inline FireParticle::FireParticle(float x, float y) : FireParticle()
+{
+	position = { x, y };
+}
+
+inline FireParticle::~FireParticle()
 {
 	UnloadTexture();
 }
 
-bool Bubble::b_LoadTexture(const char* filename)
+inline bool FireParticle::b_LoadTexture(const char* filename)
 {
 	// Unload Previous texture
 	UnloadTexture();
@@ -196,7 +202,7 @@ bool Bubble::b_LoadTexture(const char* filename)
 	return false;
 }
 
-void Bubble::UnloadTexture()
+inline void FireParticle::UnloadTexture()
 {
 	if (particle_texture.id > 0)
 	{
@@ -207,17 +213,17 @@ void Bubble::UnloadTexture()
 	b_TextureDataCached = false;
 }
 
-void Bubble::SetUseTexture(bool use)
+inline void FireParticle::SetUseTexture(bool use)
 {
 	b_UseTexture = use && (particle_texture.id > 0);
 }
 
-bool Bubble::b_IsUsingTexture() const
+inline bool FireParticle::b_IsUsingTexture() const
 {
 	return b_UseTexture && (particle_texture.id > 0);
 }
 
-Vector2 Bubble::GetEmissionPoint()
+inline Vector2 FireParticle::GetEmissionPoint()
 {
 	switch (e_EmitterType)
 	{
@@ -259,7 +265,7 @@ Vector2 Bubble::GetEmissionPoint()
 	}
 }
 
-void Bubble::EmitParticle()
+inline void FireParticle::EmitParticle()
 {
 	if (particles.size() >= max_particles)
 		return;
@@ -281,7 +287,7 @@ void Bubble::EmitParticle()
 	particles.push_back(p);
 }
 
-void Bubble::Update(float dt)
+inline void FireParticle::Update(float dt)
 {
 	if (!b_Active)
 		return;
@@ -326,17 +332,17 @@ void Bubble::Update(float dt)
 
 		if (b_ColorTransition)
 		{
-			p.color.r = static_cast<unsigned char>(Clamp(start_color.r * (1.0f - t) + end_color.r * t, 0, 255));
-			p.color.g = static_cast<unsigned char>(Clamp(start_color.g * (1.0f - t) + end_color.g * t, 0, 255));
-			p.color.b = static_cast<unsigned char>(Clamp(start_color.b * (1.0f - t) + end_color.b * t, 0, 255));
+			p.color.r = Clamp(start_color.r * (1.0f - t) + end_color.r * t, 0, 255);
+			p.color.g = Clamp(start_color.g * (1.0f - t) + end_color.g * t, 0, 255);
+			p.color.b = Clamp(start_color.b * (1.0f - t) + end_color.b * t, 0, 255);
 		}
 
-		p.color.a = static_cast<unsigned char>(Clamp(255.0f * life_ratio, 0, 255));
+		p.color.a = Clamp(255.0f * life_ratio, 0, 255);
 		++i;
 	}
 }
 
-void Bubble::DrawEmitterShape() const
+inline void FireParticle::DrawEmitterShape() const
 {
 	Color shape_color = { 128, 128, 128, 100 };
 
@@ -373,7 +379,7 @@ void Bubble::DrawEmitterShape() const
 	}
 }
 
-void Bubble::Draw()
+inline void FireParticle::Draw()
 {
 	bool b_UseTex = b_IsUsingTexture() && b_TextureDataCached;
 
@@ -497,12 +503,12 @@ void Bubble::Draw()
 	EndScissorMode();
 }
 
-void Bubble::Clear()
+inline void FireParticle::Clear()
 {
 	particles.clear();
 }
 
-size_t Bubble::GetParticleCount() const
+inline int FireParticle::GetParticleCount() const
 {
 	return particles.size();
 }
