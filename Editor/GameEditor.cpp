@@ -421,7 +421,7 @@ void GameEditor::DrawSceneWindow()
 			{
 				system
 				(
-					"build_distribution.bat"
+					"build_gamelogic.bat"
 				);
 			}
 		).detach();
