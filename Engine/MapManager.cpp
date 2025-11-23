@@ -1,5 +1,6 @@
 #include "MapManager.h"
 #include <sstream>
+#include <string_view>
 
 MapManager::MapManager()
     : m_CurrentMap(nullptr)
@@ -24,6 +25,15 @@ void MapManager::Initialize()
         // Make sure the map has proper scene bounds
         Vector2 bounds = GameMap::GetSceneBounds();
         m_CurrentMap->SetSceneBounds(bounds.x, bounds.y);
+
+        // Inject transition callback so the map can request transitions
+        m_CurrentMap->SetTransitionCallback(
+            [this](std::string_view id, bool force)
+            {
+                this->b_GotoMap(std::string(id), force);
+            }
+        );
+
         m_CurrentMap->Initialize();
         
         std::cout << "[MapManager] Successfully initialized with map: '" << m_CurrentMapId 
@@ -181,6 +191,14 @@ bool MapManager::b_GotoMap(const std::string& map_id, bool force_reload)
         if (m_CurrentMap) 
         {
             m_CurrentMap->SetSceneBounds(bounds.x, bounds.y);
+
+            // Inject transition callback for map-driven transitions
+            m_CurrentMap->SetTransitionCallback(
+                [this](std::string_view id, bool force)
+                {
+                    this->b_GotoMap(std::string(id), force);
+                }
+            );
             m_CurrentMap->Initialize();
         }
         std::cout << "[MapManager] Successfully loaded map: '" 

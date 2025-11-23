@@ -45,3 +45,20 @@ Vector2 GameMap::GetSceneBounds() const
 {
 	return Vector2(m_SceneWidth, m_SceneHeight);
 }
+
+void GameMap::SetTransitionCallback(std::function<void(std::string_view, bool)> cb)
+{
+    m_TransitionCallback = std::move(cb);
+}
+
+void GameMap::RequestGotoMap(std::string_view map_id, bool force_reload)
+{
+    if (m_TransitionCallback)
+    {
+        m_TransitionCallback(map_id, force_reload);
+    }
+    else
+    {
+		std::cerr << "Transition callback not set!" << std::endl;
+    }
+}
