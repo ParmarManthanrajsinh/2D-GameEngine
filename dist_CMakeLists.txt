@@ -13,15 +13,13 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Build GameLogic as a shared library
+# Build shared libs (GameLogic) and static Engine to mirror source build
 set(BUILD_SHARED_LIBS ON)
 
 # -------------------------------------
-# RAYLIB (NO MORE FETCHCONTENT)
+# RAYLIB (provided via dist/raylib)
 # -------------------------------------
-# User must provide raylib in raylib/
 set(RAYLIB_ROOT "${CMAKE_SOURCE_DIR}/raylib")
-
 set(RAYLIB_INCLUDE_DIR "${RAYLIB_ROOT}/include")
 set(RAYLIB_LIB_DIR     "${RAYLIB_ROOT}/lib")
 
@@ -29,20 +27,31 @@ include_directories(${RAYLIB_INCLUDE_DIR})
 link_directories(${RAYLIB_LIB_DIR})
 
 # -------------------------------------
-# SOURCES
+# SOURCES (auto-detect with CONFIGURE_DEPENDS)
 # -------------------------------------
-file(GLOB_RECURSE GAMELOGIC_SRC "GameLogic/*.cpp")
-file(GLOB_RECURSE ENGINE_SRC "Engine/*.cpp")
+file(GLOB GAMELOGIC_SRC CONFIGURE_DEPENDS "GameLogic/*.cpp")
+file(GLOB ENGINE_SRC    CONFIGURE_DEPENDS "Engine/*.cpp")
 
-add_library(GameLogic SHARED ${GAMELOGIC_SRC} ${ENGINE_SRC})
+# -------------------------------------
+# TARGETS (mirror source build: Engine static, GameLogic shared)
+# -------------------------------------
+add_library(Engine STATIC ${ENGINE_SRC})
+# Expose Engine headers and raylib linkage to consumers
+# (Needed so GameLogic sees Engine headers and raylib symbols)
+target_include_directories(Engine PUBLIC 
+    ${CMAKE_SOURCE_DIR}/Engine
+    ${RAYLIB_INCLUDE_DIR}
+)
+target_link_libraries(Engine PUBLIC raylib)
+
+add_library(GameLogic SHARED ${GAMELOGIC_SRC})
 
 target_include_directories(GameLogic PRIVATE
     ${CMAKE_SOURCE_DIR}/Engine
     ${CMAKE_SOURCE_DIR}/GameLogic
 )
 
-# Link raylib (static or dynamic)
-target_link_libraries(GameLogic PRIVATE raylib)
+target_link_libraries(GameLogic PRIVATE Engine)
 
 # -------------------------------------
 # OUTPUT LOCATION
@@ -66,4 +75,4 @@ add_custom_command(TARGET GameLogic POST_BUILD
             ${CMAKE_SOURCE_DIR}/
 )
 
-message(STATUS "GameLogic configured with minimal build output")
+message(STATUS "GameLogic configured (Engine static, GameLogic shared) with automatic source detection")

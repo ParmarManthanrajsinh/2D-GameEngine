@@ -15,10 +15,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(raylib)
 
-# Collect source files only (.cpp)
-file(GLOB GAME_SRC_CPP "Game/*.cpp")
-file(GLOB ENGINE_SRC_CPP "Engine/*.cpp")
-file(GLOB EDITOR_SRC_CPP "Editor/*.cpp")
+# Collect source files only (.cpp) with automatic reconfigure when files change
+file(GLOB GAME_SRC_CPP    CONFIGURE_DEPENDS "Game/*.cpp")
+file(GLOB ENGINE_SRC_CPP  CONFIGURE_DEPENDS "Engine/*.cpp")
+file(GLOB EDITOR_SRC_CPP  CONFIGURE_DEPENDS "Editor/*.cpp")
 
 # rlImGui and ImGui sources
 set(RLIMGUI_SRC Editor/rlImGui/rlImGui.cpp)
@@ -39,7 +39,7 @@ target_include_directories(Engine PUBLIC
 target_link_libraries(Engine PUBLIC raylib)
 
 # Create GameLogic shared library (DLL)
-file(GLOB GAMELOGIC_SRC_CPP "GameLogic/*.cpp")
+file(GLOB GAMELOGIC_SRC_CPP CONFIGURE_DEPENDS "GameLogic/*.cpp")
 add_library(GameLogic SHARED ${GAMELOGIC_SRC_CPP})
 # GameLogic needs Engine headers and linkage (for GameMap symbols)
 target_include_directories(GameLogic PRIVATE 

@@ -12,16 +12,14 @@ if not exist build (
 
 cd build
 
-REM Configure CMake if not already done
-if not exist CMakeCache.txt (
-    echo Configuring CMake...
-    cmake ..
-    if errorlevel 1 (
-        echo ERROR: CMake configuration failed!
-        echo Make sure you're running this from a Developer Command Prompt
-        if not "%1"=="nopause" pause
-        exit /b 1
-    )
+REM Always (re)configure CMake to ensure new/removed files are detected
+echo Configuring CMake...
+cmake ..
+if errorlevel 1 (
+    echo ERROR: CMake configuration failed!
+    echo Make sure you're running this from a Developer Command Prompt
+    if not "%1"=="nopause" pause
+    exit /b 1
 )
 
 REM Build GameLogic
