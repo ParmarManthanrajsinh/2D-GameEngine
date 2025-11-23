@@ -5,7 +5,7 @@
 |  Static           | s_VariableName     | s_Count            |
 |  Static function  | sf_FunctionName    | sf_ColorToVector3  |
 |  Constant         | CONSTANT_VARIABLE  | MAX_BUFFER_SIZE    |
-|  constexpr        | ce_VARIABLENAME    | ce_SCREENHEIGHT    |
+|  constexpr        | ce_VARIABLE_NAME   | ce_SCREEN_HEIGHT   |
 |  Function         | FunctionName       | CalculateSum()     |
 |  Class            | ClassName          | ParticleSystem     |
 |  Struct           | t_StructName       | t_ExportedData     |

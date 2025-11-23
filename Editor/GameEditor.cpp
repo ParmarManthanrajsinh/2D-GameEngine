@@ -167,15 +167,15 @@ void GameEditor::Run()
 		static auto s_LastReloadCheckTime = Clock::now();
 
 		// Periodically check for GameLogic.dll changes (e.g., every 0.5s)
-		const auto current_time = Clock::now();
+		const auto CURRENT_TIME = Clock::now();
 		auto elapsed_time = std::chrono::duration<float>
 		(
-			current_time - s_LastReloadCheckTime
+			CURRENT_TIME - s_LastReloadCheckTime
 		).count();
 
 		if (elapsed_time > 0.5f && !m_GameLogicPath.empty())
 		{
-			s_LastReloadCheckTime = current_time;
+			s_LastReloadCheckTime = CURRENT_TIME;
 			std::error_code ec;
 
 			// cache path once per check
@@ -203,10 +203,10 @@ void GameEditor::Run()
 			}
 		}
 
-		float DeltaTime = GetFrameTime();
+		float delta_time = GetFrameTime();
 		if (b_IsPlaying)
 		{
-			m_GameEngine.UpdateMap(DeltaTime);
+			m_GameEngine.UpdateMap(delta_time);
 		}
 		BeginDrawing();
 
@@ -320,7 +320,7 @@ static void DrawSpinner(float radius, float thickness, const ImU32& color)
 		float time_x8;
 		float inv_num_segments;
 		float angle_range;
-	} vars{};
+	} t_Vars{};
 
 	ImVec2 pos = ImGui::GetCursorScreenPos();
 	ImGui::Dummy(ImVec2(radius * 2, radius * 2));
@@ -328,35 +328,35 @@ static void DrawSpinner(float radius, float thickness, const ImU32& color)
 	ImDrawList* DrawList = ImGui::GetWindowDrawList();
 	DrawList->PathClear();
 
-	vars.time = static_cast<float>(ImGui::GetTime());
-	constexpr int NUM_SEGMENTS = 30;
-	vars.start = fabsf(sinf(vars.time * 1.8f) * (NUM_SEGMENTS - 5));
+	t_Vars.time = static_cast<float>(ImGui::GetTime());
+	constexpr int ce_NUM_SEGMENTS = 30;
+	t_Vars.start = fabsf(sinf(t_Vars.time * 1.8f) * (ce_NUM_SEGMENTS - 5));
 
 	// Precompute invariant values
-	vars.inv_num_segments = 1.0f / static_cast<float>(NUM_SEGMENTS);
-	vars.time_x8 = vars.time * 8.0f;
+	t_Vars.inv_num_segments = 1.0f / static_cast<float>(ce_NUM_SEGMENTS);
+	t_Vars.time_x8 = t_Vars.time * 8.0f;
 
-	vars.a_min = 3.14159f * 2.0f * vars.start * vars.inv_num_segments;
-	vars.a_max = 3.14159f * 2.0f * static_cast<float>(NUM_SEGMENTS - 3) * vars.inv_num_segments;
-	vars.angle_range = vars.a_max - vars.a_min;
+	t_Vars.a_min = 3.14159f * 2.0f * t_Vars.start * t_Vars.inv_num_segments;
+	t_Vars.a_max = 3.14159f * 2.0f * static_cast<float>(ce_NUM_SEGMENTS - 3) * t_Vars.inv_num_segments;
+	t_Vars.angle_range = t_Vars.a_max - t_Vars.a_min;
 
-	const ImVec2 centre = ImVec2(pos.x + radius, pos.y + radius);
-	vars.centre_x = centre.x;
-	vars.centre_y = centre.y;
+	const ImVec2 CENTER = ImVec2(pos.x + radius, pos.y + radius);
+	t_Vars.centre_x = CENTER.x;
+	t_Vars.centre_y = CENTER.y;
 
 	// Pre-allocate path memory
-	for (int i = 0; i < NUM_SEGMENTS; i++)
+	for (int i = 0; i < ce_NUM_SEGMENTS; i++)
 	{
-		const float a = vars.a_min + (static_cast<float>(i) * vars.inv_num_segments) * vars.angle_range;
+		const float A = t_Vars.a_min + (static_cast<float>(i) * t_Vars.inv_num_segments) * t_Vars.angle_range;
 
-		const float angle = a + vars.time_x8;
+		const float ANGLE = A + t_Vars.time_x8;
 
 		DrawList->PathLineTo
 		(
 			ImVec2
 			(
-				vars.centre_x + cosf(angle) * radius,
-				vars.centre_y + sinf(angle) * radius
+				t_Vars.centre_x + cosf(ANGLE) * radius,
+				t_Vars.centre_y + sinf(ANGLE) * radius
 			)
 		);
 	}
