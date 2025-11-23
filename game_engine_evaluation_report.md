@@ -411,19 +411,7 @@ Using **C++23** is ambitious but:
 
 ### 🔴 Must Fix
 
-#### 1. **Race Condition in Compilation Status**
-```cpp
-std::atomic<bool> b_IsCompiling;  // Good
-// But then:
-system("build_gamelogic.bat nopause");  // Blocks thread!
-b_IsCompiling = false;
-```
-
-**Problem:** The `system()` call runs in a detached thread but blocks that thread. If the build hangs, the flag stays true forever.
-
-**Fix:** Use proper process management with timeout.
-
-#### 2. **No Validation of DLL Exports**
+#### 1. **No Validation of DLL Exports**
 
 ```cpp
 CreateGameMapFunc NewFactory = reinterpret_cast<CreateGameMapFunc>(
@@ -436,7 +424,7 @@ if (!NewFactory) { /* error */ }
 
 **Fix:** Add version checking and signature validation.
 
-#### 3. **Shader Loading Without Fallback**
+#### 2. **Shader Loading Without Fallback** ( fixed )
 
 ```cpp
 m_OpaqueShader = LoadShader("Assets/Shaders/Opaque.vert", "Assets/Shaders/Opaque.frag");
@@ -447,7 +435,7 @@ m_OpaqueShader = LoadShader("Assets/Shaders/Opaque.vert", "Assets/Shaders/Opaque
 
 ### 🟡 Should Fix
 
-#### 4. **Inconsistent Boolean Prefix**
+#### 3. **Inconsistent Boolean Prefix**
 ```cpp
 bool b_IsPlaying;      // With prefix
 bool m_bIconsLoaded;   // Mixed prefix
@@ -455,48 +443,17 @@ bool b_IsGrounded;     // With prefix
 ```
 Pick one convention and stick to it.
 
-#### 5. **Magic Number for Reload Interval**
+#### 4. **Magic Number for Reload Interval**
 ```cpp
 if (elapsed_time > 0.5f && !m_GameLogicPath.empty())
 ```
 The `0.5f` should be a named constant.
 
-#### 6. **Hard-Coded File Paths**
-```cpp
-"Assets/Shaders/Opaque.vert"
-"Assets/icons/play.png"
-"GameLogic.dll"
-```
-Should use configuration or path constants.
-
----
-
 ## Recommendations
 
 ### Immediate Actions (High Priority)
 
-#### 1. **Fix MapManager Inheritance** ⚡
-**Current:**
-```cpp
-class MapManager : public GameMap
-```
-
-**Recommended:**
-```cpp
-class MapManager {
-    // No inheritance
-private:
-    std::unique_ptr<GameMap> m_CurrentMap;
-    std::unordered_map<std::string, std::function<std::unique_ptr<GameMap>()>> m_Registry;
-public:
-    void Update(float dt) { if (m_CurrentMap) m_CurrentMap->Update(dt); }
-    void Draw() { if (m_CurrentMap) m_CurrentMap->Draw(); }
-};
-```
-
-**Impact:** Clearer architecture, easier to extend.
-
-#### 2. **Add Error Handling Infrastructure** ⚡
+#### 1. **Add Error Handling Infrastructure** ⚡
 
 Create an error logging system:
 ```cpp
@@ -510,7 +467,7 @@ public:
 
 Display errors in the editor UI.
 
-#### 3. **Remove Static Pointer Anti-Pattern** ⚡
+#### 2. **Remove Static Pointer Anti-Pattern** ⚡
 
 **Current:**
 ```cpp
@@ -529,7 +486,7 @@ public:
 
 Or better: Use a message/event system for inter-map communication.
 
-#### 4. **Add Asset Manager** ⚡
+#### 3. **Add Asset Manager** ⚡
 
 ```cpp
 class AssetManager {
@@ -546,7 +503,7 @@ private:
 
 ### Medium Priority
 
-#### 5. **Improve GameMap Lifecycle**
+#### 4. **Improve GameMap Lifecycle**
 
 Add hooks for better map management:
 ```cpp
@@ -559,7 +516,7 @@ public:
 };
 ```
 
-#### 6. **Create Proper Input System**
+#### 5. **Create Proper Input System**
 
 ```cpp
 class InputManager {
@@ -577,7 +534,7 @@ Benefits:
 - Easier to test
 - Controller support becomes possible
 
-#### 7. **Add Configuration System**
+#### 6. **Add Configuration System**
 
 Create `config.json`:
 ```json
@@ -598,7 +555,7 @@ Create `config.json`:
 }
 ```
 
-#### 8. **Implement Logging System**
+#### 7. **Implement Logging System**
 
 Replace `std::cout` with a proper logger:
 ```cpp
@@ -615,7 +572,7 @@ Benefits:
 
 ### Lower Priority (Nice to Have)
 
-#### 9. **Add Unit Tests**
+#### 8. **Add Unit Tests**
 
 Use Catch2 or Google Test:
 ```cpp
@@ -626,13 +583,13 @@ TEST_CASE("MapManager registers maps correctly") {
 }
 ```
 
-#### 10. **Cross-Platform Support**
+#### 9. **Cross-Platform Support**
 
 - Abstract away Windows-specific code (`system()` calls, DLL loading)
 - Use `std::filesystem` consistently
 - Test on Linux with `.so` libraries
 
-#### 11. **Enhanced Documentation**
+#### 10. **Enhanced Documentation**
 
 Create additional docs:
 - `ARCHITECTURE.md` - Explain the system design
@@ -640,7 +597,7 @@ Create additional docs:
 - `CONTRIBUTION_GUIDE.md` - For open-source contributors
 - Doxygen/XML comments for auto-generated docs
 
-#### 12. **Performance Monitoring**
+#### 11. **Performance Monitoring**
 
 Add frame time tracking:
 ```cpp
