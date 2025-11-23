@@ -299,6 +299,15 @@ void GameEditor::DrawToolbarBackground()
 	);
 }
 
+// Utility function for build game logic
+bool GameEditor::b_StartBuildProcessWithTimeout
+(
+	const char* command, int timeout_seconds
+)
+{
+	return std::system(command) == 0;
+}
+
 static void DrawSpinner(float radius, float thickness, const ImU32& color)
 {
 	// Group all float variables together for cache locality
@@ -500,8 +509,8 @@ void GameEditor::DrawSceneWindow()
 		ImGui::SameLine();
 	}
 
-	bool disabled = b_IsCompiling.load();
-	if (disabled)
+	bool b_Disabled = b_IsCompiling.load();
+	if (b_Disabled)
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
 	}
@@ -516,7 +525,7 @@ void GameEditor::DrawSceneWindow()
 		)
 	)
 	{
-		if (!disabled)
+		if (!b_Disabled)
 		{
 			b_IsCompiling = true;
 
@@ -524,7 +533,13 @@ void GameEditor::DrawSceneWindow()
 			(
 				[this]()
 				{
-					system("build_gamelogic.bat nopause");
+					constexpr int BUILD_TIMEOUT_SECONDS = 60; // 60 seconds
+					bool b_Success = b_StartBuildProcessWithTimeout
+					(
+						"build_gamelogic.bat nopause",
+						BUILD_TIMEOUT_SECONDS
+					);
+
 					b_IsCompiling = false;
 				}
 			).detach();
@@ -536,7 +551,7 @@ void GameEditor::DrawSceneWindow()
 		ImGui::SetTooltip("Recompile Game Logic DLL");
 	}
 
-	if (disabled)
+	if (b_Disabled)
 	{
 		ImGui::PopStyleVar();
 	}

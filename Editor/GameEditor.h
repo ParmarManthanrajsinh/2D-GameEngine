@@ -69,6 +69,11 @@ private:
     float m_ReloadCheckAccum = 0.0f;
     Shader m_OpaqueShader;
     bool m_bUseOpaquePass = true;
+    static bool b_StartBuildProcessWithTimeout
+    (
+        const char* command, 
+        int timeout_seconds
+    );
 
     // Map selection UI
     MapManager* m_MapManager = nullptr;
