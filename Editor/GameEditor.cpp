@@ -3,7 +3,7 @@
 #include "GameEditor.h"
 using Clock = std::chrono::steady_clock;
 
-const char* OPAQUE_VERT_SHADER_SRC = R"(
+constexpr std::string_view OPAQUE_VERT_SHADER_SRC = R"(
 #version 330
 in vec3 vertexPosition;
 in vec2 vertexTexCoord;
@@ -19,7 +19,7 @@ void main()
 }
 )";
 
-const char* OPAQUE_FRAG_SHADER_SRC = R"(
+constexpr std::string_view OPAQUE_FRAG_SHADER_SRC = R"(
 #version 330
 in vec2 fragTexCoord;
 in vec4 fragColor;
@@ -95,8 +95,8 @@ void GameEditor::Init(int width, int height, const char* title)
 
 	m_OpaqueShader = LoadShaderFromMemory
 	(
-		OPAQUE_VERT_SHADER_SRC,
-		OPAQUE_FRAG_SHADER_SRC
+		OPAQUE_VERT_SHADER_SRC.data(),
+		OPAQUE_FRAG_SHADER_SRC.data()
 	);
 	if (m_OpaqueShader.id == 0)
 	{
