@@ -25,7 +25,7 @@ public:
 
     bool b_IsPlaying;
     std::atomic<bool> b_IsCompiling;
-    void Init(int width, int height, const char* title);
+    void Init(int width, int height, std::string_view title);
     void LoadMap(std::unique_ptr<GameMap>& game_map);
 
     // Load the game logic DLL and create/set a new GameMap from it

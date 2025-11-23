@@ -41,9 +41,9 @@ GameEditor::~GameEditor()
 	}
 }
 
-void GameEditor::Init(int width, int height, const char* title)
+void GameEditor::Init(int width, int height, std::string_view title)
 {
-	m_GameEngine.LaunchWindow(width, height, title);
+	m_GameEngine.LaunchWindow(width, height, title.data());
 	SetWindowState(FLAG_WINDOW_RESIZABLE);
 	rlImGuiSetup(true);
 

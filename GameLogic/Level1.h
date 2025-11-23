@@ -4,7 +4,7 @@
 #include <raylib.h>
 #include <vector>
 
-class DefaultMap : public GameMap
+class Level1 : public GameMap
 {
 private:
     // Player properties
@@ -29,8 +29,8 @@ private:
     std::vector<FireParticle> m_FireParticles;
 
 public:
-    DefaultMap();
-    ~DefaultMap() override = default;
+    Level1();
+    ~Level1() override = default;
 
     void Initialize() override;
     void Update(float delta_time) override;

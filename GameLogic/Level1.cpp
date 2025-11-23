@@ -1,11 +1,11 @@
-﻿#include "DefaultMap.h"
+﻿#include "Level1.h"
 #include <iostream>
 
-DefaultMap::DefaultMap() : GameMap("Cube Game")
+Level1::Level1() : GameMap("Cube Game")
 {
 }
 
-void DefaultMap::Initialize()
+void Level1::Initialize()
 {
     // Initialize player position to center of screen, slightly above floor
     m_PlayerPos = { 400.0f, FLOOR_Y - PLAYER_SIZE };
@@ -33,10 +33,10 @@ void DefaultMap::Initialize()
     m_FireParticles.emplace_back(80.0f, FLOOR_Y - 15.0f);
     m_FireParticles.emplace_back(1200.0f, FLOOR_Y - 15.0f);
 
-    std::cout << "[DefaultMap] Cube Game Initialized" << std::endl;
+    std::cout << "[Level1] Cube Game Initialized" << std::endl;
 }
 
-void DefaultMap::Update(float delta_time)
+void Level1::Update(float delta_time)
 {
     // -------------------------
     // Horizontal Movement (X)
@@ -163,7 +163,7 @@ void DefaultMap::Update(float delta_time)
     }
 }
 
-void DefaultMap::Draw()
+void Level1::Draw()
 {
     ClearBackground(GRAY);
 
