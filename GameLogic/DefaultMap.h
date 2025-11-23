@@ -1,15 +1,11 @@
 #pragma once
 #include "../Engine/GameMap.h"
-#include "../Engine/MapManager.h"
 #include "FireParticle.h"
 #include <raylib.h>
 #include <vector>
 
 class DefaultMap : public GameMap
 {
-public:
-    static MapManager* s_MapManager;
-
 private:
     // Player properties
     Vector2 m_PlayerPos;

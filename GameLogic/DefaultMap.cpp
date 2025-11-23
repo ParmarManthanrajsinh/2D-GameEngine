@@ -1,9 +1,6 @@
 ﻿#include "DefaultMap.h"
 #include <iostream>
 
-// Define static member
-MapManager* DefaultMap::s_MapManager = nullptr;
-
 DefaultMap::DefaultMap() : GameMap("Cube Game")
 {
 }
@@ -152,14 +149,11 @@ void DefaultMap::Update(float delta_time)
     };
     if (CheckCollisionRecs(playerRect, m_FinishZone))
     {
-        if (s_MapManager)
-        {
-            std::cout << "Level Complete! Switching to Level 2..." 
-                      << std::endl;
-
-            s_MapManager->b_GotoMap("Level2");
-            return; // Stop updating this map
-        }
+        std::cout << "Level Complete! Switching to Level 2..." 
+                  << std::endl;
+        // Request transition via injected callback
+        RequestGotoMap("Level2");
+        return; // Stop updating this map
     }
 
     // Update Fire Particles
