@@ -3,6 +3,35 @@
 #include "GameEditor.h"
 using Clock = std::chrono::steady_clock;
 
+const char* OPAQUE_VERT_SHADER_SRC = R"(
+#version 330
+in vec3 vertexPosition;
+in vec2 vertexTexCoord;
+in vec4 vertexColor;
+out vec2 fragTexCoord;
+out vec4 fragColor;
+uniform mat4 mvp;
+void main()
+{
+    fragTexCoord = vertexTexCoord;
+    fragColor = vertexColor;
+    gl_Position = mvp * vec4(vertexPosition, 1.0);
+}
+)";
+
+const char* OPAQUE_FRAG_SHADER_SRC = R"(
+#version 330
+in vec2 fragTexCoord;
+in vec4 fragColor;
+out vec4 finalColor;
+uniform sampler2D texture0;
+void main()
+{
+    vec4 c = texture(texture0, fragTexCoord) * fragColor;
+    finalColor = vec4(c.rgb, 1.0);
+}
+)";
+
 GameEditor::GameEditor()
 	: m_Viewport(nullptr),
 	  m_RaylibTexture({ 0 }),
@@ -64,11 +93,16 @@ void GameEditor::Init(int width, int height, const char* title)
 	SetTextureFilter(m_RaylibTexture.texture, TEXTURE_FILTER_BILINEAR);
 	SetTextureFilter(m_DisplayTexture.texture, TEXTURE_FILTER_BILINEAR);
 
-	m_OpaqueShader = LoadShader
+	m_OpaqueShader = LoadShaderFromMemory
 	(
-		"Assets/Shaders/Opaque.vert", 
-		"Assets/Shaders/Opaque.frag"
+		OPAQUE_VERT_SHADER_SRC,
+		OPAQUE_FRAG_SHADER_SRC
 	);
+	if (m_OpaqueShader.id == 0)
+	{
+		std::cerr << "FATAL ERROR: Failed to compile/link critical Opaque Shader (embedded source). Shutting down." << std::endl;
+		exit(EXIT_FAILURE);
+	}
 
 	// Load icon textures
 	LoadIconTextures();
@@ -497,14 +531,28 @@ void GameEditor::DrawSceneWindow()
 		// Center spinner and text vertically in toolbar
 		float spinner_height = 20.0f;
 		float spinner_y_offset = (toolbar_height - spinner_height) / 2.0f;
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - vertical_offset + spinner_y_offset);
+		ImGui::SetCursorPosY
+		(
+			ImGui::GetCursorPosY() - vertical_offset + spinner_y_offset
+		);
 
-		DrawSpinner(10.0f, 2.0f, ImGui::GetColorU32(ImVec4(0.2f, 0.8f, 0.2f, 1.0f)));
+		DrawSpinner
+		(
+			10.0f, 
+			2.0f, 
+			ImGui::GetColorU32(ImVec4(0.2f, 0.8f, 0.2f, 1.0f))
+		);
 		
 		ImGui::SameLine();
 		// Center text vertically in toolbar
-		float text_compile_y_offset = (toolbar_height - ImGui::GetTextLineHeight()) / 2.0f;
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - vertical_offset + text_compile_y_offset);
+		float text_compile_y_offset = 
+		(
+			toolbar_height - ImGui::GetTextLineHeight()
+		) / 2.0f;
+		ImGui::SetCursorPosY
+		(
+			ImGui::GetCursorPosY() - vertical_offset + text_compile_y_offset
+		);
 		ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "Compiling...");
 		ImGui::SameLine();
 	}
@@ -528,12 +576,11 @@ void GameEditor::DrawSceneWindow()
 		if (!b_Disabled)
 		{
 			b_IsCompiling = true;
-
 			std::thread
 			(
 				[this]()
 				{
-					constexpr int BUILD_TIMEOUT_SECONDS = 60; // 60 seconds
+					constexpr int BUILD_TIMEOUT_SECONDS = 60; 
 					bool b_Success = b_StartBuildProcessWithTimeout
 					(
 						"build_gamelogic.bat nopause",
