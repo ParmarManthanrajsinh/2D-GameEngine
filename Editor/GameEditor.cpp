@@ -61,12 +61,17 @@ void GameEditor::Init(int width, int height, const char* title)
 	m_RaylibTexture = LoadRenderTexture(1280, 720);
 	m_DisplayTexture = LoadRenderTexture(1280, 720);
 
-	SetTextureFilter(m_RaylibTexture.texture, TEXTURE_FILTER_BILINEAR);
-	SetTextureFilter(m_DisplayTexture.texture, TEXTURE_FILTER_BILINEAR);
+	SetTextureFilter
+	(
+		m_RaylibTexture.texture, TEXTURE_FILTER_BILINEAR
+	);
+	SetTextureFilter
+	(
+		m_DisplayTexture.texture, TEXTURE_FILTER_BILINEAR
+	);
 
 	m_OpaqueShader = LoadOpaqueShader();
 
-	// Load icon textures
 	LoadIconTextures();
 }
 
@@ -162,7 +167,7 @@ void GameEditor::Run()
 		static auto s_LastReloadCheckTime = Clock::now();
 
 		// Periodically check for GameLogic.dll changes (e.g., every 0.5s)
-		auto current_time = Clock::now();
+		const auto current_time = Clock::now();
 		auto elapsed_time = std::chrono::duration<float>
 		(
 			current_time - s_LastReloadCheckTime
@@ -175,7 +180,9 @@ void GameEditor::Run()
 
 			// cache path once per check
 			const std::filesystem::path PATH(m_GameLogicPath);
-			auto now_write = std::filesystem::last_write_time(PATH, ec);
+
+			auto now_write = 
+				std::filesystem::last_write_time(PATH, ec);
 
 			if (!ec)
 			{
@@ -273,7 +280,11 @@ void GameEditor::DrawToolbarBackground()
 
 	// Determine position and size of the toolbar
 	ImVec2 toolbar_pos = ImGui::GetCursorScreenPos();
-	ImVec2 toolbar_size = ImVec2(ImGui::GetContentRegionAvail().x, 40.0f); // Updated from 32.0f to 40.0f
+	ImVec2 toolbar_size = ImVec2
+	(
+		// Updated from 32.0f to 40.0f
+		ImGui::GetContentRegionAvail().x, 40.0f
+	); 
 
 	// Define gradient colors
 	ImU32 toolbar_color_top = IM_COL32(50, 50, 55, 255);
@@ -570,8 +581,7 @@ void GameEditor::LoadMap(std::unique_ptr<GameMap>& game_map)
     if (game_map)
     {
         // Check if the loaded map is a MapManager
-        MapManager* map_manager = dynamic_cast<MapManager*>(game_map.get());
-
+        MapManager* map_manager = static_cast<MapManager*>(game_map.get());
         if (map_manager)
         {
             // If it's a MapManager, set it using the dedicated method
@@ -654,7 +664,7 @@ bool GameEditor::b_LoadGameLogic(const char* dll_path)
 	m_CreateGameMap = NewFactory;
 	
 	// Check if the loaded map is a MapManager
-	MapManager* mapManager = dynamic_cast<MapManager*>(new_map.get());
+	MapManager* mapManager = static_cast<MapManager*>(new_map.get());
 	if (mapManager)
 	{
 		// If it's a MapManager, set it using the dedicated method
