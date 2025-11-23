@@ -98,11 +98,6 @@ void GameEditor::Init(int width, int height, const char* title)
 		OPAQUE_VERT_SHADER_SRC.data(),
 		OPAQUE_FRAG_SHADER_SRC.data()
 	);
-	if (m_OpaqueShader.id == 0)
-	{
-		std::cerr << "FATAL ERROR: Failed to compile/link critical Opaque Shader (embedded source). Shutting down." << std::endl;
-		exit(EXIT_FAILURE);
-	}
 
 	// Load icon textures
 	LoadIconTextures();
@@ -333,19 +328,11 @@ void GameEditor::DrawToolbarBackground()
 	);
 }
 
-// Utility function for build game logic
-bool GameEditor::b_StartBuildProcessWithTimeout
-(
-	const char* command, int timeout_seconds
-)
-{
-	return std::system(command) == 0;
-}
-
 static void DrawSpinner(float radius, float thickness, const ImU32& color)
 {
 	// Group all float variables together for cache locality
-	alignas(16) struct {
+	alignas(16) struct 
+	{
 		float time;
 		float start;
 		float a_min;
@@ -580,13 +567,7 @@ void GameEditor::DrawSceneWindow()
 			(
 				[this]()
 				{
-					constexpr int BUILD_TIMEOUT_SECONDS = 60; 
-					bool b_Success = b_StartBuildProcessWithTimeout
-					(
-						"build_gamelogic.bat nopause",
-						BUILD_TIMEOUT_SECONDS
-					);
-
+					std::system("build_gamelogic.bat nopause");
 					b_IsCompiling = false;
 				}
 			).detach();
