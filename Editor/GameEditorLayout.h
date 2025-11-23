@@ -46,7 +46,7 @@ inline void LoadEditorDefaultIni()
 }
 
 // Core Shaders for raylib
-constexpr std::string_view OPAQUE_VERT_SHADER_SRC = R"(
+constexpr std::string_view ce_OPAQUE_VERT_SHADER_SRC = R"(
 #version 330
 in vec3 vertexPosition;
 in vec2 vertexTexCoord;
@@ -62,7 +62,7 @@ void main()
 }
 )";
 
-constexpr std::string_view OPAQUE_FRAG_SHADER_SRC = R"(
+constexpr std::string_view ce_OPAQUE_FRAG_SHADER_SRC = R"(
 #version 330
 in vec2 fragTexCoord;
 in vec4 fragColor;
@@ -79,6 +79,6 @@ inline Shader LoadOpaqueShader()
 {
     return LoadShaderFromMemory
     (
-        OPAQUE_VERT_SHADER_SRC.data(), OPAQUE_FRAG_SHADER_SRC.data()
+        ce_OPAQUE_VERT_SHADER_SRC.data(), ce_OPAQUE_FRAG_SHADER_SRC.data()
     );
 }
