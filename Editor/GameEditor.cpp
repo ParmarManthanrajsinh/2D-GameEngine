@@ -3,35 +3,6 @@
 #include "GameEditor.h"
 using Clock = std::chrono::steady_clock;
 
-constexpr std::string_view OPAQUE_VERT_SHADER_SRC = R"(
-#version 330
-in vec3 vertexPosition;
-in vec2 vertexTexCoord;
-in vec4 vertexColor;
-out vec2 fragTexCoord;
-out vec4 fragColor;
-uniform mat4 mvp;
-void main()
-{
-    fragTexCoord = vertexTexCoord;
-    fragColor = vertexColor;
-    gl_Position = mvp * vec4(vertexPosition, 1.0);
-}
-)";
-
-constexpr std::string_view OPAQUE_FRAG_SHADER_SRC = R"(
-#version 330
-in vec2 fragTexCoord;
-in vec4 fragColor;
-out vec4 finalColor;
-uniform sampler2D texture0;
-void main()
-{
-    vec4 c = texture(texture0, fragTexCoord) * fragColor;
-    finalColor = vec4(c.rgb, 1.0);
-}
-)";
-
 GameEditor::GameEditor()
 	: m_Viewport(nullptr),
 	  m_RaylibTexture({ 0 }),
@@ -93,11 +64,7 @@ void GameEditor::Init(int width, int height, const char* title)
 	SetTextureFilter(m_RaylibTexture.texture, TEXTURE_FILTER_BILINEAR);
 	SetTextureFilter(m_DisplayTexture.texture, TEXTURE_FILTER_BILINEAR);
 
-	m_OpaqueShader = LoadShaderFromMemory
-	(
-		OPAQUE_VERT_SHADER_SRC.data(),
-		OPAQUE_FRAG_SHADER_SRC.data()
-	);
+	m_OpaqueShader = LoadOpaqueShader();
 
 	// Load icon textures
 	LoadIconTextures();

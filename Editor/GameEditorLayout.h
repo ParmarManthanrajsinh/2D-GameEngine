@@ -35,11 +35,50 @@ DockSpace     ID=0x08BD597D Window=0x1BBC0F80 Pos=0,0 Size=1280,720 Split=Y Sele
     DockNode  ID=0x00000001 Parent=0x00000003 SizeRef=972,720 CentralNode=1 Selected=0xE601B12F
     DockNode  ID=0x00000002 Parent=0x00000003 SizeRef=306,720 Selected=0x9D14B58E
   DockNode    ID=0x00000004 Parent=0x08BD597D SizeRef=1280,198 Selected=0x9C2B5678
-
-
 )";
 
 inline void LoadEditorDefaultIni()
 {
-    ImGui::LoadIniSettingsFromMemory(sc_EDITOR_DEFAULT_INI, strlen(sc_EDITOR_DEFAULT_INI));
+    ImGui::LoadIniSettingsFromMemory
+    (
+        sc_EDITOR_DEFAULT_INI, strlen(sc_EDITOR_DEFAULT_INI)
+    );
+}
+
+// Core Shaders for raylib
+constexpr std::string_view OPAQUE_VERT_SHADER_SRC = R"(
+#version 330
+in vec3 vertexPosition;
+in vec2 vertexTexCoord;
+in vec4 vertexColor;
+out vec2 fragTexCoord;
+out vec4 fragColor;
+uniform mat4 mvp;
+void main()
+{
+    fragTexCoord = vertexTexCoord;
+    fragColor = vertexColor;
+    gl_Position = mvp * vec4(vertexPosition, 1.0);
+}
+)";
+
+constexpr std::string_view OPAQUE_FRAG_SHADER_SRC = R"(
+#version 330
+in vec2 fragTexCoord;
+in vec4 fragColor;
+out vec4 finalColor;
+uniform sampler2D texture0;
+void main()
+{
+    vec4 c = texture(texture0, fragTexCoord) * fragColor;
+    finalColor = vec4(c.rgb, 1.0);
+}
+)";
+
+inline Shader LoadOpaqueShader()
+{
+    return LoadShaderFromMemory
+    (
+        OPAQUE_VERT_SHADER_SRC.data(), OPAQUE_FRAG_SHADER_SRC.data()
+    );
 }
