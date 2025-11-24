@@ -593,7 +593,11 @@ void GameEditor::DrawExportPanel()
         m_Export.worker.join();
     }
 
-    // Config
+    ImGui::Text("Create a standalone game package for distribution");
+    ImGui::Separator();
+    
+    // Configuration selector
+    ImGui::Text("Build Configuration:");
     const char* configs[] = {"Release", "Debug"};
     int idx = (m_Export.config == "Debug") ? 1 : 0;
     if (ImGui::Combo("Configuration", &idx, configs, 2))
@@ -601,11 +605,11 @@ void GameEditor::DrawExportPanel()
         m_Export.config = idx == 1 ? "Debug" : "Release";
     }
 
-    // Export location (fixed to export subfolder)
-    std::string exportPath = "export";
-    ImGui::Text("Export Location: %s/", exportPath.c_str());
+    // Export location
+    std::string exportPath = m_Export.outputDir.empty() ? "export" : m_Export.outputDir;
+    ImGui::Text("Export Location: %s", exportPath.c_str());
     ImGui::SameLine();
-    if (ImGui::Button("Change Location"))
+    if (ImGui::Button("Browse"))
     {
         const char* path = tinyfd_selectFolderDialog("Select Export Base Folder", ".");
         if (path) {
@@ -614,11 +618,22 @@ void GameEditor::DrawExportPanel()
         }
     }
     
-    // Add warning about running processes
-    ImGui::Separator();
+    
+    ImGui::Spacing();
+    
+    // Export contents preview
+    ImGui::Text("Export Package Contains:");
+    ImGui::BulletText("app.exe (Game Runtime)");
+    ImGui::BulletText("GameLogic.dll (Hot-reloadable Logic)");
+    ImGui::BulletText("raylib.dll (Graphics Library)");
+    ImGui::BulletText("Assets/ folder (Game Assets - excludes editor icons)");
+    
+    ImGui::Spacing();
     ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.2f, 1.0f), "Note: Close the game editor before exporting to avoid build conflicts.");
 
-    // Buttons
+    ImGui::Spacing();
+    
+    // Action buttons
     if (!m_Export.running)
     {
         if (ImGui::Button("Start Export"))
@@ -684,6 +699,34 @@ void GameEditor::DrawExportPanel()
                         
                         AppendLogLine(m_Export.logs, m_Export.logMutex, "Copying raylib.dll...");
                         std::filesystem::copy_file(raylibDll, exportDir / "raylib.dll", std::filesystem::copy_options::overwrite_existing);
+                        
+                        // Copy Assets folder if it exists (excluding editor icons)
+                        std::filesystem::path assetsSource = currentPath / "Assets";
+                        if (std::filesystem::exists(assetsSource) && std::filesystem::is_directory(assetsSource)) {
+                            AppendLogLine(m_Export.logs, m_Export.logMutex, "Copying game assets...");
+                            std::filesystem::path assetsDestination = exportDir / "Assets";
+                            std::filesystem::create_directories(assetsDestination);
+                            
+                            // Copy all files and folders except the icons folder
+                            for (const auto& entry : std::filesystem::directory_iterator(assetsSource)) {
+                                if (entry.is_directory() && entry.path().filename() == "icons") {
+                                    AppendLogLine(m_Export.logs, m_Export.logMutex, "Skipping editor icons folder");
+                                    continue; // Skip editor icons folder
+                                }
+                                
+                                std::filesystem::path destPath = assetsDestination / entry.path().filename();
+                                if (entry.is_directory()) {
+                                    std::filesystem::copy(entry.path(), destPath, 
+                                        std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing);
+                                } else {
+                                    std::filesystem::copy_file(entry.path(), destPath, 
+                                        std::filesystem::copy_options::overwrite_existing);
+                                }
+                            }
+                            AppendLogLine(m_Export.logs, m_Export.logMutex, "Game assets copied successfully");
+                        } else {
+                            AppendLogLine(m_Export.logs, m_Export.logMutex, "No Assets folder found - skipping asset copy");
+                        }
                         
                         AppendLogLine(m_Export.logs, m_Export.logMutex, "Export completed successfully!");
                         m_Export.success = true;
@@ -780,20 +823,28 @@ void GameEditor::DrawExportPanel()
     }
     else
     {
+        ImGui::Text("Export in progress...");
+        ImGui::SameLine();
         if (ImGui::Button("Cancel"))
         {
-            m_Export.cancel = true; // best-effort; powershell won't be killed here
+            m_Export.cancel = true;
         }
     }
 
+    // Status indicator
     ImGui::SameLine();
-    if (m_Export.success)
+    if (m_Export.success && !m_Export.running)
     {
-        ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "Success");
+        ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "Export Completed Successfully");
+    }
+    else if (!m_Export.running && !m_Export.logs.empty() && !m_Export.success)
+    {
+        ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "Export Failed");
     }
 
     // Log area
     ImGui::Separator();
+    ImGui::Text("Export Log:");
     ImGui::BeginChild("export_log", ImVec2(0, 200), true);
     {
         std::scoped_lock lk(m_Export.logMutex);
