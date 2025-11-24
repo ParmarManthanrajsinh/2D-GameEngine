@@ -9,7 +9,8 @@ static MapManager* g_GameMapManager = nullptr;
 extern "C" __declspec(dllexport) GameMap* CreateGameMap()
 {
     // If we already have a manager, reuse it to maintain map registrations
-    if (g_GameMapManager == nullptr) {
+    if (g_GameMapManager == nullptr) 
+    {
         g_GameMapManager = new MapManager();
         
         // Register your game maps - this happens only once
