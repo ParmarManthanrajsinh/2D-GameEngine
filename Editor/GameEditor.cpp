@@ -15,7 +15,7 @@ static void sf_AppendLogLine
 
 static bool sf_ValidateExportFolder
 (
-	const std::string& outDir, 
+	const std::string& out_dir, 
 	std::vector<std::string>& logs, 
 	std::mutex& mtx
 );
@@ -967,7 +967,12 @@ void GameEditor::DrawExportPanel()
     {
         ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "Export Completed Successfully");
     }
-    else if (!mt_ExportState.m_bIsExporting && !mt_ExportState.m_ExportLogs.empty() && !mt_ExportState.m_bIsExporting)
+    else if 
+	(
+		!mt_ExportState.m_bIsExporting && 
+		!mt_ExportState.m_ExportLogs.empty() && 
+		!mt_ExportState.m_bIsExporting
+	)
     {
         ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "Export Failed");
     }
