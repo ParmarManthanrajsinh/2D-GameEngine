@@ -621,7 +621,10 @@ void GameEditor::DrawExportPanel()
     ImGui::SameLine();
     if (ImGui::Button("Browse"))
     {
-        const char* PATH = tinyfd_selectFolderDialog("Select Export Base Folder", ".");
+        const char* PATH = tinyfd_selectFolderDialog
+		(
+			"Select Export Base Folder", "."
+		);
         if (PATH) 
 		{
             export_path = fs::path(PATH).filename().string();
@@ -721,7 +724,7 @@ void GameEditor::DrawExportPanel()
 					{
                         sf_AppendLogLine
 						(
-							mt_ExportState.m_ExportLogs,
+							mt_ExportState.m_ExportLogs ,
 							mt_ExportState.m_ExportLogMutex, 
 							"ERROR: raylib.dll not found in distribution!"
 						);
