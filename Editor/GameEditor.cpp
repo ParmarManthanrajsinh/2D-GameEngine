@@ -606,26 +606,43 @@ void GameEditor::DrawExportPanel()
     ImGui::Text("Create a standalone game package for distribution");
     ImGui::Separator();
     
-    // Configuration selector
-    ImGui::Text("Build Configuration:");
-    const char* configs[] = {"Release", "Debug"};
-    int idx = (mt_ExportState.m_ExportConfig == "Debug") ? 1 : 0;
-    if (ImGui::Combo("Configuration", &idx, configs, 2))
+    // Game name field with fixed width
+    ImGui::Text("Game Name:");
+    char game_name_buffer[256];
+    strncpy_s(game_name_buffer, mt_ExportState.m_GameName.c_str(), sizeof(game_name_buffer) - 1);
+    game_name_buffer[sizeof(game_name_buffer) - 1] = '\0';
+    ImGui::PushItemWidth(200.0f); // Fixed width for cleaner UI
+    if (ImGui::InputText("##game_name", game_name_buffer, sizeof(game_name_buffer)))
     {
-        mt_ExportState.m_ExportConfig = idx == 1 ? "Debug" : "Release";
+        mt_ExportState.m_GameName = game_name_buffer;
     }
+    ImGui::PopItemWidth();
+    ImGui::SameLine();
+    ImGui::TextDisabled("(will create: %s.exe)", game_name_buffer);
 
-    // Export location (fixed to export subfolder)
-    std::string export_path = "export";
-    ImGui::Text("Export Location: %s/", export_path.c_str());
+    // Export location with proper path display
+    ImGui::Text("Export Location:");
+    ImGui::PushItemWidth(300.0f); // Fixed width for path display
+
+    char export_path_buffer[512];
+    std::string current_path = mt_ExportState.m_ExportPath.empty() ? "export" : mt_ExportState.m_ExportPath;
+
+    strncpy_s(export_path_buffer, current_path.c_str(), sizeof(export_path_buffer) - 1);
+    export_path_buffer[sizeof(export_path_buffer) - 1] = '\0';
+
+    if (ImGui::InputText("##export_path", export_path_buffer, sizeof(export_path_buffer), ImGuiInputTextFlags_ReadOnly))
+    {
+        mt_ExportState.m_ExportPath = export_path_buffer;
+    }
+    ImGui::PopItemWidth();
     ImGui::SameLine();
     if (ImGui::Button("Browse"))
     {
-        const char* PATH = tinyfd_selectFolderDialog("Select Export Base Folder", ".");
-        if (PATH) 
-		{
-            export_path = fs::path(PATH).filename().string();
-            mt_ExportState.m_ExportPath = export_path;
+        const char* selected_path = tinyfd_saveFileDialog("Select Export Folder", fs::current_path().string().c_str(), 0, NULL, NULL);  
+        if (selected_path)  
+        {  
+            std::string parent_path = fs::path(selected_path).parent_path().string();  
+            mt_ExportState.m_ExportPath = parent_path;  
         }
     }
     
@@ -636,6 +653,7 @@ void GameEditor::DrawExportPanel()
 		ImVec4(1.0f, 0.8f, 0.2f, 1.0f), 
 		"Note: Close the game editor before exporting to avoid build conflicts."
 	);
+	ImGui::Separator();
 
     // Buttons
     if (!mt_ExportState.m_bIsExporting)
@@ -647,8 +665,7 @@ void GameEditor::DrawExportPanel()
             mt_ExportState.m_bExportSuccess = false;
             mt_ExportState.m_ExportLogs.clear();
 
-            // Ensure we use "export" as the output directory
-            mt_ExportState.m_ExportPath = "export";
+            // mt_ExportState.m_ExportPath is now set directly from the UI
 
             mt_ExportState.m_ExportThread = std::thread
 			(
@@ -664,15 +681,15 @@ void GameEditor::DrawExportPanel()
 						"Starting export process..."
 					);
                 
-					fs::path currentPath = fs::current_path();
+					fs::path current_path = fs::current_path();
                 
 					// Check if we're in a distribution (has app.exe but not full build system)
 					bool b_IsDistribution = fs::exists
 					(
-						currentPath / "app.exe"
+						current_path / "app.exe"
 					) && !fs::exists
 					(
-						currentPath / "Game" / "main_game.cpp"
+						current_path / "Game" / "main_game.cpp"
 					);
                 
 					if (b_IsDistribution) 
@@ -685,11 +702,11 @@ void GameEditor::DrawExportPanel()
 						);
                     
 						// In distribution, just copy the existing runtime files
-						fs::path app_exe = currentPath / "app.exe";
+						fs::path app_exe = current_path / "app.exe";
 						fs::path game_logic_dll = 
-							currentPath / "GameLogic.dll";
+							current_path / "GameLogic.dll";
 
-						fs::path raylib_dll = currentPath / "raylib.dll";
+						fs::path raylib_dll = current_path / "raylib.dll";
                     
                     if (!fs::exists(app_exe)) 
 					{
@@ -733,20 +750,22 @@ void GameEditor::DrawExportPanel()
                     try 
 					{
                         fs::path export_dir = 
-							currentPath / mt_ExportState.m_ExportPath;
+							current_path / mt_ExportState.m_ExportPath;
 
                         fs::create_directories(export_dir);
                         
+                        // Use custom game name for the executable
+                        std::string gameExeName = mt_ExportState.m_GameName + ".exe";
                         sf_AppendLogLine
 						(
 							mt_ExportState.m_ExportLogs,
 							mt_ExportState.m_ExportLogMutex, 
-							"Copying app.exe..."
+							"Creating game executable: " + gameExeName
 						);
                         fs::copy_file
 						(
 							app_exe, 
-							export_dir / "app.exe", 
+							export_dir / gameExeName, 
 							fs::copy_options::overwrite_existing
 						);
                         
@@ -862,13 +881,13 @@ void GameEditor::DrawExportPanel()
 				);
                 std::stringstream cmd;
                 fs::path export_script = 
-					currentPath / "simple_export.ps1";
+					current_path / "simple_export.ps1";
 
                 cmd << "powershell -ExecutionPolicy Bypass -File \"" 
 					<< export_script.string() 
-					<< "\" -BuildConfig " 
-					<< mt_ExportState.m_ExportConfig 
-					<< " -OutputDir " << mt_ExportState.m_ExportPath;
+					<< "\" -BuildConfig Release" 
+					<< " -OutputDir " << mt_ExportState.m_ExportPath
+					<< " -GameName \"" << mt_ExportState.m_GameName << "\"";
 
                 FILE* pipe = _popen(cmd.str().c_str(), "r");
                 if (!pipe) 
@@ -962,9 +981,9 @@ void GameEditor::DrawExportPanel()
     }
 
     // Status indicator
-    ImGui::SameLine();
     if (mt_ExportState.m_bExportSuccess)
     {
+		ImGui::SameLine();
         ImGui::TextColored
 		(
 			ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "Export Completed Successfully"
@@ -977,6 +996,7 @@ void GameEditor::DrawExportPanel()
 		!mt_ExportState.m_bIsExporting
 	)
     {
+		ImGui::SameLine();
         ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "Export Failed");
     }
 
@@ -1195,7 +1215,28 @@ static bool sf_ValidateExportFolder
 		);
 		if (!b_Exists) b_Ok = false;
 	};
-	require(fs::path(out_dir) / "app.exe");
+	// For validation, we need to check for "MyGame.exe" since we don't have access to the actual game name here
+	// This is a limitation - we'll just check for any .exe file in the export directory
+	bool foundGameExe = false;
+	std::error_code ec;
+	if (fs::exists(out_dir, ec) && !ec) 
+	{
+		for (const auto& entry : fs::directory_iterator(out_dir, ec)) 
+		{
+			if (!ec && entry.is_regular_file() && entry.path().extension() == ".exe") 
+			{
+				foundGameExe = true;
+				sf_AppendLogLine(logs, mtx, std::string("Found game executable: ") + entry.path().filename().string());
+				break;
+			}
+		}
+	}
+	if (!foundGameExe) 
+	{
+		sf_AppendLogLine(logs, mtx, "Missing: Game executable (.exe file)");
+		b_Ok = false;
+	}
+	
 	require(fs::path(out_dir) / "GameLogic.dll");
 	require(fs::path(out_dir) / "raylib.dll");
 	return b_Ok;

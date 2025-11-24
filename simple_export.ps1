@@ -1,9 +1,10 @@
 # Simple Game Export Script with Asset Support
-# Creates only the essential game runtime files: app.exe, GameLogic.dll, raylib.dll + Assets
+# Creates only the essential game runtime files: [GameName].exe, GameLogic.dll, raylib.dll + Assets
 
 param(
     [string]$BuildConfig = "Release",
-    [string]$OutputDir = "export"
+    [string]$OutputDir = "export",
+    [string]$GameName = "MyGame"
 )
 
 $ErrorActionPreference = "Stop"
@@ -37,11 +38,13 @@ if (Test-Path $OutputDir) {
 }
 New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
 
-# Copy only the essential runtime files
+# Copy only the essential runtime files with custom name
 Write-Host "Copying game runtime files..." -ForegroundColor Yellow
-Copy-Item $GameExe "$OutputDir/app.exe" -Force
+$GameExeName = "$GameName.exe"
+Copy-Item $GameExe "$OutputDir/$GameExeName" -Force
 Copy-Item $LogicDll "$OutputDir/" -Force  
 Copy-Item $RaylibDll "$OutputDir/" -Force
+Write-Host "Game executable created: $GameExeName" -ForegroundColor Green
 
 # Copy Assets folder if it exists (excluding editor icons)
 if (Test-Path "Assets") {
@@ -60,7 +63,7 @@ if (Test-Path "Assets") {
 Write-Host "Simple game export completed successfully!" -ForegroundColor Green
 Write-Host ""
 Write-Host "Export contains:" -ForegroundColor Cyan
-Write-Host "- app.exe (game runtime)" -ForegroundColor White
+Write-Host "- $GameExeName (game runtime)" -ForegroundColor White
 Write-Host "- GameLogic.dll (hot-reloadable game logic)" -ForegroundColor White  
 Write-Host "- raylib.dll (graphics library)" -ForegroundColor White
 if (Test-Path "$OutputDir/Assets") {

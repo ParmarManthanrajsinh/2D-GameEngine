@@ -82,8 +82,9 @@ private:
     {
         std::atomic<bool> m_bIsExporting{false};
         std::atomic<bool> m_bCancelExport{false};
-        std::string m_ExportConfig = "Release";
+        // Build config is now fixed to Release only
         std::string m_ExportPath = "export";
+        std::string m_GameName = "MyGame";
         std::vector<std::string> m_ExportLogs;
         std::mutex m_ExportLogMutex;
         std::thread m_ExportThread;
