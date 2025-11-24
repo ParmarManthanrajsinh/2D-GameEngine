@@ -603,7 +603,7 @@ void GameEditor::DrawExportPanel()
         mt_ExportState.m_ExportThread.join();
     }
 
-    ImGui::Text("Create a standalone game package for distribution");
+    ImGui::Text("Export standalone game");
     ImGui::Separator();
     
     // Game name field with fixed width
@@ -654,7 +654,7 @@ void GameEditor::DrawExportPanel()
     ImGui::TextColored
 	(
 		ImVec4(1.0f, 0.8f, 0.2f, 1.0f), 
-		"Note: Close the game editor before exporting to avoid build conflicts."
+		"Note: Close the editor before exporting to avoid conflicts."
 	);
 	ImGui::Separator();
 
@@ -797,6 +797,61 @@ void GameEditor::DrawExportPanel()
 							export_dir / "raylib.dll", 
 							fs::copy_options::overwrite_existing
 						);
+                        
+                        // Copy game assets (excluding EngineContent)
+                        fs::path assets_dir = current_path / "Assets";
+                        if (fs::exists(assets_dir)) 
+                        {
+                            sf_AppendLogLine
+                            (
+                                mt_ExportState.m_ExportLogs,
+                                mt_ExportState.m_ExportLogMutex, 
+                                "Copying game assets..."
+                            );
+                            
+                            fs::path export_assets_dir = export_dir / "Assets";
+                            fs::create_directories(export_assets_dir);
+                            
+                            for (const auto& entry : fs::directory_iterator(assets_dir))
+                            {
+                                if (entry.is_directory() && entry.path().filename() != "EngineContent")
+                                {
+                                    fs::path dest = export_assets_dir / entry.path().filename();
+                                    fs::copy(entry.path(), dest, 
+                                        fs::copy_options::recursive | 
+                                        fs::copy_options::overwrite_existing);
+                                    
+                                    sf_AppendLogLine
+                                    (
+                                        mt_ExportState.m_ExportLogs,
+                                        mt_ExportState.m_ExportLogMutex, 
+                                        "Copied asset folder: " + entry.path().filename().string()
+                                    );
+                                }
+                                else if (entry.is_regular_file())
+                                {
+                                    fs::path dest = export_assets_dir / entry.path().filename();
+                                    fs::copy_file(entry.path(), dest, 
+                                        fs::copy_options::overwrite_existing);
+                                    
+                                    sf_AppendLogLine
+                                    (
+                                        mt_ExportState.m_ExportLogs,
+                                        mt_ExportState.m_ExportLogMutex, 
+                                        "Copied asset file: " + entry.path().filename().string()
+                                    );
+                                }
+                            }
+                        }
+                        else 
+                        {
+                            sf_AppendLogLine
+                            (
+                                mt_ExportState.m_ExportLogs,
+                                mt_ExportState.m_ExportLogMutex, 
+                                "No Assets folder found - skipping asset copy"
+                            );
+                        }
                         
                         sf_AppendLogLine
 						(
@@ -989,7 +1044,7 @@ void GameEditor::DrawExportPanel()
 		ImGui::SameLine();
         ImGui::TextColored
 		(
-			ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "Export Completed Successfully"
+			ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "Export Complete"
 		);
     }
     else if 
@@ -1242,6 +1297,18 @@ static bool sf_ValidateExportFolder
 	
 	require(fs::path(out_dir) / "GameLogic.dll");
 	require(fs::path(out_dir) / "raylib.dll");
+	
+	// Check for Assets folder (optional - may not exist if no game assets)
+	fs::path assets_path = fs::path(out_dir) / "Assets";
+	if (fs::exists(assets_path)) 
+	{
+		sf_AppendLogLine(logs, mtx, "Found Assets folder in export");
+	}
+	else 
+	{
+		sf_AppendLogLine(logs, mtx, "No Assets folder found - this is OK if game has no assets");
+	}
+	
 	return b_Ok;
 }
 

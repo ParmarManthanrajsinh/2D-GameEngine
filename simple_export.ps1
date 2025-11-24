@@ -46,16 +46,16 @@ Copy-Item $LogicDll "$OutputDir/" -Force
 Copy-Item $RaylibDll "$OutputDir/" -Force
 Write-Host "Game executable created: $GameExeName" -ForegroundColor Green
 
-# Copy Assets folder if it exists (excluding editor icons)
+# Copy Assets folder if it exists (excluding editor content)
 if (Test-Path "Assets") {
     Write-Host "Copying game assets..." -ForegroundColor Yellow
     New-Item -ItemType Directory -Path "$OutputDir/Assets" -Force | Out-Null
     
-    # Copy all items from Assets except the icons folder
-    Get-ChildItem "Assets" | Where-Object { $_.Name -ne "icons" } | ForEach-Object {
+    # Copy all items from Assets except the EngineContent folder
+    Get-ChildItem "Assets" | Where-Object { $_.Name -ne "EngineContent" } | ForEach-Object {
         Copy-Item $_.FullName "$OutputDir/Assets" -Recurse -Force
     }
-    Write-Host "Game assets copied successfully (excluding editor icons)" -ForegroundColor Green
+    Write-Host "Game assets copied successfully (excluding editor content)" -ForegroundColor Green
 } else {
     Write-Host "No Assets folder found - skipping asset copy" -ForegroundColor Yellow
 }
