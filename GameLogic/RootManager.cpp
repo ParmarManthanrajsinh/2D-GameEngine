@@ -9,7 +9,8 @@ static MapManager* g_GameMapManager = nullptr;
 extern "C" __declspec(dllexport) GameMap* CreateGameMap()
 {
     // If we already have a manager, reuse it to maintain map registrations
-    if (g_GameMapManager == nullptr) {
+    if (g_GameMapManager == nullptr) 
+    {
         g_GameMapManager = new MapManager();
         
         // Register your game maps - this happens only once
@@ -18,11 +19,11 @@ extern "C" __declspec(dllexport) GameMap* CreateGameMap()
     }
 
     // Automatically load the first registered map
-    auto available_maps = manager->GetAvailableMaps();  
+    auto available_maps = g_GameMapManager->GetAvailableMaps();  
     if (!available_maps.empty())
     {
-        manager->b_GotoMap(available_maps.at(0));
+        g_GameMapManager->b_GotoMap(available_maps.at(0));
     }
     
-    return manager;
+    return g_GameMapManager;
 }
