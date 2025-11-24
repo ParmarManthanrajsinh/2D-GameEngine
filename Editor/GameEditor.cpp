@@ -102,6 +102,7 @@ void GameEditor::LoadIconTextures()
 	Image restart_img = LoadImage("Assets/EngineContent/icons/restart.png");
 	Image restore_img = LoadImage("Assets/EngineContent/icons/restore.png");
 	Image compile_img = LoadImage("Assets/EngineContent/icons/compile.png");
+	Image clean_img = LoadImage("Assets/EngineContent/icons/clean.png");
 
 	// Create fallback icons if files don't exist
 	if (play_img.data == nullptr)
@@ -155,12 +156,22 @@ void GameEditor::LoadIconTextures()
 		ImageDrawRectangle(&compile_img, 8, 8, 10, 10, LIME);
 	}
 
+	if (clean_img.data == nullptr)
+	{
+		clean_img = GenImageColor(28, 28, DARKGRAY);
+
+		ImageDrawRectangle(&clean_img, 10, 10, 8, 12, GRAY);
+		ImageDrawRectangle(&clean_img, 8, 7, 12, 3, BLACK);
+		ImageDrawRectangle(&clean_img, 12, 5, 4, 2, BLACK);
+	}
+
 	// Resize to consistent size
 	ImageResize(&play_img, 28, 28);
 	ImageResize(&pause_img, 28, 28);
 	ImageResize(&restart_img, 28, 28);
 	ImageResize(&restore_img, 28, 28);
 	ImageResize(&compile_img, 28, 28);
+	ImageResize(&clean_img, 28, 28);
 
 	// Convert to textures
 	m_PlayIcon = LoadTextureFromImage(play_img);
@@ -168,6 +179,7 @@ void GameEditor::LoadIconTextures()
 	m_RestartIcon = LoadTextureFromImage(restart_img);
 	m_RestoreIcon = LoadTextureFromImage(restore_img);
 	m_CompileIcon = LoadTextureFromImage(compile_img);
+	m_CleanIcon = LoadTextureFromImage(clean_img);
 
 	// Cleanup temporary images
 	UnloadImage(play_img);
@@ -279,6 +291,7 @@ void GameEditor::Close() const
 		UnloadTexture(m_PauseIcon);
 		UnloadTexture(m_RestoreIcon);
 		UnloadTexture(m_CompileIcon);
+		UnloadTexture(m_CleanIcon);
 	}
 
 	UnloadRenderTexture(m_RaylibTexture);
@@ -490,6 +503,24 @@ void GameEditor::DrawSceneWindow()
 		if (!b_ReloadGameLogic())
 		{
 			m_GameEngine.ResetMap();
+		}
+	}
+
+	ImGui::SameLine();
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 12);
+	if
+	(
+		ImGui::ImageButton
+		(
+			"clean_btn",
+			(ImTextureID)(intptr_t)m_CleanIcon.id,
+			ImVec2(28, 28)
+		)
+	)
+	{
+		if (fs::exists("build"))
+		{
+			fs::remove_all("build");
 		}
 	}
 
