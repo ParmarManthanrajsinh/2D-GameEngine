@@ -6,7 +6,10 @@
 
 using CreateGameMapFunc = GameMap* (*)();
 
-static std::unique_ptr<GameMap> LoadGameLogic(const char* dllPath, DllHandle& outHandle)
+static std::unique_ptr<GameMap> LoadGameLogic
+(
+    const char* dllPath, DllHandle& outHandle
+)
 {
     outHandle = LoadDll(dllPath);
     if (!outHandle.handle)
@@ -15,8 +18,11 @@ static std::unique_ptr<GameMap> LoadGameLogic(const char* dllPath, DllHandle& ou
         return nullptr;
     }
 
-    auto createFn = reinterpret_cast<CreateGameMapFunc>(GetDllSymbol(outHandle, "CreateGameMap"));
-    if (!createFn)
+    auto CreateFn = reinterpret_cast<CreateGameMapFunc>
+    (
+        GetDllSymbol(outHandle, "CreateGameMap")
+    );
+    if (!CreateFn)
     {
         std::cerr << "Failed to find symbol CreateGameMap in GameLogic DLL\n";
         UnloadDll(outHandle);
@@ -24,7 +30,7 @@ static std::unique_ptr<GameMap> LoadGameLogic(const char* dllPath, DllHandle& ou
         return nullptr;
     }
 
-    GameMap* raw = createFn();
+    GameMap* raw = CreateFn();
     if (!raw)
     {
         std::cerr << "CreateGameMap returned null\n";
@@ -52,7 +58,8 @@ int main()
     }
     else
     {
-        std::cerr << "Running without GameLogic (no map loaded)." << std::endl;
+        std::cerr << "Running without GameLogic (no map loaded)." 
+                  << std::endl;
     }
 
     while (!WindowShouldClose())

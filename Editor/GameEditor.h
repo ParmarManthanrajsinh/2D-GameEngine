@@ -67,7 +67,7 @@ private:
     CreateGameMapFunc m_CreateGameMap = nullptr;
 
     std::string m_GameLogicPath;
-    std::filesystem::file_time_type m_LastLogicWriteTime{};
+    fs::file_time_type m_LastLogicWriteTime{};
 
     float m_ReloadCheckAccum = 0.0f;
     Shader m_OpaqueShader;
@@ -78,14 +78,15 @@ private:
     std::string m_SelectedMapId;
 
     // Export UI state
-    struct ExportState {
-        std::atomic<bool> running{false};
-        std::atomic<bool> cancel{false};
-        std::string config = "Release";
-        std::string outputDir = "export";
-        std::vector<std::string> logs;
-        std::mutex logMutex;
-        std::thread worker;
-        bool success = false;
-    } m_Export;
+    struct ExportState 
+    {
+        std::atomic<bool> m_bIsExporting{false};
+        std::atomic<bool> m_bCancelExport{false};
+        std::string m_ExportConfig = "Release";
+        std::string m_ExportPath = "export";
+        std::vector<std::string> m_ExportLogs;
+        std::mutex m_ExportLogMutex;
+        std::thread m_ExportThread;
+        bool m_bExportSuccess = false;
+    } mt_ExportState;
 };

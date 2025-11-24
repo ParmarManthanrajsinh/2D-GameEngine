@@ -15,4 +15,5 @@
 |  Boolean Variable | b_VariableName     | b_IsActive         |
 |  Private bool     | m_bVarName         | m_bIsEnemyDie      |
 |  Private Static   | m_sVarName         | m_sLoadMap         |
-|  Static Const     | sc_CONSTANT_NAME   | sc_EDITOR_DEFAULT  |_
+|  Static Const     | sc_CONSTANT_NAME   | sc_EDITOR_DEFAULT  |
+|  Private Struct   | mt_StructName      | mt_UiState         |
