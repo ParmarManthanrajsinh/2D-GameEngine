@@ -15,14 +15,18 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(raylib)
 
-# Collect source files only (.cpp) with automatic reconfigure when files change
-file(GLOB GAME_SRC_CPP    CONFIGURE_DEPENDS "Game/*.cpp")
+# Collect source files
+# Explicitly list Game sources for the editor to avoid pulling in game-only main
+set(GAME_SRC_CPP
+    Game/main.cpp
+    Game/DllLoader.cpp
+)
 file(GLOB ENGINE_SRC_CPP  CONFIGURE_DEPENDS "Engine/*.cpp")
 file(GLOB EDITOR_SRC_CPP  CONFIGURE_DEPENDS "Editor/*.cpp")
 
 # rlImGui and ImGui sources
 set(RLIMGUI_SRC Editor/rlImGui/rlImGui.cpp)
-set(IMGUI_SRC Editor/imgui/imgui.cpp Editor/imgui/imgui_draw.cpp Editor/imgui/imgui_tables.cpp Editor/imgui/imgui_widgets.cpp Editor/imgui/imgui_demo.cpp)
+set(IMGUI_SRC Editor/imgui/imgui.cpp Editor/imgui/imgui_draw.cpp Editor/imgui/imgui_tables.cpp Editor/imgui/imgui_widgets.cpp)
 set(TINYFILEDIALOGS Editor/tinyfiledialogs/tinyfiledialogs.c)
 
 # Copy assets to the build directory
@@ -88,3 +92,40 @@ add_custom_command(TARGET GameLogic POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             $<TARGET_FILE:GameLogic>
             ${CMAKE_BINARY_DIR})
+
+# ------------------------------
+# Game-only runtime executable
+# ------------------------------
+add_executable(game
+    Game/main_game.cpp
+    Game/DllLoader.cpp
+)
+
+# Includes for game runtime
+target_include_directories(game PRIVATE
+    ${CMAKE_SOURCE_DIR}/Engine
+    ${CMAKE_SOURCE_DIR}/Game
+)
+
+# Link Engine (transitively links raylib)
+target_link_libraries(game PRIVATE Engine)
+
+# Copy GameLogic DLL beside game executable after building 'game'.
+add_custom_command(TARGET game POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:GameLogic>
+            $<TARGET_FILE_DIR:game>)
+
+# Also copy raylib DLL so both EXE and GameLogic load the same shared raylib
+add_custom_command(TARGET game POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:raylib>
+            $<TARGET_FILE_DIR:game>)
+
+# Optional export packaging target
+add_custom_target(export_package
+    COMMAND ${CMAKE_COMMAND} -E echo "Running export script..."
+    COMMAND powershell -ExecutionPolicy Bypass -File "${CMAKE_SOURCE_DIR}/distribute.ps1" -BuildConfig Release -OutputDir dist
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Packaging distribution via distribute.ps1"
+)

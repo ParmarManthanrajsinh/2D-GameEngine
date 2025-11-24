@@ -6,15 +6,39 @@ param(
     [string]$OutputDir = "dist"
 )
 
+$ErrorActionPreference = "Stop"
+
 Write-Host "Creating distribution package..." -ForegroundColor Green
+Write-Host "Build Config: $BuildConfig, Output Directory: $OutputDir" -ForegroundColor Cyan
+
+# Note: VS environment setup is handled by the calling batch script
 
 # Ensure we have a release build
 $BuildPath = "out/build/x64-$($BuildConfig.ToLower())"
 if (-not (Test-Path $BuildPath)) {
-    Write-Host "Building release version..." -ForegroundColor Yellow
-    cmake --preset x64-release
-    cmake --build out/build/x64-release --config Release --target main
+    Write-Host "Configuring $BuildConfig version..." -ForegroundColor Yellow
+    if ($BuildConfig -ieq "Release") {
+        cmake --preset x64-release
+    } else {
+        cmake --preset x64-debug
+    }
 }
+
+Write-Host "Building targets (game runtime, GameLogic, and editor)..." -ForegroundColor Yellow
+cmake --build $BuildPath --config $BuildConfig --target game GameLogic main
+if ($LASTEXITCODE -ne 0) {
+    throw "Build failed with exit code $LASTEXITCODE"
+}
+
+# Verify expected outputs exist before packaging
+$GameExe = Join-Path $BuildPath "game.exe"
+$EditorExe = Join-Path $BuildPath "main.exe"
+$LogicDll = Join-Path $BuildPath "GameLogic.dll"
+$RaylibDll = Join-Path $BuildPath "raylib.dll"
+
+if (-not (Test-Path $GameExe)) { throw "Missing game.exe at $GameExe" }
+if (-not (Test-Path $LogicDll)) { throw "Missing GameLogic.dll at $LogicDll" }
+if (-not (Test-Path $RaylibDll)) { throw "Missing raylib.dll at $RaylibDll" }
 
 # Create distribution directory structure
 $DistPath = $OutputDir
@@ -37,8 +61,13 @@ New-Item -ItemType Directory -Path "$DistPath/raylib/bin" -Force | Out-Null
 
 Write-Host "Copying executable and dependencies..." -ForegroundColor Yellow
 
-# Copy main executable
-Copy-Item "$BuildPath/main.exe" "$DistPath/app.exe" -Force
+# Copy game runtime as app.exe
+Copy-Item "$BuildPath/game.exe" "$DistPath/app.exe" -Force
+
+# Optionally include the editor (rename to editor.exe)
+if (Test-Path "$BuildPath/main.exe") {
+    Copy-Item "$BuildPath/main.exe" "$DistPath/editor.exe" -Force
+}
 
 # Copy GameLogic DLL to root
 Copy-Item "$BuildPath/GameLogic.dll" "$DistPath/" -Force

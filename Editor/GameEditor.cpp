@@ -1,7 +1,13 @@
 #include "../Engine/MapManager.h"
 #include "../Game/DllLoader.h"
 #include "GameEditor.h"
+#include <cstdio>
+#include <sstream>
 using Clock = std::chrono::steady_clock;
+
+// Forward declarations for export helpers
+static void AppendLogLine(std::vector<std::string>& logs, std::mutex& mtx, const std::string& line);
+static bool ValidateExportFolder(const std::string& outDir, std::vector<std::string>& logs, std::mutex& mtx);
 
 GameEditor::GameEditor()
 	: m_Viewport(nullptr),
@@ -243,6 +249,7 @@ void GameEditor::Run()
 
 		DrawSceneWindow();
 		DrawMapSelectionUI();
+        DrawExportPanel();
 
 		rlImGuiEnd();
 		EndDrawing();
@@ -576,6 +583,236 @@ void GameEditor::DrawSceneWindow()
 	ImGui::End();
 }
 
+void GameEditor::DrawExportPanel()
+{
+    ImGui::Begin("Export", nullptr, ImGuiWindowFlags_NoCollapse);
+
+    // Join previous worker if it finished to avoid accumulating threads
+    if (!m_Export.running && m_Export.worker.joinable())
+    {
+        m_Export.worker.join();
+    }
+
+    // Config
+    const char* configs[] = {"Release", "Debug"};
+    int idx = (m_Export.config == "Debug") ? 1 : 0;
+    if (ImGui::Combo("Configuration", &idx, configs, 2))
+    {
+        m_Export.config = idx == 1 ? "Debug" : "Release";
+    }
+
+    // Export location (fixed to export subfolder)
+    std::string exportPath = "export";
+    ImGui::Text("Export Location: %s/", exportPath.c_str());
+    ImGui::SameLine();
+    if (ImGui::Button("Change Location"))
+    {
+        const char* path = tinyfd_selectFolderDialog("Select Export Base Folder", ".");
+        if (path) {
+            exportPath = std::filesystem::path(path).filename().string();
+            m_Export.outputDir = exportPath;
+        }
+    }
+    
+    // Add warning about running processes
+    ImGui::Separator();
+    ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.2f, 1.0f), "Note: Close the game editor before exporting to avoid build conflicts.");
+
+    // Buttons
+    if (!m_Export.running)
+    {
+        if (ImGui::Button("Start Export"))
+        {
+            m_Export.running = true;
+            m_Export.cancel = false;
+            m_Export.success = false;
+            m_Export.logs.clear();
+
+            // Ensure we use "export" as the output directory
+            m_Export.outputDir = "export";
+
+            m_Export.worker = std::thread([this]() {
+                // Create export directory if it doesn't exist
+                std::filesystem::create_directories(m_Export.outputDir);
+                
+                AppendLogLine(m_Export.logs, m_Export.logMutex, "Starting export process...");
+                
+                std::filesystem::path currentPath = std::filesystem::current_path();
+                
+                // Check if we're in a distribution (has app.exe but not full build system)
+                bool isDistribution = std::filesystem::exists(currentPath / "app.exe") && 
+                                    !std::filesystem::exists(currentPath / "Game" / "main_game.cpp");
+                
+                if (isDistribution) {
+                    AppendLogLine(m_Export.logs, m_Export.logMutex, "Distribution environment detected - using direct file copy...");
+                    
+                    // In distribution, just copy the existing runtime files
+                    std::filesystem::path appExe = currentPath / "app.exe";
+                    std::filesystem::path gameLogicDll = currentPath / "GameLogic.dll";
+                    std::filesystem::path raylibDll = currentPath / "raylib.dll";
+                    
+                    if (!std::filesystem::exists(appExe)) {
+                        AppendLogLine(m_Export.logs, m_Export.logMutex, "ERROR: app.exe not found in distribution!");
+                        m_Export.success = false;
+                        m_Export.running = false;
+                        return;
+                    }
+                    
+                    if (!std::filesystem::exists(gameLogicDll)) {
+                        AppendLogLine(m_Export.logs, m_Export.logMutex, "ERROR: GameLogic.dll not found in distribution!");
+                        m_Export.success = false;
+                        m_Export.running = false;
+                        return;
+                    }
+                    
+                    if (!std::filesystem::exists(raylibDll)) {
+                        AppendLogLine(m_Export.logs, m_Export.logMutex, "ERROR: raylib.dll not found in distribution!");
+                        m_Export.success = false;
+                        m_Export.running = false;
+                        return;
+                    }
+                    
+                    try {
+                        std::filesystem::path exportDir = currentPath / m_Export.outputDir;
+                        std::filesystem::create_directories(exportDir);
+                        
+                        AppendLogLine(m_Export.logs, m_Export.logMutex, "Copying app.exe...");
+                        std::filesystem::copy_file(appExe, exportDir / "app.exe", std::filesystem::copy_options::overwrite_existing);
+                        
+                        AppendLogLine(m_Export.logs, m_Export.logMutex, "Copying GameLogic.dll...");
+                        std::filesystem::copy_file(gameLogicDll, exportDir / "GameLogic.dll", std::filesystem::copy_options::overwrite_existing);
+                        
+                        AppendLogLine(m_Export.logs, m_Export.logMutex, "Copying raylib.dll...");
+                        std::filesystem::copy_file(raylibDll, exportDir / "raylib.dll", std::filesystem::copy_options::overwrite_existing);
+                        
+                        AppendLogLine(m_Export.logs, m_Export.logMutex, "Export completed successfully!");
+                        m_Export.success = true;
+                    } catch (const std::exception& e) {
+                        AppendLogLine(m_Export.logs, m_Export.logMutex, std::string("ERROR: ") + e.what());
+                        m_Export.success = false;
+                    }
+                    
+                    m_Export.running = false;
+                    return;
+                }
+                
+                // Source environment - check for running processes and build
+                AppendLogLine(m_Export.logs, m_Export.logMutex, "Source environment detected - checking for running processes...");
+                
+                // Check for running main.exe process
+                std::stringstream checkCmd;
+                checkCmd << "powershell -Command \"Get-Process -Name 'main' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Path\"";
+                
+#if defined(_WIN32)
+                FILE* checkPipe = _popen(checkCmd.str().c_str(), "r");
+#else
+                FILE* checkPipe = popen(checkCmd.str().c_str(), "r");
+#endif
+                if (checkPipe) {
+                    char buffer[1024];
+                    bool foundRunningProcess = false;
+                    while (fgets(buffer, sizeof(buffer), checkPipe) != nullptr) {
+                        std::string output(buffer);
+                        if (output.find("main.exe") != std::string::npos) {
+                            foundRunningProcess = true;
+                            AppendLogLine(m_Export.logs, m_Export.logMutex, "WARNING: main.exe is currently running. Export may fail.");
+                            AppendLogLine(m_Export.logs, m_Export.logMutex, "Please close the game editor before exporting for best results.");
+                            break;
+                        }
+                    }
+#if defined(_WIN32)
+                    _pclose(checkPipe);
+#else
+                    pclose(checkPipe);
+#endif
+                    if (!foundRunningProcess) {
+                        AppendLogLine(m_Export.logs, m_Export.logMutex, "No conflicting processes found. Proceeding with build...");
+                    }
+                }
+                
+                // Use simple export script that builds from source
+                AppendLogLine(m_Export.logs, m_Export.logMutex, "Building game runtime from source...");
+                std::stringstream cmd;
+                std::filesystem::path exportScript = currentPath / "simple_export.ps1";
+                cmd << "powershell -ExecutionPolicy Bypass -File \"" << exportScript.string() << "\" -BuildConfig " << m_Export.config << " -OutputDir " << m_Export.outputDir;
+
+#if defined(_WIN32)
+                FILE* pipe = _popen(cmd.str().c_str(), "r");
+#else
+                FILE* pipe = popen(cmd.str().c_str(), "r");
+#endif
+                if (!pipe) {
+                    AppendLogLine(m_Export.logs, m_Export.logMutex, "Failed to start export process");
+                    m_Export.running = false;
+                    return;
+                }
+
+                char buffer[1024];
+                while (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+                {
+                    AppendLogLine(m_Export.logs, m_Export.logMutex, std::string(buffer));
+                }
+
+#if defined(_WIN32)
+                int rc = _pclose(pipe);
+#else
+                int rc = pclose(pipe);
+#endif
+                AppendLogLine(m_Export.logs, m_Export.logMutex, std::string("Export process exited with code ") + std::to_string(rc));
+
+                // Add final log message about process completion
+                AppendLogLine(m_Export.logs, m_Export.logMutex, std::string("Process completed. Validating export folder: ") + m_Export.outputDir);
+                
+                // Validate
+                bool ok = ValidateExportFolder(m_Export.outputDir, m_Export.logs, m_Export.logMutex);
+                m_Export.success = ok && (rc == 0);
+                
+                if (!ok) {
+                    AppendLogLine(m_Export.logs, m_Export.logMutex, "Export validation failed - check export folder contents");
+                }
+                if (rc != 0) {
+                    AppendLogLine(m_Export.logs, m_Export.logMutex, std::string("Export script failed with exit code: ") + std::to_string(rc));
+                }
+                
+                m_Export.running = false;
+            });
+        }
+    }
+    else
+    {
+        if (ImGui::Button("Cancel"))
+        {
+            m_Export.cancel = true; // best-effort; powershell won't be killed here
+        }
+    }
+
+    ImGui::SameLine();
+    if (m_Export.success)
+    {
+        ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "Success");
+    }
+
+    // Log area
+    ImGui::Separator();
+    ImGui::BeginChild("export_log", ImVec2(0, 200), true);
+    {
+        std::scoped_lock lk(m_Export.logMutex);
+        for (const auto& line : m_Export.logs)
+        {
+            ImGui::TextUnformatted(line.c_str());
+        }
+    }
+    ImGui::EndChild();
+
+    // Cleanup worker if finished
+    if (!m_Export.running && m_Export.worker.joinable())
+    {
+        m_Export.worker.join();
+    }
+
+    ImGui::End();
+}
+
 void GameEditor::LoadMap(std::unique_ptr<GameMap>& game_map)
 {
     if (game_map)
@@ -712,6 +949,33 @@ bool GameEditor::b_ReloadGameLogic()
 	b_IsPlaying = b_WasPlaying;
 
 	return b_Ok;
+}
+
+static void AppendLogLine(std::vector<std::string>& logs, std::mutex& mtx, const std::string& line)
+{
+	std::scoped_lock lk(mtx);
+	logs.push_back(line);
+}
+
+static bool ValidateExportFolder(const std::string& outDir, std::vector<std::string>& logs, std::mutex& mtx)
+{
+	bool ok = true;
+	
+	// Log current working directory for debugging
+	AppendLogLine(logs, mtx, std::string("Validation working directory: ") + std::filesystem::current_path().string());
+	AppendLogLine(logs, mtx, std::string("Checking export directory: ") + outDir);
+	
+	auto require = [&](const std::filesystem::path& p){
+		bool exists = std::filesystem::exists(p);
+		AppendLogLine(logs, mtx, std::string("Checking: ") + p.string() + " - " + (exists ? "EXISTS" : "MISSING"));
+		if (!exists) {
+			ok = false;
+		}
+	};
+	require(std::filesystem::path(outDir) / "app.exe");
+	require(std::filesystem::path(outDir) / "GameLogic.dll");
+	require(std::filesystem::path(outDir) / "raylib.dll");
+	return ok;
 }
 
 void GameEditor::DrawMapSelectionUI()

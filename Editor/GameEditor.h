@@ -10,6 +10,8 @@
 #include <thread>
 #include <tinyfiledialogs.h>
 #include <atomic>
+#include <mutex>
+#include <vector>
 
 #include "DllLoader.h"
 #include "GameEditorLayout.h"
@@ -46,6 +48,7 @@ private:
 
     void DrawSceneWindow();
     void DrawMapSelectionUI();
+    void DrawExportPanel();
 
     // New icon texture members
     Texture2D m_PlayIcon;
@@ -73,4 +76,16 @@ private:
     // Map selection UI
     MapManager* m_MapManager = nullptr;
     std::string m_SelectedMapId;
+
+    // Export UI state
+    struct ExportState {
+        std::atomic<bool> running{false};
+        std::atomic<bool> cancel{false};
+        std::string config = "Release";
+        std::string outputDir = "export";
+        std::vector<std::string> logs;
+        std::mutex logMutex;
+        std::thread worker;
+        bool success = false;
+    } m_Export;
 };

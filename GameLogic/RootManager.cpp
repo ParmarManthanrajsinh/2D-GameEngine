@@ -3,21 +3,26 @@
 #include "Level2.h"
 #include <memory>
 
+// Global static instance to ensure consistency across editor and runtime
+static MapManager* g_GameMapManager = nullptr;
+
 extern "C" __declspec(dllexport) GameMap* CreateGameMap()
 {
-	MapManager* manager = new MapManager();
+    // If we already have a manager, reuse it to maintain map registrations
+    if (g_GameMapManager == nullptr) {
+        g_GameMapManager = new MapManager();
+        
+        // Register your game maps - this happens only once
+        g_GameMapManager->RegisterMap<Level1>("Level1");
+        g_GameMapManager->RegisterMap<Level2>("Level2");
+    }
 
-	// Register your game maps
-	// These are just default - replace with your actual maps
-	manager->RegisterMap<Level1>("Level 1");
-	manager->RegisterMap<Level2>("Level 2");
-
-	// Automatically load the first registered map
-	auto available_maps = manager->GetAvailableMaps();
-	if (!available_maps.empty())
-	{
-		manager->b_GotoMap(available_maps.at(0));
-	}
-
-	return manager;
+    // Automatically load the first registered map
+    auto available_maps = manager->GetAvailableMaps();  
+    if (!available_maps.empty())
+    {
+        manager->b_GotoMap(available_maps.at(0));
+    }
+    
+    return manager;
 }
