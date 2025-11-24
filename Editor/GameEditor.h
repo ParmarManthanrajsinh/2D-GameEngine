@@ -56,6 +56,7 @@ private:
     Texture2D m_RestartIcon;
     Texture2D m_RestoreIcon;
     Texture2D m_CompileIcon;
+    Texture2D m_CleanIcon;
 
     bool m_bIconsLoaded;
     void LoadIconTextures();
