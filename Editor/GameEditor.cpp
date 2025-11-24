@@ -608,9 +608,11 @@ void GameEditor::DrawExportPanel()
     
     // Game name field with fixed width
     ImGui::Text("Game Name:");
+
     char game_name_buffer[256];
     strncpy_s(game_name_buffer, mt_ExportState.m_GameName.c_str(), sizeof(game_name_buffer) - 1);
     game_name_buffer[sizeof(game_name_buffer) - 1] = '\0';
+
     ImGui::PushItemWidth(200.0f); // Fixed width for cleaner UI
     if (ImGui::InputText("##game_name", game_name_buffer, sizeof(game_name_buffer)))
     {
@@ -635,6 +637,7 @@ void GameEditor::DrawExportPanel()
         mt_ExportState.m_ExportPath = export_path_buffer;
     }
     ImGui::PopItemWidth();
+
     ImGui::SameLine();
     if (ImGui::Button("Browse"))
     {
