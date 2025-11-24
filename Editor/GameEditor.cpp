@@ -738,7 +738,7 @@ void GameEditor::DrawExportPanel()
 					{
                         sf_AppendLogLine
 						(
-							mt_ExportState.m_ExportLogs,
+							mt_ExportState.m_ExportLogs ,
 							mt_ExportState.m_ExportLogMutex, 
 							"ERROR: raylib.dll not found in distribution!"
 						);
