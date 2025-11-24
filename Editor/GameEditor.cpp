@@ -95,11 +95,11 @@ void GameEditor::Init(int width, int height, std::string_view title)
 void GameEditor::LoadIconTextures()
 {
 	// Load PNG icons (replace paths with your actual icon files)
-	Image play_img = LoadImage("Assets/icons/play.png");
-	Image pause_img = LoadImage("Assets/icons/pause.png");
-	Image restart_img = LoadImage("Assets/icons/restart.png");
-	Image restore_img = LoadImage("Assets/icons/restore.png");
-	Image compile_img = LoadImage("Assets/icons/compile.png");
+	Image play_img = LoadImage("Assets/EngineContent/icons/play.png");
+	Image pause_img = LoadImage("Assets/EngineContent/icons/pause.png");
+	Image restart_img = LoadImage("Assets/EngineContent/icons/restart.png");
+	Image restore_img = LoadImage("Assets/EngineContent/icons/restore.png");
+	Image compile_img = LoadImage("Assets/EngineContent/icons/compile.png");
 
 	// Create fallback icons if files don't exist
 	if (play_img.data == nullptr)

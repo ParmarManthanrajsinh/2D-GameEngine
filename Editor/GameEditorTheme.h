@@ -3,7 +3,7 @@
 #include <imgui.h>
 #include <rlImGui.h>
 
-inline void SetEngineTheme(const std::string& path = "Assets/Roboto-Regular.ttf")
+inline void SetEngineTheme(const std::string& path = "Assets/EngineContent/Roboto-Regular.ttf")
 {
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->Clear();
