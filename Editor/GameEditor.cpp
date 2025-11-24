@@ -965,7 +965,10 @@ void GameEditor::DrawExportPanel()
     ImGui::SameLine();
     if (mt_ExportState.m_bExportSuccess)
     {
-        ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "Export Completed Successfully");
+        ImGui::TextColored
+		(
+			ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "Export Completed Successfully"
+		);
     }
     else if 
 	(
@@ -1137,13 +1140,23 @@ bool GameEditor::b_ReloadGameLogic()
 	return b_Ok;
 }
 
-static void sf_AppendLogLine(std::vector<std::string>& logs, std::mutex& mtx, const std::string& line)
+static void sf_AppendLogLine
+(
+	std::vector<std::string>& logs, 
+	std::mutex& mtx, 
+	const std::string& line
+)
 {
 	std::scoped_lock lk(mtx);
 	logs.push_back(line);
 }
 
-static bool sf_ValidateExportFolder(const std::string& out_dir, std::vector<std::string>& logs, std::mutex& mtx)
+static bool sf_ValidateExportFolder
+(
+	const std::string& out_dir, 
+	std::vector<std::string>& logs, 
+	std::mutex& mtx
+)
 {
 	bool b_Ok = true;
 	
