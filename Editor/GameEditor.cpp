@@ -967,7 +967,7 @@ void GameEditor::DrawExportPanel()
     {
         ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "Export Completed Successfully");
     }
-    else if (!m_Export.running && !m_Export.logs.empty() && !m_Export.success)
+    else if (!mt_ExportState.m_bIsExporting && !mt_ExportState.m_ExportLogs.empty() && !mt_ExportState.m_bIsExporting)
     {
         ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "Export Failed");
     }
