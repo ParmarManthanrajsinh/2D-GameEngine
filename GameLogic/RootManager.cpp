@@ -19,7 +19,7 @@ extern "C" __declspec(dllexport) GameMap* CreateGameMap()
     }
 
     // Automatically load the first registered map
-    auto available_maps = g_GameMapManager->GetAvailableMaps();  
+    auto available_maps = g_GameMapManager->GetAvailableMaps();
     if (!available_maps.empty())
     {
         g_GameMapManager->b_GotoMap(available_maps.at(0));

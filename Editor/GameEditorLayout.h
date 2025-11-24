@@ -9,7 +9,7 @@ static const char* sc_EDITOR_DEFAULT_INI =
 R"(
 [Window][WindowOverViewport_11111111]
 Pos=0,0
-Size=1280,720
+Size=1920,1009
 Collapsed=0
 
 [Window][Debug##Default]
@@ -19,20 +19,26 @@ Collapsed=0
 
 [Window][Scene]
 Pos=0,0
-Size=972,720
+Size=1612,1009
 Collapsed=0
 DockId=0x00000001,0
 
 [Window][Map Selection]
-Pos=974,0
-Size=306,720
+Pos=1614,0
+Size=306,1009
 Collapsed=0
 DockId=0x00000002,0
 
+[Window][Export]
+Pos=0,0
+Size=1612,1009
+Collapsed=0
+DockId=0x00000001,1
+
 [Docking][Data]
-DockSpace     ID=0x08BD597D Window=0x1BBC0F80 Pos=0,0 Size=1280,720 Split=Y Selected=0xE601B12F
+DockSpace     ID=0x08BD597D Window=0x1BBC0F80 Pos=0,0 Size=1920,1009 Split=Y Selected=0xE601B12F
   DockNode    ID=0x00000003 Parent=0x08BD597D SizeRef=1280,520 Split=X Selected=0xE601B12F
-    DockNode  ID=0x00000001 Parent=0x00000003 SizeRef=972,720 CentralNode=1 Selected=0xE601B12F
+    DockNode  ID=0x00000001 Parent=0x00000003 SizeRef=972,720 CentralNode=1 Selected=0x44137060
     DockNode  ID=0x00000002 Parent=0x00000003 SizeRef=306,720 Selected=0x9D14B58E
   DockNode    ID=0x00000004 Parent=0x08BD597D SizeRef=1280,198 Selected=0x9C2B5678
 )";

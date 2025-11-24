@@ -603,7 +603,11 @@ void GameEditor::DrawExportPanel()
         mt_ExportState.m_ExportThread.join();
     }
 
-    // Config
+    ImGui::Text("Create a standalone game package for distribution");
+    ImGui::Separator();
+    
+    // Configuration selector
+    ImGui::Text("Build Configuration:");
     const char* configs[] = {"Release", "Debug"};
     int idx = (mt_ExportState.m_ExportConfig == "Debug") ? 1 : 0;
     if (ImGui::Combo("Configuration", &idx, configs, 2))
@@ -615,7 +619,7 @@ void GameEditor::DrawExportPanel()
     std::string export_path = "export";
     ImGui::Text("Export Location: %s/", export_path.c_str());
     ImGui::SameLine();
-    if (ImGui::Button("Change Location"))
+    if (ImGui::Button("Browse"))
     {
         const char* PATH = tinyfd_selectFolderDialog("Select Export Base Folder", ".");
         if (PATH) 
@@ -949,20 +953,28 @@ void GameEditor::DrawExportPanel()
     }
     else
     {
+        ImGui::Text("Export in progress...");
+        ImGui::SameLine();
         if (ImGui::Button("Cancel"))
         {
             mt_ExportState.m_bCancelExport = true; // best-effort; powershell won't be killed here
         }
     }
 
+    // Status indicator
     ImGui::SameLine();
     if (mt_ExportState.m_bExportSuccess)
     {
-        ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "Success");
+        ImGui::TextColored(ImVec4(0.2f, 0.8f, 0.2f, 1.0f), "Export Completed Successfully");
+    }
+    else if (!m_Export.running && !m_Export.logs.empty() && !m_Export.success)
+    {
+        ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "Export Failed");
     }
 
     // Log area
     ImGui::Separator();
+    ImGui::Text("Export Log:");
     ImGui::BeginChild("export_log", ImVec2(0, 200), true);
     {
         std::scoped_lock lk(mt_ExportState.m_ExportLogMutex);
