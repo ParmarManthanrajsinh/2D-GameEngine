@@ -1,5 +1,6 @@
 #include "GameEngine.h"
 #include "DllLoader.h"
+#include "GameConfig.h"
 #include <raylib.h>
 #include <memory>
 #include <iostream>
@@ -46,9 +47,19 @@ int main()
 {
     std::cout << "Starting game runtime..." << std::endl;
 
+    // Load configuration
+    GameConfig& config = GameConfig::GetInstance();
+    config.LoadFromFile("game_config.ini");
+    
     GameEngine engine;
-    engine.LaunchWindow(1280, 720, "My Game");
-    SetTargetFPS(60);
+    engine.LaunchWindow(config.GetWindowConfig());
+    
+    // Set FPS based on vsync setting
+    if (config.GetWindowConfig().vsync) {
+        SetTargetFPS(0); // Let vsync handle it
+    } else {
+        SetTargetFPS(config.GetWindowConfig().targetFPS);
+    }
 
     DllHandle gameLogicHandle{nullptr, {}};
     auto map = LoadGameLogic("GameLogic.dll", gameLogicHandle);
@@ -64,6 +75,12 @@ int main()
 
     while (!WindowShouldClose())
     {
+        // Handle Alt+Enter for fullscreen toggle
+        if (IsKeyDown(KEY_LEFT_ALT) && IsKeyPressed(KEY_ENTER))
+        {
+            engine.ToggleFullscreen();
+        }
+        
         float dt = GetFrameTime();
         engine.UpdateMap(dt);
 

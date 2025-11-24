@@ -1,5 +1,6 @@
 #include "GameEngine.h"
 #include "MapManager.h"
+#include "GameConfig.h"
 
 GameEngine::GameEngine()
 {
@@ -28,6 +29,67 @@ void GameEngine::LaunchWindow(int width, int height, const char* title)
 		<< std::endl;
 
 	InitWindow(width, height, title);
+}
+
+void GameEngine::LaunchWindow(const WindowConfig& config)
+{
+	m_WindowWidth = config.width;
+	m_WindowHeight = config.height;
+	m_WindowTitle = config.title;
+
+	std::cout << "Window initialized from config: "
+		<< config.title
+		<< " ("
+		<< config.width
+		<< "x"
+		<< config.height
+		<< ") "
+		<< (config.fullscreen ? "Fullscreen" : "Windowed")
+		<< std::endl;
+
+	// Set window flags before initialization
+	unsigned int flags = 0;
+	if (config.resizable) flags |= FLAG_WINDOW_RESIZABLE;
+	if (config.vsync) flags |= FLAG_VSYNC_HINT;
+
+	if (flags != 0) {
+		SetConfigFlags(flags);
+	}
+
+	InitWindow(config.width, config.height, config.title.c_str());
+
+	// Set fullscreen after window creation if needed
+	if (config.fullscreen) {
+		ToggleFullscreen();
+	}
+}
+
+void GameEngine::ToggleFullscreen()
+{
+	::ToggleFullscreen();
+	if (IsWindowFullscreen())
+	{
+		std::cout << "Switched to fullscreen mode" << std::endl;
+	}
+	else
+	{
+		std::cout << "Switched to windowed mode" << std::endl;
+	}
+}
+
+void GameEngine::SetWindowMode(bool fullscreen)
+{
+	bool isCurrentlyFullscreen = IsWindowFullscreen();
+	if (fullscreen && !isCurrentlyFullscreen)
+	{
+		::ToggleFullscreen();
+		std::cout << "Switched to fullscreen mode" << std::endl;
+	}
+	else if (!fullscreen && isCurrentlyFullscreen)
+	{
+		::ToggleFullscreen();
+		std::cout << "Switched to windowed mode" << std::endl;
+	}
 }
 
 void GameEngine::SetMap(std::unique_ptr<GameMap> game_map)

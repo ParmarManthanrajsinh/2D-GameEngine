@@ -102,6 +102,9 @@ Copy-Item "Documentation/DISTRIBUTION_GUIDE.md" "$DistPath/Documentation/" -Forc
 # Copy build helper script
 Copy-Item "build_gamelogic.bat" "$DistPath/" -Force
 
+# Copy default game configuration
+Copy-Item "game_config.ini" "$DistPath/" -Force
+
 Write-Host "Creating build configuration..." -ForegroundColor Yellow
 
 Write-Host "Distribution created successfully in '$DistPath'" -ForegroundColor Green
@@ -110,6 +113,7 @@ Write-Host "Distribution contents:" -ForegroundColor Cyan
 Write-Host "- app.exe (main game engine/editor)" -ForegroundColor White
 Write-Host "- GameLogic.dll (hot-reloadable game logic)" -ForegroundColor White
 Write-Host "- raylib.dll (required at runtime)" -ForegroundColor White
+Write-Host "- game_config.ini (window and game settings)" -ForegroundColor White
 Write-Host "- raylib/ (raylib development files)" -ForegroundColor White
 Write-Host "  - include/ (raylib headers)" -ForegroundColor White
 Write-Host "  - lib/ (raylib.lib)" -ForegroundColor White

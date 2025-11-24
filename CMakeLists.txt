@@ -97,7 +97,7 @@ add_custom_command(TARGET GameLogic POST_BUILD
 # Game-only runtime executable
 # ------------------------------
 add_executable(game
-    Game/main_game.cpp
+    Game/game.cpp
     Game/DllLoader.cpp
 )
 

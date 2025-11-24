@@ -85,6 +85,13 @@ private:
         // Build config is now fixed to Release only
         std::string m_ExportPath = "export";
         std::string m_GameName = "MyGame";
+        // Window configuration options
+        int m_WindowWidth = 1280;
+        int m_WindowHeight = 720;
+        bool m_Fullscreen = false;
+        bool m_Resizable = true;
+        bool m_VSync = true;
+        int m_TargetFPS = 60;
         std::vector<std::string> m_ExportLogs;
         std::mutex m_ExportLogMutex;
         std::thread m_ExportThread;
