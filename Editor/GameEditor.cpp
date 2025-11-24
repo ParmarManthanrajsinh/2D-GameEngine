@@ -258,9 +258,9 @@ void GameEditor::Run()
 
 		ImGui::DockSpaceOverViewport(0, m_Viewport);
 
-		DrawSceneWindow();
 		DrawMapSelectionUI();
         DrawExportPanel();
+		DrawSceneWindow();
 
 		rlImGuiEnd();
 		EndDrawing();
