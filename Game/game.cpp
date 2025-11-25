@@ -6,7 +6,7 @@
 #include <iostream>
 using CreateGameMapFunc = GameMap* (*)();
 
-static std::unique_ptr<GameMap> sf_LoadGameLogic
+static std::unique_ptr<GameMap> s_fLoadGameLogic
 (
     const char* dll_path, DllHandle& out_handle
 )
@@ -48,23 +48,23 @@ int main()
 
     // Load configuration
     GameConfig& config = GameConfig::GetInstance();
-    config.LoadFromFile("game_config.ini");
+    config.m_bLoadFromFile("game_config.ini");
     
     GameEngine engine;
     engine.LaunchWindow(config.GetWindowConfig());
     
     // Set FPS based on vsync setting
-    if (config.GetWindowConfig().vsync) 
+    if (config.GetWindowConfig().b_Vsync) 
     {
         SetTargetFPS(0); // Let vsync handle it
     }
     else 
     {
-        SetTargetFPS(config.GetWindowConfig().targetFPS);
+        SetTargetFPS(config.GetWindowConfig().target_fps);
     }
 
     DllHandle game_logic_handle{nullptr, {}};
-    auto map = sf_LoadGameLogic("GameLogic.dll", game_logic_handle);
+    auto map = s_fLoadGameLogic("GameLogic.dll", game_logic_handle);
     if (map)
     {
         engine.SetMap(std::move(map));
