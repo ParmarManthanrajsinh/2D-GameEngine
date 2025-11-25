@@ -28,7 +28,7 @@ The engine follows a modular architecture with clear separation of concerns:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        Main Application                      │
+│                        Main Application                     │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐ │
 │  │   GameEditor    │  │   GameEngine    │  │  DllLoader   │ │
 │  │  (ImGui UI)     │  │ (Core Runtime)  │  │ (Hot-Reload) │ │
@@ -38,7 +38,7 @@ The engine follows a modular architecture with clear separation of concerns:
                                │ Loads
                                ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                     GameLogic.dll                          │
+│                     GameLogic.dll                           │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐ │
 │  │   MapManager    │  │   Custom Maps   │  │  Particles   │ │
 │  │ (Map System)    │  │  (Game Logic)   │  │  (Effects)   │ │
@@ -48,7 +48,7 @@ The engine follows a modular architecture with clear separation of concerns:
                                │ Uses
                                ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                      Engine Static Lib                     │
+│                      Engine Static Lib                      │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐ │
 │  │    GameMap      │  │   GameConfig    │  │    Raylib    │ │
 │  │  (Base Class)   │  │ (Configuration) │  │ (Graphics)   │ │
