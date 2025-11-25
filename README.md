@@ -158,6 +158,18 @@ This creates a complete package in the `dist/` folder with everything needed for
 
 ## 📚 Documentation
 
+### Core Documentation
+- **[API Reference](Documentation/API_REFERENCE.md)** - Complete API documentation and examples
+- **[Developer Guide](Documentation/DEVELOPER_GUIDE.md)** - Architecture, patterns, and best practices
+- **[Architecture](Documentation/ARCHITECTURE.md)** - Technical architecture and design decisions
+- **[Troubleshooting](Documentation/TROUBLESHOOTING.md)** - Solutions to common problems
+
+### Specialized Guides
+- **[Particle System Guide](Documentation/PARTICLE_SYSTEM_GUIDE.md)** - Comprehensive particle effects documentation
+- **[Window Configuration](Documentation/WINDOW_CONFIGURATION.md)** - Window and display settings
+- **[Naming Convention](Documentation/NAMING_CONVENTION.md)** - Code style guidelines
+
+### Distribution
 - **[Distribution Guide](Documentation/DISTRIBUTION_GUIDE.md)** - How to create distribution packages
 - **[Distribution README](Documentation/README_DISTRIBUTION.md)** - User guide for distributed packages
 
