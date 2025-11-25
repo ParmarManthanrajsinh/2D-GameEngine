@@ -814,23 +814,35 @@ void GameEditor::DrawExportPanel()
     ImGui::Spacing();
 
     // Validation
-    if (m_ExportState.m_WindowWidth < 320) 
+	if (m_ExportState.m_WindowWidth < 320)
+	{
 		m_ExportState.m_WindowWidth = 320;
+	}
 
-    if (m_ExportState.m_WindowHeight < 240) 
+	if (m_ExportState.m_WindowHeight < 240)
+	{
 		m_ExportState.m_WindowHeight = 240;
+	}
 
-    if (m_ExportState.m_WindowWidth > 7680) 
+	if (m_ExportState.m_WindowWidth > 7680)
+	{
 		m_ExportState.m_WindowWidth = 7680;
+	}
 
-    if (m_ExportState.m_WindowHeight > 4320) 
+	if (m_ExportState.m_WindowHeight > 4320)
+	{
 		m_ExportState.m_WindowHeight = 4320;
+	}
 
-    if (m_ExportState.m_TargetFPS < 0) 
+	if (m_ExportState.m_TargetFPS < 0)
+	{
 		m_ExportState.m_TargetFPS = 0;
+	}
 
-    if (m_ExportState.m_TargetFPS > 1000) 
+	if (m_ExportState.m_TargetFPS > 1000)
+	{
 		m_ExportState.m_TargetFPS = 1000;
+	}
 
     // === EXPORT SETTINGS ===
     ImGui::Text("Export Settings");
