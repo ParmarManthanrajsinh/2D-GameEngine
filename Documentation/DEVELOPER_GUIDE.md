@@ -1,8 +1,5 @@
 # 2D Game Engine - Developer Guide
 
-**Version:** 1.0  
-**Last Updated:** January 2025
-
 This guide provides comprehensive information for developers working with the 2D Game Engine, covering architecture, development patterns, and best practices.
 
 ---
