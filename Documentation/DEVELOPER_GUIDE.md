@@ -11,9 +11,6 @@ This guide provides comprehensive information for developers working with the 2D
 3. [Hot-Reload Development](#hot-reload-development)
 4. [Map Development Patterns](#map-development-patterns)
 5. [Asset Management](#asset-management)
-6. [Performance Guidelines](#performance-guidelines)
-7. [Debugging and Testing](#debugging-and-testing)
-8. [Distribution and Deployment](#distribution-and-deployment)
 
 ---
 
