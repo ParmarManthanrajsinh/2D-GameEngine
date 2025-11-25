@@ -31,7 +31,10 @@ public:
 
     // Hook for MapManager: injects a function that executes a map transition.
     // Maps call RequestGotoMap to trigger transitions safely (no global/static).
-    void SetTransitionCallback(std::function<void(std::string_view, bool)> cb);
+    void SetTransitionCallback
+    (
+        std::function<void(std::string_view, bool)> cb
+    );
 
 protected:
     // Helper maps can call to request a transition (executes callback if provided)

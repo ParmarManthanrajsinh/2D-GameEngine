@@ -42,13 +42,13 @@ private:
     std::string m_CurrentMapId;
     
     // Map metadata for better developer experience
-    struct MapInfo 
+    struct t_MapInfo 
     {
         std::string description;
         bool b_IsLoaded = false;
     };
 
-    std::unordered_map<std::string, MapInfo> m_MapInfo;
+    std::unordered_map<std::string, t_MapInfo> m_MapInfo;
     bool m_bUsingDefaultMap;
 
 public:
