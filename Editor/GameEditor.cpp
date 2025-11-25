@@ -875,7 +875,7 @@ void GameEditor::DrawExportPanel()
     ImGui::SameLine();
     if (ImGui::Button("Browse", ImVec2(80.0f, 0)))
     {
-        const char* selected_path = 
+        const std::string_view selected_path = 
 		tinyfd_saveFileDialog
 		(
 			"Select Export Folder", 
@@ -884,7 +884,7 @@ void GameEditor::DrawExportPanel()
 			NULL, 
 			NULL
 		);  
-        if (selected_path)  
+        if (selected_path.data())
         {  
             std::string parent_path = 
 				fs::path(selected_path).parent_path().string();  
@@ -1028,17 +1028,17 @@ void GameEditor::DrawExportPanel()
                         fs::create_directories(export_dir);
                         
                         // Use custom game name for the executable
-                        std::string gameExeName = m_ExportState.m_GameName + ".exe";
+                        std::string game_exe_name = m_ExportState.m_GameName + ".exe";
                         s_fAppendLogLine
 						(
 							m_ExportState.m_ExportLogs,
 							m_ExportState.m_ExportLogMutex, 
-							"Creating game executable: " + gameExeName
+							"Creating game executable: " + game_exe_name
 						);
                         fs::copy_file
 						(
 							app_exe, 
-							export_dir / gameExeName, 
+							export_dir / game_exe_name, 
 							fs::copy_options::overwrite_existing
 						);
                         
@@ -1049,7 +1049,7 @@ void GameEditor::DrawExportPanel()
 							m_ExportState.m_ExportLogMutex, 
 							"Creating game configuration..."
 						);
-                        std::string configContent = 
+                        std::string config_content = 
                             "# Game Configuration File\n"
                             "# Window Settings\n"
                             "width=" + std::to_string(m_ExportState.m_WindowWidth) + "\n"
@@ -1060,12 +1060,12 @@ void GameEditor::DrawExportPanel()
                             "target_fps=" + std::to_string(m_ExportState.m_TargetFPS) + "\n"
                             "title=" + m_ExportState.m_GameName + "\n";
                         
-                        fs::path configPath = export_dir / "game_config.ini";
-                        std::ofstream configFile(configPath.string());
-                        if (configFile.is_open()) 
+                        fs::path config_path = export_dir / "game_config.ini";
+                        std::ofstream config_file(config_path.string());
+                        if (config_file.is_open()) 
 						{
-                            configFile << configContent;
-                            configFile.close();
+                            config_file << config_content;
+                            config_file.close();
                         }
                         
                         s_fAppendLogLine
@@ -1539,7 +1539,7 @@ bool GameEditor::b_LoadGameLogic(const char* dll_path)
 	{
 		std::cerr << "Failed to load GameLogic DLL: "
 				  << dll_path
-				  << std::endl;
+				  << "\n";
 
 		return false;
 	}
@@ -1553,7 +1553,7 @@ bool GameEditor::b_LoadGameLogic(const char* dll_path)
 
 	if (!new_factory)
 	{
-		std::cerr << "Failed to get CreateGameMap from DLL" << std::endl;
+		std::cerr << "Failed to get CreateGameMap from DLL" << "\n";
 		UnloadDll(new_dll);
 		return false;
 	}
@@ -1562,7 +1562,7 @@ bool GameEditor::b_LoadGameLogic(const char* dll_path)
 	std::unique_ptr<GameMap> new_map(new_factory());
 	if (!new_map)
 	{
-		std::cerr << "CreateGameMap returned null" << std::endl;
+		std::cerr << "CreateGameMap returned null" << "\n";
 		UnloadDll(new_dll);
 		return false;
 	}

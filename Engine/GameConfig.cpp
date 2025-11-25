@@ -6,17 +6,17 @@
 
 GameConfig& GameConfig::GetInstance() 
 {
-    static GameConfig instance;
-    return instance;
+    static GameConfig s_Instance;
+    return s_Instance;
 }
 
-bool GameConfig::m_bLoadFromFile(const std::string& configPath) 
+bool GameConfig::m_bLoadFromFile(const std::string& config_path) 
 {
-    std::ifstream file(configPath);
+    std::ifstream file(config_path);
     if (!file.is_open()) 
     {
         std::cout << "Config file not found: " 
-                  << configPath << ". Using defaults." << "\n";
+                  << config_path << ". Using defaults." << "\n";
         return false;
     }
     
@@ -71,7 +71,7 @@ bool GameConfig::m_bLoadFromFile(const std::string& configPath)
     }
     
     file.close();
-    std::cout << "Loaded configuration from: " << configPath << "\n";
+    std::cout << "Loaded configuration from: " << config_path << "\n";
     return true;
 }
 

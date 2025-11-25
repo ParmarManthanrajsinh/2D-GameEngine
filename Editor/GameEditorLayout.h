@@ -5,7 +5,7 @@
 // ImGui::GetIO().IniFilename = nullptr;
 
 // Default docking layout for the editor, loaded on startup
-static const char* sc_EDITOR_DEFAULT_INI = 
+static constexpr std::string_view s_cEDITOR_DEFAULT_INI = 
 R"(
 [Window][WindowOverViewport_11111111]
 Pos=0,0
@@ -47,12 +47,12 @@ inline void LoadEditorDefaultIni()
 {
     ImGui::LoadIniSettingsFromMemory
     (
-        sc_EDITOR_DEFAULT_INI, strlen(sc_EDITOR_DEFAULT_INI)
+        s_cEDITOR_DEFAULT_INI.data(), strlen(s_cEDITOR_DEFAULT_INI.data())
     );
 }
 
 // Core Shaders for raylib
-constexpr std::string_view ce_OPAQUE_VERT_SHADER_SRC = R"(
+constexpr std::string_view c_OPAQUE_VERT_SHADER_SRC = R"(
 #version 330
 in vec3 vertexPosition;
 in vec2 vertexTexCoord;
@@ -68,7 +68,7 @@ void main()
 }
 )";
 
-constexpr std::string_view ce_OPAQUE_FRAG_SHADER_SRC = R"(
+constexpr std::string_view c_OPAQUE_FRAG_SHADER_SRC = R"(
 #version 330
 in vec2 fragTexCoord;
 in vec4 fragColor;
@@ -85,6 +85,6 @@ inline Shader LoadOpaqueShader()
 {
     return LoadShaderFromMemory
     (
-        ce_OPAQUE_VERT_SHADER_SRC.data(), ce_OPAQUE_FRAG_SHADER_SRC.data()
+        c_OPAQUE_VERT_SHADER_SRC.data(), c_OPAQUE_FRAG_SHADER_SRC.data()
     );
 }
