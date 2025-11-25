@@ -15,7 +15,7 @@ static void s_fAppendLogLine
 	const std::string& line
 );
 
-static bool s_fValidateExportFolder
+static bool s_bfValidateExportFolder
 (
 	const std::string& out_dir, 
 	std::vector<std::string>& logs, 
@@ -632,7 +632,8 @@ void GameEditor::DrawExportPanel()
     ImGui::Begin("Export", nullptr, ImGuiWindowFlags_NoCollapse);
 
     // Join previous worker if it finished to avoid accumulating threads
-    if (!m_ExportState.m_bIsExporting && m_ExportState.m_ExportThread.joinable())
+    if (!m_ExportState.m_bIsExporting && 
+		 m_ExportState.m_ExportThread.joinable())
     {
         m_ExportState.m_ExportThread.join();
     }
@@ -798,11 +799,13 @@ void GameEditor::DrawExportPanel()
     }
     ImGui::PopItemWidth();
     
-    if (m_ExportState.m_bVSync) {
+    if (m_ExportState.m_bVSync) 
+	{
         ImGui::EndDisabled();
     }
     
-    if (m_ExportState.m_TargetFPS == 0 && !m_ExportState.m_bVSync) {
+    if (m_ExportState.m_TargetFPS == 0 && !m_ExportState.m_bVSync) 
+	{
         ImGui::SameLine();
         ImGui::TextDisabled("(Unlimited)");
     }
@@ -1301,7 +1304,7 @@ void GameEditor::DrawExportPanel()
 				);
                 
                 // Validate
-                bool b_Ok = s_fValidateExportFolder
+                bool b_Ok = s_bfValidateExportFolder
 				(
 					m_ExportState.m_ExportPath, 
 					m_ExportState.m_ExportLogs, 
@@ -1452,7 +1455,7 @@ void GameEditor::DrawExportPanel()
                     text_color = ImVec4(1.0f, 0.8f, 0.3f, 1.0f); 
                 }
                 else if (line.find("completed") != std::string::npos || 
-                         line.find("SUCCESS") != std::string::npos ||
+                         line.find("SUCCESS") != std::string::npos   ||
                          line.find("Copied") != std::string::npos)
                 {
 					// Green
@@ -1642,7 +1645,7 @@ static void s_fAppendLogLine
 	logs.push_back(line);
 }
 
-static bool s_fValidateExportFolder
+static bool s_bfValidateExportFolder
 (
 	const std::string& out_dir, 
 	std::vector<std::string>& logs, 
@@ -1688,7 +1691,7 @@ static bool s_fValidateExportFolder
 	};
 	// For validation, we need to check for "MyGame.exe" since we don't have access to the actual game name here
 	// This is a limitation - we'll just check for any .exe file in the export directory
-	bool foundGameExe = false;
+	bool b_FoundGameExe = false;
 	std::error_code ec;
 	if (fs::exists(out_dir, ec) && !ec) 
 	{
@@ -1700,7 +1703,7 @@ static bool s_fValidateExportFolder
 				entry.path().extension() == ".exe"
 			) 
 			{
-				foundGameExe = true;
+				b_FoundGameExe = true;
 				s_fAppendLogLine
 				(
 					logs, 
@@ -1714,7 +1717,7 @@ static bool s_fValidateExportFolder
 			}
 		}
 	}
-	if (!foundGameExe) 
+	if (!b_FoundGameExe) 
 	{
 		s_fAppendLogLine(logs, mtx, "Missing: Game executable (.exe file)");
 		b_Ok = false;
