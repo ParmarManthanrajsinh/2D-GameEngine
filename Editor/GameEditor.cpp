@@ -8,14 +8,14 @@
 using Clock = std::chrono::steady_clock;
 
 // Forward declarations for export helpers
-static void sf_AppendLogLine
+static void s_fAppendLogLine
 (
 	std::vector<std::string>& logs, 
 	std::mutex& mtx, 
 	const std::string& line
 );
 
-static bool sf_ValidateExportFolder
+static bool s_fValidateExportFolder
 (
 	const std::string& out_dir, 
 	std::vector<std::string>& logs, 
@@ -33,6 +33,7 @@ GameEditor::GameEditor()
 	  m_RestartIcon({ 0 }),
 	  m_RestoreIcon({ 0 }),
 	  m_CompileIcon({ 0 }),
+	  m_CleanIcon({ 0 }),
 	  m_bIconsLoaded(false),
 	  m_GameLogicDll{},
 	  m_CreateGameMap(nullptr),
@@ -338,7 +339,7 @@ void GameEditor::DrawToolbarBackground()
 	);
 }
 
-static void sf_DrawSpinner(float radius, float thickness, const ImU32& color)
+static void s_fDrawSpinner(float radius, float thickness, const ImU32& color)
 {
 	// Group all float variables together for cache locality
 	alignas(16) struct 
@@ -352,7 +353,7 @@ static void sf_DrawSpinner(float radius, float thickness, const ImU32& color)
 		float time_x8;
 		float inv_num_segments;
 		float angle_range;
-	} t_Vars{};
+	} vars{};
 
 	ImVec2 pos = ImGui::GetCursorScreenPos();
 	ImGui::Dummy(ImVec2(radius * 2, radius * 2));
@@ -360,35 +361,35 @@ static void sf_DrawSpinner(float radius, float thickness, const ImU32& color)
 	ImDrawList* DrawList = ImGui::GetWindowDrawList();
 	DrawList->PathClear();
 
-	t_Vars.time = static_cast<float>(ImGui::GetTime());
-	constexpr int ce_NUM_SEGMENTS = 30;
-	t_Vars.start = fabsf(sinf(t_Vars.time * 1.8f) * (ce_NUM_SEGMENTS - 5));
+	vars.time = static_cast<float>(ImGui::GetTime());
+	constexpr int c_NUM_SEGMENTS = 30;
+	vars.start = fabsf(sinf(vars.time * 1.8f) * (c_NUM_SEGMENTS - 5));
 
 	// Precompute invariant values
-	t_Vars.inv_num_segments = 1.0f / static_cast<float>(ce_NUM_SEGMENTS);
-	t_Vars.time_x8 = t_Vars.time * 8.0f;
+	vars.inv_num_segments = 1.0f / static_cast<float>(c_NUM_SEGMENTS);
+	vars.time_x8 = vars.time * 8.0f;
 
-	t_Vars.a_min = 3.14159f * 2.0f * t_Vars.start * t_Vars.inv_num_segments;
-	t_Vars.a_max = 3.14159f * 2.0f * static_cast<float>(ce_NUM_SEGMENTS - 3) * t_Vars.inv_num_segments;
-	t_Vars.angle_range = t_Vars.a_max - t_Vars.a_min;
+	vars.a_min = 3.14159f * 2.0f * vars.start * vars.inv_num_segments;
+	vars.a_max = 3.14159f * 2.0f * static_cast<float>(c_NUM_SEGMENTS - 3) * vars.inv_num_segments;
+	vars.angle_range = vars.a_max - vars.a_min;
 
 	const ImVec2 CENTER = ImVec2(pos.x + radius, pos.y + radius);
-	t_Vars.centre_x = CENTER.x;
-	t_Vars.centre_y = CENTER.y;
+	vars.centre_x = CENTER.x;
+	vars.centre_y = CENTER.y;
 
 	// Pre-allocate path memory
-	for (int i = 0; i < ce_NUM_SEGMENTS; i++)
+	for (int i = 0; i < c_NUM_SEGMENTS; i++)
 	{
-		const float A = t_Vars.a_min + (static_cast<float>(i) * t_Vars.inv_num_segments) * t_Vars.angle_range;
+		const float A = vars.a_min + (static_cast<float>(i) * vars.inv_num_segments) * vars.angle_range;
 
-		const float ANGLE = A + t_Vars.time_x8;
+		const float ANGLE = A + vars.time_x8;
 
 		DrawList->PathLineTo
 		(
 			ImVec2
 			(
-				t_Vars.centre_x + cosf(ANGLE) * radius,
-				t_Vars.centre_y + sinf(ANGLE) * radius
+				vars.centre_x + cosf(ANGLE) * radius,
+				vars.centre_y + sinf(ANGLE) * radius
 			)
 		);
 	}
@@ -551,7 +552,7 @@ void GameEditor::DrawSceneWindow()
 			ImGui::GetCursorPosY() - vertical_offset + spinner_y_offset
 		);
 
-		sf_DrawSpinner
+		s_fDrawSpinner
 		(
 			10.0f, 
 			2.0f, 
@@ -631,9 +632,9 @@ void GameEditor::DrawExportPanel()
     ImGui::Begin("Export", nullptr, ImGuiWindowFlags_NoCollapse);
 
     // Join previous worker if it finished to avoid accumulating threads
-    if (!mt_ExportState.m_bIsExporting && mt_ExportState.m_ExportThread.joinable())
+    if (!m_ExportState.m_bIsExporting && m_ExportState.m_ExportThread.joinable())
     {
-        mt_ExportState.m_ExportThread.join();
+        m_ExportState.m_ExportThread.join();
     }
 
     ImGui::Text("Export standalone game");
@@ -656,7 +657,7 @@ void GameEditor::DrawExportPanel()
     strncpy_s
 	(
 		game_name_buffer, 
-		mt_ExportState.m_GameName.c_str(), 
+		m_ExportState.m_GameName.c_str(), 
 		sizeof(game_name_buffer) - 1
 	);
     game_name_buffer[sizeof(game_name_buffer) - 1] = '\0';
@@ -670,7 +671,7 @@ void GameEditor::DrawExportPanel()
 		)
 	)
     {
-        mt_ExportState.m_GameName = game_name_buffer;
+        m_ExportState.m_GameName = game_name_buffer;
     }
     ImGui::PopItemWidth();
     
@@ -692,7 +693,7 @@ void GameEditor::DrawExportPanel()
     ImGui::SetCursorPosX(120.0f);
     
     ImGui::PushItemWidth(80.0f);
-    ImGui::InputInt("##width", &mt_ExportState.m_WindowWidth, 0, 0);
+    ImGui::InputInt("##width", &m_ExportState.m_WindowWidth, 0, 0);
     ImGui::PopItemWidth();
     
     ImGui::SameLine();
@@ -700,7 +701,7 @@ void GameEditor::DrawExportPanel()
     ImGui::SameLine();
     
     ImGui::PushItemWidth(80.0f);
-    ImGui::InputInt("##height", &mt_ExportState.m_WindowHeight, 0, 0);
+    ImGui::InputInt("##height", &m_ExportState.m_WindowHeight, 0, 0);
     ImGui::PopItemWidth();
     
     ImGui::SameLine();
@@ -709,28 +710,28 @@ void GameEditor::DrawExportPanel()
     {
         if (ImGui::Selectable("1920×1080 (Full HD)")) 
 		{
-            mt_ExportState.m_WindowWidth = 1920;
-            mt_ExportState.m_WindowHeight = 1080;
+            m_ExportState.m_WindowWidth = 1920;
+            m_ExportState.m_WindowHeight = 1080;
         }
         if (ImGui::Selectable("1600×900 (HD+)")) 
 		{
-            mt_ExportState.m_WindowWidth = 1600;
-            mt_ExportState.m_WindowHeight = 900;
+            m_ExportState.m_WindowWidth = 1600;
+            m_ExportState.m_WindowHeight = 900;
         }
         if (ImGui::Selectable("1280×720 (HD)")) 
 		{
-            mt_ExportState.m_WindowWidth = 1280;
-            mt_ExportState.m_WindowHeight = 720;
+            m_ExportState.m_WindowWidth = 1280;
+            m_ExportState.m_WindowHeight = 720;
         }
         if (ImGui::Selectable("1024×768 (4:3)")) 
 		{
-            mt_ExportState.m_WindowWidth = 1024;
-            mt_ExportState.m_WindowHeight = 768;
+            m_ExportState.m_WindowWidth = 1024;
+            m_ExportState.m_WindowHeight = 768;
         }
         if (ImGui::Selectable("800×600 (SVGA)")) 
 		{
-            mt_ExportState.m_WindowWidth = 800;
-            mt_ExportState.m_WindowHeight = 600;
+            m_ExportState.m_WindowWidth = 800;
+            m_ExportState.m_WindowHeight = 600;
         }
         ImGui::EndCombo();
     }
@@ -744,10 +745,10 @@ void GameEditor::DrawExportPanel()
     ImGui::SameLine();
     ImGui::SetCursorPosX(120.0f);
     
-    ImGui::Checkbox("Fullscreen", &mt_ExportState.m_Fullscreen);
+    ImGui::Checkbox("Fullscreen", &m_ExportState.m_bFullscreen);
     ImGui::SameLine();
     ImGui::SetCursorPosX(220.0f);
-    ImGui::Checkbox("Resizable", &mt_ExportState.m_Resizable);
+    ImGui::Checkbox("Resizable", &m_ExportState.m_bResizable);
 
     ImGui::Spacing();
 
@@ -761,8 +762,8 @@ void GameEditor::DrawExportPanel()
     ImGui::Text("V-Sync:");
     ImGui::SameLine();
     ImGui::SetCursorPosX(120.0f);
-    ImGui::Checkbox("##vsync", &mt_ExportState.m_VSync);
-    if (mt_ExportState.m_VSync) 
+    ImGui::Checkbox("##b_Vsync", &m_ExportState.m_bVSync);
+    if (m_ExportState.m_bVSync) 
 	{
         ImGui::SameLine();
         ImGui::TextDisabled("(Locks FPS to display refresh rate)");
@@ -774,34 +775,34 @@ void GameEditor::DrawExportPanel()
     ImGui::SameLine();
     ImGui::SetCursorPosX(120.0f);
     
-    if (mt_ExportState.m_VSync) 
+    if (m_ExportState.m_bVSync) 
 	{
         ImGui::BeginDisabled();
     }
     
     ImGui::PushItemWidth(80.0f);
-    ImGui::InputInt("##target_fps", &mt_ExportState.m_TargetFPS, 0, 0);
+    ImGui::InputInt("##target_fps", &m_ExportState.m_TargetFPS, 0, 0);
     ImGui::PopItemWidth();
     
     ImGui::SameLine();
     ImGui::PushItemWidth(100.0f);
     if (ImGui::BeginCombo("##fps_presets", "Presets"))
     {
-        if (ImGui::Selectable("30 FPS")) mt_ExportState.m_TargetFPS = 30;
-        if (ImGui::Selectable("60 FPS")) mt_ExportState.m_TargetFPS = 60;
-        if (ImGui::Selectable("120 FPS")) mt_ExportState.m_TargetFPS = 120;
-        if (ImGui::Selectable("144 FPS")) mt_ExportState.m_TargetFPS = 144;
-        if (ImGui::Selectable("240 FPS")) mt_ExportState.m_TargetFPS = 240;
-        if (ImGui::Selectable("Unlimited")) mt_ExportState.m_TargetFPS = 0;
+        if (ImGui::Selectable("30 FPS")) m_ExportState.m_TargetFPS = 30;
+        if (ImGui::Selectable("60 FPS")) m_ExportState.m_TargetFPS = 60;
+        if (ImGui::Selectable("120 FPS")) m_ExportState.m_TargetFPS = 120;
+        if (ImGui::Selectable("144 FPS")) m_ExportState.m_TargetFPS = 144;
+        if (ImGui::Selectable("240 FPS")) m_ExportState.m_TargetFPS = 240;
+        if (ImGui::Selectable("Unlimited")) m_ExportState.m_TargetFPS = 0;
         ImGui::EndCombo();
     }
     ImGui::PopItemWidth();
     
-    if (mt_ExportState.m_VSync) {
+    if (m_ExportState.m_bVSync) {
         ImGui::EndDisabled();
     }
     
-    if (mt_ExportState.m_TargetFPS == 0 && !mt_ExportState.m_VSync) {
+    if (m_ExportState.m_TargetFPS == 0 && !m_ExportState.m_bVSync) {
         ImGui::SameLine();
         ImGui::TextDisabled("(Unlimited)");
     }
@@ -810,23 +811,23 @@ void GameEditor::DrawExportPanel()
     ImGui::Spacing();
 
     // Validation
-    if (mt_ExportState.m_WindowWidth < 320) 
-		mt_ExportState.m_WindowWidth = 320;
+    if (m_ExportState.m_WindowWidth < 320) 
+		m_ExportState.m_WindowWidth = 320;
 
-    if (mt_ExportState.m_WindowHeight < 240) 
-		mt_ExportState.m_WindowHeight = 240;
+    if (m_ExportState.m_WindowHeight < 240) 
+		m_ExportState.m_WindowHeight = 240;
 
-    if (mt_ExportState.m_WindowWidth > 7680) 
-		mt_ExportState.m_WindowWidth = 7680;
+    if (m_ExportState.m_WindowWidth > 7680) 
+		m_ExportState.m_WindowWidth = 7680;
 
-    if (mt_ExportState.m_WindowHeight > 4320) 
-		mt_ExportState.m_WindowHeight = 4320;
+    if (m_ExportState.m_WindowHeight > 4320) 
+		m_ExportState.m_WindowHeight = 4320;
 
-    if (mt_ExportState.m_TargetFPS < 0) 
-		mt_ExportState.m_TargetFPS = 0;
+    if (m_ExportState.m_TargetFPS < 0) 
+		m_ExportState.m_TargetFPS = 0;
 
-    if (mt_ExportState.m_TargetFPS > 1000) 
-		mt_ExportState.m_TargetFPS = 1000;
+    if (m_ExportState.m_TargetFPS > 1000) 
+		m_ExportState.m_TargetFPS = 1000;
 
     // === EXPORT SETTINGS ===
     ImGui::Text("Export Settings");
@@ -841,8 +842,8 @@ void GameEditor::DrawExportPanel()
 
     char export_path_buffer[512];
     std::string current_path = 
-		mt_ExportState.m_ExportPath.empty() ? 
-		"export" : mt_ExportState.m_ExportPath;
+		m_ExportState.m_ExportPath.empty() ? 
+		"export" : m_ExportState.m_ExportPath;
 
     strncpy_s
 	(
@@ -864,7 +865,7 @@ void GameEditor::DrawExportPanel()
 		)
 	)
     {
-        mt_ExportState.m_ExportPath = export_path_buffer;
+        m_ExportState.m_ExportPath = export_path_buffer;
     }
     ImGui::PopItemWidth();
 
@@ -884,7 +885,7 @@ void GameEditor::DrawExportPanel()
         {  
             std::string parent_path = 
 				fs::path(selected_path).parent_path().string();  
-            mt_ExportState.m_ExportPath = parent_path;  
+            m_ExportState.m_ExportPath = parent_path;  
         }
     }
 
@@ -904,7 +905,7 @@ void GameEditor::DrawExportPanel()
     ImGui::Spacing();
 
     // === EXPORT ACTION ===
-    if (!mt_ExportState.m_bIsExporting)
+    if (!m_ExportState.m_bIsExporting)
     {
         // Center the export button and make it prominent
         float button_width = 200.0f;
@@ -929,24 +930,24 @@ void GameEditor::DrawExportPanel()
         
         if (ImGui::Button("Start Export", ImVec2(button_width, 40.0f)))
         {
-            mt_ExportState.m_bIsExporting = true;
-            mt_ExportState.m_bCancelExport = false;
-            mt_ExportState.m_bExportSuccess = false;
-            mt_ExportState.m_ExportLogs.clear();
+            m_ExportState.m_bIsExporting = true;
+            m_ExportState.m_bCancelExport = false;
+            m_ExportState.m_bExportSuccess = false;
+            m_ExportState.m_ExportLogs.clear();
 
-            // mt_ExportState.m_ExportPath is now set directly from the UI
+            // m_ExportState.m_ExportPath is now set directly from the UI
 
-            mt_ExportState.m_ExportThread = std::thread
+            m_ExportState.m_ExportThread = std::thread
 			(
 				[this]() 
 				{
 					// Create export directory if it doesn't exist
-					fs::create_directories(mt_ExportState.m_ExportPath);
+					fs::create_directories(m_ExportState.m_ExportPath);
                 
-					sf_AppendLogLine
+					s_fAppendLogLine
 					(
-						mt_ExportState.m_ExportLogs,
-						mt_ExportState.m_ExportLogMutex, 
+						m_ExportState.m_ExportLogs,
+						m_ExportState.m_ExportLogMutex, 
 						"Starting export process..."
 					);
                 
@@ -963,10 +964,10 @@ void GameEditor::DrawExportPanel()
                 
 					if (b_IsDistribution) 
 					{
-						sf_AppendLogLine
+						s_fAppendLogLine
 						(
-							mt_ExportState.m_ExportLogs,
-							mt_ExportState.m_ExportLogMutex, 
+							m_ExportState.m_ExportLogs,
+							m_ExportState.m_ExportLogMutex, 
 							"Distribution environment detected - using direct file copy..."
 						);
                     
@@ -979,56 +980,56 @@ void GameEditor::DrawExportPanel()
                     
                     if (!fs::exists(app_exe)) 
 					{
-                        sf_AppendLogLine
+                        s_fAppendLogLine
 						(
-							mt_ExportState.m_ExportLogs,
-							mt_ExportState.m_ExportLogMutex, 
+							m_ExportState.m_ExportLogs,
+							m_ExportState.m_ExportLogMutex, 
 							"ERROR: app.exe not found in distribution!"
 						);
-                        mt_ExportState.m_bExportSuccess = false;
-                        mt_ExportState.m_bIsExporting = false;
+                        m_ExportState.m_bExportSuccess = false;
+                        m_ExportState.m_bIsExporting = false;
                         return;
                     }
                     
                     if (!fs::exists(game_logic_dll)) 
 					{
-                        sf_AppendLogLine
+                        s_fAppendLogLine
 						(
-							mt_ExportState.m_ExportLogs,
-							mt_ExportState.m_ExportLogMutex, 
+							m_ExportState.m_ExportLogs,
+							m_ExportState.m_ExportLogMutex, 
 							"ERROR: GameLogic.dll not found in distribution!"
 						);
-                        mt_ExportState.m_bExportSuccess = false;
-                        mt_ExportState.m_bIsExporting = false;
+                        m_ExportState.m_bExportSuccess = false;
+                        m_ExportState.m_bIsExporting = false;
                         return;
                     }
                     
                     if (!fs::exists(raylib_dll)) 
 					{
-                        sf_AppendLogLine
+                        s_fAppendLogLine
 						(
-							mt_ExportState.m_ExportLogs ,
-							mt_ExportState.m_ExportLogMutex, 
+							m_ExportState.m_ExportLogs ,
+							m_ExportState.m_ExportLogMutex, 
 							"ERROR: raylib.dll not found in distribution!"
 						);
-                        mt_ExportState.m_bExportSuccess = false;
-                        mt_ExportState.m_bIsExporting = false;
+                        m_ExportState.m_bExportSuccess = false;
+                        m_ExportState.m_bIsExporting = false;
                         return;
                     }
                     
                     try 
 					{
                         fs::path export_dir = 
-							current_path / mt_ExportState.m_ExportPath;
+							current_path / m_ExportState.m_ExportPath;
 
                         fs::create_directories(export_dir);
                         
                         // Use custom game name for the executable
-                        std::string gameExeName = mt_ExportState.m_GameName + ".exe";
-                        sf_AppendLogLine
+                        std::string gameExeName = m_ExportState.m_GameName + ".exe";
+                        s_fAppendLogLine
 						(
-							mt_ExportState.m_ExportLogs,
-							mt_ExportState.m_ExportLogMutex, 
+							m_ExportState.m_ExportLogs,
+							m_ExportState.m_ExportLogMutex, 
 							"Creating game executable: " + gameExeName
 						);
                         fs::copy_file
@@ -1039,22 +1040,22 @@ void GameEditor::DrawExportPanel()
 						);
                         
                         // Create game configuration file
-                        sf_AppendLogLine
+                        s_fAppendLogLine
 						(
-							mt_ExportState.m_ExportLogs,
-							mt_ExportState.m_ExportLogMutex, 
+							m_ExportState.m_ExportLogs,
+							m_ExportState.m_ExportLogMutex, 
 							"Creating game configuration..."
 						);
                         std::string configContent = 
                             "# Game Configuration File\n"
                             "# Window Settings\n"
-                            "width=" + std::to_string(mt_ExportState.m_WindowWidth) + "\n"
-                            "height=" + std::to_string(mt_ExportState.m_WindowHeight) + "\n"
-                            "fullscreen=" + (mt_ExportState.m_Fullscreen ? "true" : "false") + "\n"
-                            "resizable=" + (mt_ExportState.m_Resizable ? "true" : "false") + "\n"
-                            "vsync=" + (mt_ExportState.m_VSync ? "true" : "false") + "\n"
-                            "targetFPS=" + std::to_string(mt_ExportState.m_TargetFPS) + "\n"
-                            "title=" + mt_ExportState.m_GameName + "\n";
+                            "width=" + std::to_string(m_ExportState.m_WindowWidth) + "\n"
+                            "height=" + std::to_string(m_ExportState.m_WindowHeight) + "\n"
+                            "b_Fullscreen=" + (m_ExportState.m_bFullscreen ? "true" : "false") + "\n"
+                            "b_Resizable=" + (m_ExportState.m_bResizable ? "true" : "false") + "\n"
+                            "b_Vsync=" + (m_ExportState.m_bVSync ? "true" : "false") + "\n"
+                            "target_fps=" + std::to_string(m_ExportState.m_TargetFPS) + "\n"
+                            "title=" + m_ExportState.m_GameName + "\n";
                         
                         fs::path configPath = export_dir / "game_config.ini";
                         std::ofstream configFile(configPath.string());
@@ -1064,10 +1065,10 @@ void GameEditor::DrawExportPanel()
                             configFile.close();
                         }
                         
-                        sf_AppendLogLine
+                        s_fAppendLogLine
 						(
-							mt_ExportState.m_ExportLogs,
-							mt_ExportState.m_ExportLogMutex, 
+							m_ExportState.m_ExportLogs,
+							m_ExportState.m_ExportLogMutex, 
 							"Copying GameLogic.dll..."
 						);
                         fs::copy_file
@@ -1077,10 +1078,10 @@ void GameEditor::DrawExportPanel()
 							fs::copy_options::overwrite_existing
 						);
                         
-                        sf_AppendLogLine
+                        s_fAppendLogLine
 						(
-							mt_ExportState.m_ExportLogs,
-							mt_ExportState.m_ExportLogMutex, 
+							m_ExportState.m_ExportLogs,
+							m_ExportState.m_ExportLogMutex, 
 							"Copying raylib.dll..."
 						);
                         fs::copy_file
@@ -1094,10 +1095,10 @@ void GameEditor::DrawExportPanel()
                         fs::path assets_dir = current_path / "Assets";
                         if (fs::exists(assets_dir)) 
                         {
-                            sf_AppendLogLine
+                            s_fAppendLogLine
                             (
-                                mt_ExportState.m_ExportLogs,
-                                mt_ExportState.m_ExportLogMutex, 
+                                m_ExportState.m_ExportLogs,
+                                m_ExportState.m_ExportLogMutex, 
                                 "Copying game assets..."
                             );
                             
@@ -1121,10 +1122,10 @@ void GameEditor::DrawExportPanel()
                                         fs::copy_options::overwrite_existing
 									);
                                     
-                                    sf_AppendLogLine
+                                    s_fAppendLogLine
                                     (
-                                        mt_ExportState.m_ExportLogs,
-                                        mt_ExportState.m_ExportLogMutex, 
+                                        m_ExportState.m_ExportLogs,
+                                        m_ExportState.m_ExportLogMutex, 
                                         "Copied asset folder: " + entry.path().filename().string()
                                     );
                                 }
@@ -1134,10 +1135,10 @@ void GameEditor::DrawExportPanel()
                                     fs::copy_file(entry.path(), dest, 
                                         fs::copy_options::overwrite_existing);
                                     
-                                    sf_AppendLogLine
+                                    s_fAppendLogLine
                                     (
-                                        mt_ExportState.m_ExportLogs,
-                                        mt_ExportState.m_ExportLogMutex, 
+                                        m_ExportState.m_ExportLogs,
+                                        m_ExportState.m_ExportLogMutex, 
                                         "Copied asset file: " + entry.path().filename().string()
                                     );
                                 }
@@ -1145,42 +1146,42 @@ void GameEditor::DrawExportPanel()
                         }
                         else 
                         {
-                            sf_AppendLogLine
+                            s_fAppendLogLine
                             (
-                                mt_ExportState.m_ExportLogs,
-                                mt_ExportState.m_ExportLogMutex, 
+                                m_ExportState.m_ExportLogs,
+                                m_ExportState.m_ExportLogMutex, 
                                 "No Assets folder found - skipping asset copy"
                             );
                         }
                         
-                        sf_AppendLogLine
+                        s_fAppendLogLine
 						(
-							mt_ExportState.m_ExportLogs,
-							mt_ExportState.m_ExportLogMutex, 
+							m_ExportState.m_ExportLogs,
+							m_ExportState.m_ExportLogMutex, 
 							"Export completed successfully!"
 						);
-                        mt_ExportState.m_bExportSuccess = true;
+                        m_ExportState.m_bExportSuccess = true;
                     } 
 					catch (const std::exception& e) 
 					{
-                        sf_AppendLogLine
+                        s_fAppendLogLine
 						(
-							mt_ExportState.m_ExportLogs,
-							mt_ExportState.m_ExportLogMutex, 
+							m_ExportState.m_ExportLogs,
+							m_ExportState.m_ExportLogMutex, 
 							std::string("ERROR: ") + e.what()
 						);
-                        mt_ExportState.m_bExportSuccess = false;
+                        m_ExportState.m_bExportSuccess = false;
                     }
                     
-                    mt_ExportState.m_bIsExporting = false;
+                    m_ExportState.m_bIsExporting = false;
                     return;
                 }
                 
                 // Source environment - check for running processes and build
-                sf_AppendLogLine
+                s_fAppendLogLine
 				(
-					mt_ExportState.m_ExportLogs,
-					mt_ExportState.m_ExportLogMutex, 
+					m_ExportState.m_ExportLogs,
+					m_ExportState.m_ExportLogMutex, 
 					"Source environment detected - checking for m_bIsExporting processes..."
 				);
                 
@@ -1202,16 +1203,16 @@ void GameEditor::DrawExportPanel()
                         if (output.find("main.exe") != std::string::npos) 
 						{
                             b_FoundRunningProcess = true;
-                            sf_AppendLogLine
+                            s_fAppendLogLine
 							(
-								mt_ExportState.m_ExportLogs, 
-								mt_ExportState.m_ExportLogMutex, 
+								m_ExportState.m_ExportLogs, 
+								m_ExportState.m_ExportLogMutex, 
 								"WARNING: main.exe is currently m_bIsExporting. Export may fail."
 							);
-                            sf_AppendLogLine
+                            s_fAppendLogLine
 							(
-								mt_ExportState.m_ExportLogs, 
-								mt_ExportState.m_ExportLogMutex, 
+								m_ExportState.m_ExportLogs, 
+								m_ExportState.m_ExportLogMutex, 
 								"Please close the game editor before exporting for best results."
 							);
                             break;
@@ -1221,20 +1222,20 @@ void GameEditor::DrawExportPanel()
                     _pclose(check_pipe);
                     if (!b_FoundRunningProcess) 
 					{
-                        sf_AppendLogLine
+                        s_fAppendLogLine
 						(
-							mt_ExportState.m_ExportLogs, 
-							mt_ExportState.m_ExportLogMutex, 
+							m_ExportState.m_ExportLogs, 
+							m_ExportState.m_ExportLogMutex, 
 							"No conflicting processes found. Proceeding with build..."
 						);
                     }
                 }
                 
                 // Use simple export script that builds from source
-                sf_AppendLogLine
+                s_fAppendLogLine
 				(
-					mt_ExportState.m_ExportLogs, 
-					mt_ExportState.m_ExportLogMutex, 
+					m_ExportState.m_ExportLogs, 
+					m_ExportState.m_ExportLogMutex, 
 					"Building game runtime from source..."
 				);
                 std::stringstream cmd;
@@ -1244,44 +1245,44 @@ void GameEditor::DrawExportPanel()
                 cmd << "powershell -ExecutionPolicy Bypass -File \"" 
 					<< export_script.string() 
 					<< "\" -BuildConfig Release" 
-					<< " -OutputDir \"" << mt_ExportState.m_ExportPath << "\""
-					<< " -GameName \"" << mt_ExportState.m_GameName << "\""
-					<< " -WindowWidth " << mt_ExportState.m_WindowWidth
-					<< " -WindowHeight " << mt_ExportState.m_WindowHeight
-					<< " -Fullscreen $" << (mt_ExportState.m_Fullscreen ? "true" : "false")
-					<< " -Resizable $" << (mt_ExportState.m_Resizable ? "true" : "false") 
-					<< " -VSync $" << (mt_ExportState.m_VSync ? "true" : "false")
-					<< " -TargetFPS " << mt_ExportState.m_TargetFPS;
+					<< " -OutputDir \"" << m_ExportState.m_ExportPath << "\""
+					<< " -GameName \"" << m_ExportState.m_GameName << "\""
+					<< " -WindowWidth " << m_ExportState.m_WindowWidth
+					<< " -WindowHeight " << m_ExportState.m_WindowHeight
+					<< " -Fullscreen $" << (m_ExportState.m_bFullscreen ? "true" : "false")
+					<< " -Resizable $" << (m_ExportState.m_bResizable ? "true" : "false") 
+					<< " -VSync $" << (m_ExportState.m_bVSync ? "true" : "false")
+					<< " -target_fps " << m_ExportState.m_TargetFPS;
 
                 FILE* pipe = _popen(cmd.str().c_str(), "r");
                 if (!pipe) 
 				{
-                    sf_AppendLogLine
+                    s_fAppendLogLine
 					(
-						mt_ExportState.m_ExportLogs, 
-						mt_ExportState.m_ExportLogMutex, 
+						m_ExportState.m_ExportLogs, 
+						m_ExportState.m_ExportLogMutex, 
 						"Failed to start export process"
 					);
-                    mt_ExportState.m_bIsExporting = false;
+                    m_ExportState.m_bIsExporting = false;
                     return;
                 }
 
                 char buffer[1024];
                 while (fgets(buffer, sizeof(buffer), pipe) != nullptr)
                 {
-                    sf_AppendLogLine
+                    s_fAppendLogLine
 					(
-						mt_ExportState.m_ExportLogs, 
-						mt_ExportState.m_ExportLogMutex,
+						m_ExportState.m_ExportLogs, 
+						m_ExportState.m_ExportLogMutex,
 						std::string(buffer)
 					);
                 }
 
                 int rc = _pclose(pipe);
-                sf_AppendLogLine
+                s_fAppendLogLine
 				(
-					mt_ExportState.m_ExportLogs, 
-					mt_ExportState.m_ExportLogMutex, 
+					m_ExportState.m_ExportLogs, 
+					m_ExportState.m_ExportLogMutex, 
 					std::string
 					(
 						"Export process exited with code "
@@ -1289,40 +1290,40 @@ void GameEditor::DrawExportPanel()
 				);
 
                 // Add final log message about process completion
-                sf_AppendLogLine
+                s_fAppendLogLine
 				(
-					mt_ExportState.m_ExportLogs, 
-					mt_ExportState.m_ExportLogMutex, 
+					m_ExportState.m_ExportLogs, 
+					m_ExportState.m_ExportLogMutex, 
 					std::string
 					(
 						"Process completed. Validating export folder: "
-					) + mt_ExportState.m_ExportPath
+					) + m_ExportState.m_ExportPath
 				);
                 
                 // Validate
-                bool b_Ok = sf_ValidateExportFolder
+                bool b_Ok = s_fValidateExportFolder
 				(
-					mt_ExportState.m_ExportPath, 
-					mt_ExportState.m_ExportLogs, 
-					mt_ExportState.m_ExportLogMutex
+					m_ExportState.m_ExportPath, 
+					m_ExportState.m_ExportLogs, 
+					m_ExportState.m_ExportLogMutex
 				);
-                mt_ExportState.m_bExportSuccess = b_Ok && (rc == 0);
+                m_ExportState.m_bExportSuccess = b_Ok && (rc == 0);
                 
                 if (!b_Ok) 
 				{
-                    sf_AppendLogLine
+                    s_fAppendLogLine
 					(
-						mt_ExportState.m_ExportLogs, 
-						mt_ExportState.m_ExportLogMutex, 
+						m_ExportState.m_ExportLogs, 
+						m_ExportState.m_ExportLogMutex, 
 						"Export validation failed - check export folder contents"
 					);
                 }
                 if (rc != 0) 
 				{
-                    sf_AppendLogLine
+                    s_fAppendLogLine
 					(
-						mt_ExportState.m_ExportLogs, 
-						mt_ExportState.m_ExportLogMutex, 
+						m_ExportState.m_ExportLogs, 
+						m_ExportState.m_ExportLogMutex, 
 						std::string
 						(
 							"Export script failed with exit code: "
@@ -1330,7 +1331,7 @@ void GameEditor::DrawExportPanel()
 					);
                 }
                 
-                mt_ExportState.m_bIsExporting = false;
+                m_ExportState.m_bIsExporting = false;
             });
         }
         ImGui::PopStyleColor(3);
@@ -1368,7 +1369,7 @@ void GameEditor::DrawExportPanel()
         if (ImGui::Button("Cancel", ImVec2(cancel_width, 30.0f)))
         {
 			// best-effort; powershell won't be killed here
-            mt_ExportState.m_bCancelExport = true; 
+            m_ExportState.m_bCancelExport = true; 
         }
         ImGui::PopStyleColor(3);
     }
@@ -1376,7 +1377,7 @@ void GameEditor::DrawExportPanel()
     ImGui::Spacing();
 
     // Status indicator (centered and more prominent)
-    if (mt_ExportState.m_bExportSuccess)
+    if (m_ExportState.m_bExportSuccess)
     {
         float window_width = ImGui::GetContentRegionAvail().x;
         ImGui::SetCursorPosX
@@ -1391,9 +1392,9 @@ void GameEditor::DrawExportPanel()
     }
     else if 
 	(
-		!mt_ExportState.m_bIsExporting && 
-		!mt_ExportState.m_ExportLogs.empty() && 
-		!mt_ExportState.m_bIsExporting
+		!m_ExportState.m_bIsExporting && 
+		!m_ExportState.m_ExportLogs.empty() && 
+		!m_ExportState.m_bIsExporting
 	)
     {
         float window_width = ImGui::GetContentRegionAvail().x;
@@ -1422,9 +1423,9 @@ void GameEditor::DrawExportPanel()
     
     if (ImGui::BeginChild("export_log", ImVec2(0, 200), true))
     {
-        std::scoped_lock lk(mt_ExportState.m_ExportLogMutex);
+        std::scoped_lock lk(m_ExportState.m_ExportLogMutex);
         
-        if (mt_ExportState.m_ExportLogs.empty())
+        if (m_ExportState.m_ExportLogs.empty())
         {
             ImGui::PushStyleColor
 			(
@@ -1435,7 +1436,7 @@ void GameEditor::DrawExportPanel()
         }
         else
         {
-            for (const auto& line : mt_ExportState.m_ExportLogs)
+            for (const auto& line : m_ExportState.m_ExportLogs)
             {
                 // Color code log messages ( Default white )
                 ImVec4 text_color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f); 
@@ -1471,7 +1472,7 @@ void GameEditor::DrawExportPanel()
             }
             
             // Auto-scroll to bottom during export
-            if (mt_ExportState.m_bIsExporting)
+            if (m_ExportState.m_bIsExporting)
             {
                 ImGui::SetScrollHereY(1.0f);
             }
@@ -1483,10 +1484,10 @@ void GameEditor::DrawExportPanel()
     ImGui::PopStyleVar(2);
 
     // Cleanup worker if finished
-    if (!mt_ExportState.m_bIsExporting &&
-		 mt_ExportState.m_ExportThread.joinable())
+    if (!m_ExportState.m_bIsExporting &&
+		 m_ExportState.m_ExportThread.joinable())
     {
-        mt_ExportState.m_ExportThread.join();
+        m_ExportState.m_ExportThread.join();
     }
 
     ImGui::End();
@@ -1630,7 +1631,7 @@ bool GameEditor::b_ReloadGameLogic()
 	return b_Ok;
 }
 
-static void sf_AppendLogLine
+static void s_fAppendLogLine
 (
 	std::vector<std::string>& logs, 
 	std::mutex& mtx, 
@@ -1641,7 +1642,7 @@ static void sf_AppendLogLine
 	logs.push_back(line);
 }
 
-static bool sf_ValidateExportFolder
+static bool s_fValidateExportFolder
 (
 	const std::string& out_dir, 
 	std::vector<std::string>& logs, 
@@ -1651,7 +1652,7 @@ static bool sf_ValidateExportFolder
 	bool b_Ok = true;
 	
 	// Log current working directory for debugging
-	sf_AppendLogLine
+	s_fAppendLogLine
 	(
 		logs, 
 		mtx, 
@@ -1660,7 +1661,7 @@ static bool sf_ValidateExportFolder
 			"Validation working directory: "
 		) + fs::current_path().string()
 	);
-	sf_AppendLogLine
+	s_fAppendLogLine
 	(
 		logs, 
 		mtx, 
@@ -1674,7 +1675,7 @@ static bool sf_ValidateExportFolder
 	{
 		bool b_Exists = fs::exists(p);
 
-		sf_AppendLogLine
+		s_fAppendLogLine
 		(
 			logs, 
 			mtx, 
@@ -1693,17 +1694,29 @@ static bool sf_ValidateExportFolder
 	{
 		for (const auto& entry : fs::directory_iterator(out_dir, ec)) 
 		{
-			if (!ec && entry.is_regular_file() && entry.path().extension() == ".exe") 
+			if 
+			(
+				!ec && entry.is_regular_file() && 
+				entry.path().extension() == ".exe"
+			) 
 			{
 				foundGameExe = true;
-				sf_AppendLogLine(logs, mtx, std::string("Found game executable: ") + entry.path().filename().string());
+				s_fAppendLogLine
+				(
+					logs, 
+					mtx, 
+					std::string
+					(
+						"Found game executable: "
+					) + entry.path().filename().string()
+				);
 				break;
 			}
 		}
 	}
 	if (!foundGameExe) 
 	{
-		sf_AppendLogLine(logs, mtx, "Missing: Game executable (.exe file)");
+		s_fAppendLogLine(logs, mtx, "Missing: Game executable (.exe file)");
 		b_Ok = false;
 	}
 	
@@ -1714,11 +1727,16 @@ static bool sf_ValidateExportFolder
 	fs::path assets_path = fs::path(out_dir) / "Assets";
 	if (fs::exists(assets_path)) 
 	{
-		sf_AppendLogLine(logs, mtx, "Found Assets folder in export");
+		s_fAppendLogLine(logs, mtx, "Found Assets folder in export");
 	}
 	else 
 	{
-		sf_AppendLogLine(logs, mtx, "No Assets folder found - this is OK if game has no assets");
+		s_fAppendLogLine
+		(
+			logs, 
+			mtx, 
+			"No Assets folder found - this is OK if game has no assets"
+		);
 	}
 	
 	return b_Ok;

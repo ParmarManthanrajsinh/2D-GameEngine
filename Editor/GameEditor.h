@@ -79,23 +79,24 @@ private:
     std::string m_SelectedMapId;
 
     // Export UI state
-    struct ExportState 
+    struct m_tExportState 
     {
         std::atomic<bool> m_bIsExporting{false};
         std::atomic<bool> m_bCancelExport{false};
-        // Build config is now fixed to Release only
-        std::string m_ExportPath = "export";
+        std::string m_ExportPath = "Exported Game";
         std::string m_GameName = "MyGame";
+
         // Window configuration options
         int m_WindowWidth = 1280;
         int m_WindowHeight = 720;
-        bool m_Fullscreen = false;
-        bool m_Resizable = true;
-        bool m_VSync = true;
+        bool m_bFullscreen = false;
+        bool m_bResizable = true;
+        bool m_bVSync = true;
         int m_TargetFPS = 60;
+
         std::vector<std::string> m_ExportLogs;
         std::mutex m_ExportLogMutex;
         std::thread m_ExportThread;
         bool m_bExportSuccess = false;
-    } mt_ExportState;
+    } m_ExportState;
 };

@@ -4,30 +4,29 @@
 #include <raylib.h>
 #include <memory>
 #include <iostream>
-
 using CreateGameMapFunc = GameMap* (*)();
 
-static std::unique_ptr<GameMap> LoadGameLogic
+static std::unique_ptr<GameMap> sf_LoadGameLogic
 (
-    const char* dllPath, DllHandle& outHandle
+    const char* dll_path, DllHandle& out_handle
 )
 {
-    outHandle = LoadDll(dllPath);
-    if (!outHandle.handle)
+    out_handle = LoadDll(dll_path);
+    if (!out_handle.handle)
     {
-        std::cerr << "Failed to load GameLogic DLL: " << dllPath << "\n";
+        std::cerr << "Failed to load GameLogic DLL: " << dll_path << "\n";
         return nullptr;
     }
 
     auto CreateFn = reinterpret_cast<CreateGameMapFunc>
     (
-        GetDllSymbol(outHandle, "CreateGameMap")
+        GetDllSymbol(out_handle, "CreateGameMap")
     );
     if (!CreateFn)
     {
         std::cerr << "Failed to find symbol CreateGameMap in GameLogic DLL\n";
-        UnloadDll(outHandle);
-        outHandle = {nullptr, {}};
+        UnloadDll(out_handle);
+        out_handle = {nullptr, {}};
         return nullptr;
     }
 
@@ -35,8 +34,8 @@ static std::unique_ptr<GameMap> LoadGameLogic
     if (!raw)
     {
         std::cerr << "CreateGameMap returned null\n";
-        UnloadDll(outHandle);
-        outHandle = {nullptr, {}};
+        UnloadDll(out_handle);
+        out_handle = {nullptr, {}};
         return nullptr;
     }
 
@@ -55,14 +54,17 @@ int main()
     engine.LaunchWindow(config.GetWindowConfig());
     
     // Set FPS based on vsync setting
-    if (config.GetWindowConfig().vsync) {
+    if (config.GetWindowConfig().vsync) 
+    {
         SetTargetFPS(0); // Let vsync handle it
-    } else {
+    }
+    else 
+    {
         SetTargetFPS(config.GetWindowConfig().targetFPS);
     }
 
-    DllHandle gameLogicHandle{nullptr, {}};
-    auto map = LoadGameLogic("GameLogic.dll", gameLogicHandle);
+    DllHandle game_logic_handle{nullptr, {}};
+    auto map = sf_LoadGameLogic("GameLogic.dll", game_logic_handle);
     if (map)
     {
         engine.SetMap(std::move(map));
@@ -90,7 +92,7 @@ int main()
         EndDrawing();
     }
 
-    UnloadDll(gameLogicHandle);
+    UnloadDll(game_logic_handle);
     CloseWindow();
     return 0;
 }

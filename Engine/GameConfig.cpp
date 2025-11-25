@@ -4,14 +4,17 @@
 #include <iostream>
 #include <filesystem>
 
-GameConfig& GameConfig::GetInstance() {
+GameConfig& GameConfig::GetInstance() 
+{
     static GameConfig instance;
     return instance;
 }
 
-bool GameConfig::LoadFromFile(const std::string& configPath) {
+bool GameConfig::m_bLoadFromFile(const std::string& configPath) 
+{
     std::ifstream file(configPath);
-    if (!file.is_open()) {
+    if (!file.is_open()) 
+    {
         std::cout << "Config file not found: " << configPath << ". Using defaults." << std::endl;
         return false;
     }
@@ -35,19 +38,32 @@ bool GameConfig::LoadFromFile(const std::string& configPath) {
         value.erase(value.find_last_not_of(" \t") + 1);
         
         // Parse configuration values
-        if (key == "width") {
+        if (key == "width") 
+        {
             m_WindowConfig.width = std::stoi(value);
-        } else if (key == "height") {
+        } 
+        else if (key == "height") 
+        {
             m_WindowConfig.height = std::stoi(value);
-        } else if (key == "fullscreen") {
-            m_WindowConfig.fullscreen = (value == "true" || value == "1");
-        } else if (key == "resizable") {
-            m_WindowConfig.resizable = (value == "true" || value == "1");
-        } else if (key == "vsync") {
-            m_WindowConfig.vsync = (value == "true" || value == "1");
-        } else if (key == "targetFPS") {
-            m_WindowConfig.targetFPS = std::stoi(value);
-        } else if (key == "title") {
+        } 
+        else if (key == "b_Fullscreen") 
+        {
+            m_WindowConfig.b_Fullscreen = (value == "true" || value == "1");
+        } 
+        else if (key == "b_Resizable") 
+        {
+            m_WindowConfig.b_Resizable = (value == "true" || value == "1");
+        } 
+        else if (key == "b_Vsync") 
+        {
+            m_WindowConfig.b_Vsync = (value == "true" || value == "1");
+        } 
+        else if (key == "target_fps") 
+        {
+            m_WindowConfig.target_fps = std::stoi(value);
+        }
+        else if (key == "title") 
+        {
             m_WindowConfig.title = value;
         }
     }
@@ -57,10 +73,13 @@ bool GameConfig::LoadFromFile(const std::string& configPath) {
     return true;
 }
 
-bool GameConfig::SaveToFile(const std::string& configPath) {
+bool GameConfig::m_bSaveToFile(const std::string& configPath) const 
+{
     std::ofstream file(configPath);
-    if (!file.is_open()) {
-        std::cerr << "Failed to create config file: " << configPath << std::endl;
+    if (!file.is_open()) 
+    {
+        std::cerr << "Failed to create config file: " 
+                  << configPath << std::endl;
         return false;
     }
     
@@ -68,10 +87,10 @@ bool GameConfig::SaveToFile(const std::string& configPath) {
     file << "# Window Settings" << std::endl;
     file << "width=" << m_WindowConfig.width << std::endl;
     file << "height=" << m_WindowConfig.height << std::endl;
-    file << "fullscreen=" << (m_WindowConfig.fullscreen ? "true" : "false") << std::endl;
-    file << "resizable=" << (m_WindowConfig.resizable ? "true" : "false") << std::endl;
-    file << "vsync=" << (m_WindowConfig.vsync ? "true" : "false") << std::endl;
-    file << "targetFPS=" << m_WindowConfig.targetFPS << std::endl;
+    file << "b_Fullscreen=" << (m_WindowConfig.b_Fullscreen ? "true" : "false") << std::endl;
+    file << "b_Resizable=" << (m_WindowConfig.b_Resizable ? "true" : "false") << std::endl;
+    file << "b_Vsync=" << (m_WindowConfig.b_Vsync ? "true" : "false") << std::endl;
+    file << "target_fps=" << m_WindowConfig.target_fps << std::endl;
     file << "title=" << m_WindowConfig.title << std::endl;
     
     file.close();

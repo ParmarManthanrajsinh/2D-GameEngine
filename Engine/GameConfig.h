@@ -1,26 +1,28 @@
 #pragma once
 #include <string>
 
-struct WindowConfig {
+struct t_WindowConfig 
+{
     int width = 1280;
     int height = 720;
-    bool fullscreen = false;
-    bool resizable = true;
-    bool vsync = true;
-    int targetFPS = 60;
+    bool b_Fullscreen = false;
+    bool b_Resizable = true;
+    bool b_Vsync = true;
+    int target_fps = 60;
     std::string title = "My Game";
 };
 
-class GameConfig {
+class GameConfig 
+{
 public:
     static GameConfig& GetInstance();
-    bool LoadFromFile(const std::string& configPath = "game_config.ini");
-    bool SaveToFile(const std::string& configPath = "game_config.ini");
+    bool m_bLoadFromFile(const std::string& config_path = "game_config.ini");
+    bool m_bSaveToFile(const std::string& config_path = "game_config.ini") const;
     
-    WindowConfig& GetWindowConfig() { return m_WindowConfig; }
-    const WindowConfig& GetWindowConfig() const { return m_WindowConfig; }
+    t_WindowConfig& GetWindowConfig() { return m_WindowConfig; }
+    const t_WindowConfig& GetWindowConfig() const { return m_WindowConfig; }
     
 private:
-    WindowConfig m_WindowConfig;
+    t_WindowConfig m_WindowConfig;
     GameConfig() = default;
 };

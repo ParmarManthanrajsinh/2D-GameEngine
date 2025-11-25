@@ -31,7 +31,8 @@ void GameEngine::LaunchWindow(int width, int height, const char* title)
 	InitWindow(width, height, title);
 }
 
-void GameEngine::LaunchWindow(const WindowConfig& config)
+
+void GameEngine::LaunchWindow(const t_WindowConfig& config)
 {
 	m_WindowWidth = config.width;
 	m_WindowHeight = config.height;
@@ -44,22 +45,24 @@ void GameEngine::LaunchWindow(const WindowConfig& config)
 		<< "x"
 		<< config.height
 		<< ") "
-		<< (config.fullscreen ? "Fullscreen" : "Windowed")
+		<< (config.b_Fullscreen ? "Fullscreen" : "Windowed")
 		<< std::endl;
 
 	// Set window flags before initialization
 	unsigned int flags = 0;
-	if (config.resizable) flags |= FLAG_WINDOW_RESIZABLE;
-	if (config.vsync) flags |= FLAG_VSYNC_HINT;
+	if (config.b_Resizable) flags |= FLAG_WINDOW_RESIZABLE;
+	if (config.b_Vsync) flags |= FLAG_VSYNC_HINT;
 
-	if (flags != 0) {
+	if (flags != 0) 
+	{
 		SetConfigFlags(flags);
 	}
 
 	InitWindow(config.width, config.height, config.title.c_str());
 
 	// Set fullscreen after window creation if needed
-	if (config.fullscreen) {
+	if (config.b_Fullscreen)
+	{
 		ToggleFullscreen();
 	}
 }
