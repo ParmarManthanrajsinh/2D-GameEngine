@@ -653,11 +653,22 @@ void GameEditor::DrawExportPanel()
     ImGui::SetCursorPosX(120.0f);
     
     char game_name_buffer[256];
-    strncpy_s(game_name_buffer, mt_ExportState.m_GameName.c_str(), sizeof(game_name_buffer) - 1);
+    strncpy_s
+	(
+		game_name_buffer, 
+		mt_ExportState.m_GameName.c_str(), 
+		sizeof(game_name_buffer) - 1
+	);
     game_name_buffer[sizeof(game_name_buffer) - 1] = '\0';
 
     ImGui::PushItemWidth(250.0f);
-    if (ImGui::InputText("##game_name", game_name_buffer, sizeof(game_name_buffer)))
+    if 
+	(
+		ImGui::InputText
+		(
+			"##game_name", game_name_buffer, sizeof(game_name_buffer)
+		)
+	)
     {
         mt_ExportState.m_GameName = game_name_buffer;
     }
@@ -696,23 +707,28 @@ void GameEditor::DrawExportPanel()
     ImGui::PushItemWidth(150.0f);
     if (ImGui::BeginCombo("##resolution_presets", "Presets"))
     {
-        if (ImGui::Selectable("1920×1080 (Full HD)")) {
+        if (ImGui::Selectable("1920×1080 (Full HD)")) 
+		{
             mt_ExportState.m_WindowWidth = 1920;
             mt_ExportState.m_WindowHeight = 1080;
         }
-        if (ImGui::Selectable("1600×900 (HD+)")) {
+        if (ImGui::Selectable("1600×900 (HD+)")) 
+		{
             mt_ExportState.m_WindowWidth = 1600;
             mt_ExportState.m_WindowHeight = 900;
         }
-        if (ImGui::Selectable("1280×720 (HD)")) {
+        if (ImGui::Selectable("1280×720 (HD)")) 
+		{
             mt_ExportState.m_WindowWidth = 1280;
             mt_ExportState.m_WindowHeight = 720;
         }
-        if (ImGui::Selectable("1024×768 (4:3)")) {
+        if (ImGui::Selectable("1024×768 (4:3)")) 
+		{
             mt_ExportState.m_WindowWidth = 1024;
             mt_ExportState.m_WindowHeight = 768;
         }
-        if (ImGui::Selectable("800×600 (SVGA)")) {
+        if (ImGui::Selectable("800×600 (SVGA)")) 
+		{
             mt_ExportState.m_WindowWidth = 800;
             mt_ExportState.m_WindowHeight = 600;
         }
@@ -746,7 +762,8 @@ void GameEditor::DrawExportPanel()
     ImGui::SameLine();
     ImGui::SetCursorPosX(120.0f);
     ImGui::Checkbox("##vsync", &mt_ExportState.m_VSync);
-    if (mt_ExportState.m_VSync) {
+    if (mt_ExportState.m_VSync) 
+	{
         ImGui::SameLine();
         ImGui::TextDisabled("(Locks FPS to display refresh rate)");
     }
@@ -757,7 +774,8 @@ void GameEditor::DrawExportPanel()
     ImGui::SameLine();
     ImGui::SetCursorPosX(120.0f);
     
-    if (mt_ExportState.m_VSync) {
+    if (mt_ExportState.m_VSync) 
+	{
         ImGui::BeginDisabled();
     }
     
@@ -792,12 +810,23 @@ void GameEditor::DrawExportPanel()
     ImGui::Spacing();
 
     // Validation
-    if (mt_ExportState.m_WindowWidth < 320) mt_ExportState.m_WindowWidth = 320;
-    if (mt_ExportState.m_WindowHeight < 240) mt_ExportState.m_WindowHeight = 240;
-    if (mt_ExportState.m_WindowWidth > 7680) mt_ExportState.m_WindowWidth = 7680;
-    if (mt_ExportState.m_WindowHeight > 4320) mt_ExportState.m_WindowHeight = 4320;
-    if (mt_ExportState.m_TargetFPS < 0) mt_ExportState.m_TargetFPS = 0;
-    if (mt_ExportState.m_TargetFPS > 1000) mt_ExportState.m_TargetFPS = 1000;
+    if (mt_ExportState.m_WindowWidth < 320) 
+		mt_ExportState.m_WindowWidth = 320;
+
+    if (mt_ExportState.m_WindowHeight < 240) 
+		mt_ExportState.m_WindowHeight = 240;
+
+    if (mt_ExportState.m_WindowWidth > 7680) 
+		mt_ExportState.m_WindowWidth = 7680;
+
+    if (mt_ExportState.m_WindowHeight > 4320) 
+		mt_ExportState.m_WindowHeight = 4320;
+
+    if (mt_ExportState.m_TargetFPS < 0) 
+		mt_ExportState.m_TargetFPS = 0;
+
+    if (mt_ExportState.m_TargetFPS > 1000) 
+		mt_ExportState.m_TargetFPS = 1000;
 
     // === EXPORT SETTINGS ===
     ImGui::Text("Export Settings");
@@ -811,13 +840,29 @@ void GameEditor::DrawExportPanel()
     ImGui::SetCursorPosX(120.0f);
 
     char export_path_buffer[512];
-    std::string current_path = mt_ExportState.m_ExportPath.empty() ? "export" : mt_ExportState.m_ExportPath;
+    std::string current_path = 
+		mt_ExportState.m_ExportPath.empty() ? 
+		"export" : mt_ExportState.m_ExportPath;
 
-    strncpy_s(export_path_buffer, current_path.c_str(), sizeof(export_path_buffer) - 1);
+    strncpy_s
+	(
+		export_path_buffer, 
+		current_path.c_str(), 
+		sizeof(export_path_buffer) - 1
+	);
     export_path_buffer[sizeof(export_path_buffer) - 1] = '\0';
 
     ImGui::PushItemWidth(300.0f);
-    if (ImGui::InputText("##export_path", export_path_buffer, sizeof(export_path_buffer), ImGuiInputTextFlags_ReadOnly))
+    if 
+	(
+		ImGui::InputText
+		(
+			"##export_path", 
+			export_path_buffer, 
+			sizeof(export_path_buffer), 
+			ImGuiInputTextFlags_ReadOnly
+		)
+	)
     {
         mt_ExportState.m_ExportPath = export_path_buffer;
     }
@@ -826,10 +871,19 @@ void GameEditor::DrawExportPanel()
     ImGui::SameLine();
     if (ImGui::Button("Browse", ImVec2(80.0f, 0)))
     {
-        const char* selected_path = tinyfd_saveFileDialog("Select Export Folder", fs::current_path().string().c_str(), 0, NULL, NULL);  
+        const char* selected_path = 
+		tinyfd_saveFileDialog
+		(
+			"Select Export Folder", 
+			fs::current_path().string().c_str(), 
+			0, 
+			NULL, 
+			NULL
+		);  
         if (selected_path)  
         {  
-            std::string parent_path = fs::path(selected_path).parent_path().string();  
+            std::string parent_path = 
+				fs::path(selected_path).parent_path().string();  
             mt_ExportState.m_ExportPath = parent_path;  
         }
     }
@@ -839,7 +893,10 @@ void GameEditor::DrawExportPanel()
     
     // Warning message
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.8f, 0.2f, 1.0f));
-    ImGui::TextWrapped("Note: Close the editor before exporting to avoid file conflicts.");
+    ImGui::TextWrapped
+	(
+		"Note: Close the editor before exporting to avoid file conflicts."
+	);
     ImGui::PopStyleColor();
     
     ImGui::Spacing();
@@ -852,11 +909,23 @@ void GameEditor::DrawExportPanel()
         // Center the export button and make it prominent
         float button_width = 200.0f;
         float window_width = ImGui::GetContentRegionAvail().x;
-        ImGui::SetCursorPosX((window_width - button_width) * 0.5f);
+        ImGui::SetCursorPosX
+		(
+			(window_width - button_width) * 0.5f
+		);
         
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.7f, 0.2f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.8f, 0.3f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.6f, 0.1f, 1.0f));
+        ImGui::PushStyleColor
+		(
+			ImGuiCol_Button, ImVec4(0.2f, 0.7f, 0.2f, 1.0f)
+		);
+        ImGui::PushStyleColor
+		(
+			ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.8f, 0.3f, 1.0f)
+		);
+        ImGui::PushStyleColor
+		(
+			ImGuiCol_ButtonActive, ImVec4(0.1f, 0.6f, 0.1f, 1.0f)
+		);
         
         if (ImGui::Button("Start Export", ImVec2(button_width, 40.0f)))
         {
@@ -989,7 +1058,8 @@ void GameEditor::DrawExportPanel()
                         
                         fs::path configPath = export_dir / "game_config.ini";
                         std::ofstream configFile(configPath.string());
-                        if (configFile.is_open()) {
+                        if (configFile.is_open()) 
+						{
                             configFile << configContent;
                             configFile.close();
                         }
@@ -1034,14 +1104,22 @@ void GameEditor::DrawExportPanel()
                             fs::path export_assets_dir = export_dir / "Assets";
                             fs::create_directories(export_assets_dir);
                             
-                            for (const auto& entry : fs::directory_iterator(assets_dir))
+                            for 
+							(
+								const auto& entry : fs::directory_iterator(assets_dir)
+							)
                             {
-                                if (entry.is_directory() && entry.path().filename() != "EngineContent")
+                                if (entry.is_directory() && 
+									entry.path().filename()!="EngineContent")
                                 {
                                     fs::path dest = export_assets_dir / entry.path().filename();
-                                    fs::copy(entry.path(), dest, 
+                                    fs::copy
+									(
+										entry.path(), 
+										dest, 
                                         fs::copy_options::recursive | 
-                                        fs::copy_options::overwrite_existing);
+                                        fs::copy_options::overwrite_existing
+									);
                                     
                                     sf_AppendLogLine
                                     (
@@ -1274,13 +1352,23 @@ void GameEditor::DrawExportPanel()
         float cancel_width = 100.0f;
         ImGui::SetCursorPosX((window_width - cancel_width) * 0.5f);
         
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.3f, 0.3f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.4f, 0.4f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.6f, 0.2f, 0.2f, 1.0f));
+        ImGui::PushStyleColor
+		(
+			ImGuiCol_Button, ImVec4(0.7f, 0.3f, 0.3f, 1.0f)
+		);
+        ImGui::PushStyleColor
+		(
+			ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.4f, 0.4f, 1.0f)
+		);
+        ImGui::PushStyleColor
+		(
+			ImGuiCol_ButtonActive, ImVec4(0.6f, 0.2f, 0.2f, 1.0f)
+		);
         
         if (ImGui::Button("Cancel", ImVec2(cancel_width, 30.0f)))
         {
-            mt_ExportState.m_bCancelExport = true; // best-effort; powershell won't be killed here
+			// best-effort; powershell won't be killed here
+            mt_ExportState.m_bCancelExport = true; 
         }
         ImGui::PopStyleColor(3);
     }
@@ -1291,7 +1379,12 @@ void GameEditor::DrawExportPanel()
     if (mt_ExportState.m_bExportSuccess)
     {
         float window_width = ImGui::GetContentRegionAvail().x;
-        ImGui::SetCursorPosX((window_width - ImGui::CalcTextSize("✅ Export Complete!").x) * 0.5f);
+        ImGui::SetCursorPosX
+		(
+			(
+				window_width - ImGui::CalcTextSize("Export Complete!").x
+			) * 0.5f
+		);
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
         ImGui::Text("Export Complete!");
         ImGui::PopStyleColor();
@@ -1304,7 +1397,12 @@ void GameEditor::DrawExportPanel()
 	)
     {
         float window_width = ImGui::GetContentRegionAvail().x;
-        ImGui::SetCursorPosX((window_width - ImGui::CalcTextSize("❌ Export Failed").x) * 0.5f);
+        ImGui::SetCursorPosX
+		(
+			(
+				window_width - ImGui::CalcTextSize("Export Failed").x
+			) * 0.5f
+		);
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
         ImGui::Text("Export Failed");
         ImGui::PopStyleColor();
@@ -1328,7 +1426,10 @@ void GameEditor::DrawExportPanel()
         
         if (mt_ExportState.m_ExportLogs.empty())
         {
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+            ImGui::PushStyleColor
+			(
+				ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f)
+			);
             ImGui::Text("Export log will appear here...");
             ImGui::PopStyleColor();
         }
@@ -1336,28 +1437,32 @@ void GameEditor::DrawExportPanel()
         {
             for (const auto& line : mt_ExportState.m_ExportLogs)
             {
-                // Color code log messages
-                ImVec4 text_color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f); // Default white
+                // Color code log messages ( Default white )
+                ImVec4 text_color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f); 
                 
                 if (line.find("ERROR:") != std::string::npos)
-                {
-                    text_color = ImVec4(1.0f, 0.3f, 0.3f, 1.0f); // Red for errors
+                {	
+					// Red
+                    text_color = ImVec4(1.0f, 0.3f, 0.3f, 1.0f); 
                 }
                 else if (line.find("WARNING:") != std::string::npos)
                 {
-                    text_color = ImVec4(1.0f, 0.8f, 0.3f, 1.0f); // Yellow for warnings
+					// Yellow
+                    text_color = ImVec4(1.0f, 0.8f, 0.3f, 1.0f); 
                 }
                 else if (line.find("completed") != std::string::npos || 
                          line.find("SUCCESS") != std::string::npos ||
                          line.find("Copied") != std::string::npos)
                 {
-                    text_color = ImVec4(0.3f, 1.0f, 0.3f, 1.0f); // Green for success
+					// Green
+                    text_color = ImVec4(0.3f, 1.0f, 0.3f, 1.0f); 
                 }
                 else if (line.find("Building") != std::string::npos ||
                          line.find("Creating") != std::string::npos ||
                          line.find("Starting") != std::string::npos)
                 {
-                    text_color = ImVec4(0.3f, 0.8f, 1.0f, 1.0f); // Blue for info
+					// Blue
+                    text_color = ImVec4(0.3f, 0.8f, 1.0f, 1.0f); 
                 }
                 
                 ImGui::PushStyleColor(ImGuiCol_Text, text_color);
@@ -1378,7 +1483,8 @@ void GameEditor::DrawExportPanel()
     ImGui::PopStyleVar(2);
 
     // Cleanup worker if finished
-    if (!mt_ExportState.m_bIsExporting && mt_ExportState.m_ExportThread.joinable())
+    if (!mt_ExportState.m_bIsExporting &&
+		 mt_ExportState.m_ExportThread.joinable())
     {
         mt_ExportState.m_ExportThread.join();
     }
