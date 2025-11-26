@@ -1,7 +1,11 @@
 ﻿#include "Level1.h"
 #include <iostream>
 
-Level1::Level1() : GameMap("Cube Game")
+Level1::Level1() : GameMap("Cube Game"),  
+    m_FinishZone{0.0f, 0.0f, 0.0f, 0.0f},  
+    m_PlayerPos{0.0f, 0.0f},  
+    m_PlayerVel{0.0f, 0.0f},
+    m_bIsGrounded(false)
 {
 }
 

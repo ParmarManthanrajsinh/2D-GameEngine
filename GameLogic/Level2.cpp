@@ -1,7 +1,10 @@
 #include "Level2.h"
 #include <iostream>
 
-Level2::Level2() : GameMap("Level 2")
+Level2::Level2() : GameMap("Level 2"),
+m_PlayerPos{ 0.0f, 0.0f },
+m_PlayerVel{ 0.0f, 0.0f },
+m_bIsGrounded(false)
 {
 }
 
