@@ -78,8 +78,8 @@ void GameEditor::Init(int width, int height, std::string_view title)
 	SetTargetFPS(60);
 	m_Viewport = ImGui::GetMainViewport();
 
-	m_RaylibTexture = LoadRenderTexture(1280, 720);
-	m_DisplayTexture = LoadRenderTexture(1280, 720);
+	m_RaylibTexture = LoadRenderTexture(m_SceneSettings.m_SceneWidth, m_SceneSettings.m_SceneHeight);
+	m_DisplayTexture = LoadRenderTexture(m_SceneSettings.m_SceneWidth, m_SceneSettings.m_SceneHeight);
 
 	SetTextureFilter
 	(
@@ -275,6 +275,7 @@ void GameEditor::Run()
 
 		DrawMapSelectionUI();
         DrawExportPanel();
+		DrawSceneSettingsPanel();
 		DrawSceneWindow();
 
 		rlImGuiEnd();
@@ -677,7 +678,7 @@ void GameEditor::DrawExportPanel()
     ImGui::PopItemWidth();
     
     ImGui::SameLine();
-    ImGui::TextDisabled("→ %s.exe", game_name_buffer);
+    ImGui::TextDisabled("%s.exe", game_name_buffer);
 
     ImGui::Spacing();
     ImGui::Spacing();
@@ -744,11 +745,11 @@ void GameEditor::DrawExportPanel()
     ImGui::AlignTextToFramePadding();
     ImGui::Text("Window Mode:");
     ImGui::SameLine();
-    ImGui::SetCursorPosX(120.0f);
+    ImGui::SetCursorPosX(130.0f);
     
     ImGui::Checkbox("Fullscreen", &m_ExportState.m_bFullscreen);
     ImGui::SameLine();
-    ImGui::SetCursorPosX(220.0f);
+    ImGui::SetCursorPosX(260.0f);
     ImGui::Checkbox("Resizable", &m_ExportState.m_bResizable);
 
     ImGui::Spacing();
@@ -1503,6 +1504,148 @@ void GameEditor::DrawExportPanel()
 		 m_ExportState.m_ExportThread.joinable())
     {
         m_ExportState.m_ExportThread.join();
+    }
+
+    ImGui::End();
+}
+
+void GameEditor::DrawSceneSettingsPanel()
+{
+    ImGui::Begin("Scene Settings", nullptr, ImGuiWindowFlags_NoCollapse);
+
+    ImGui::Text("Scene Resolution Settings");
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    // Store previous values to detect changes
+    static int s_prev_width = m_SceneSettings.m_SceneWidth;
+    static int s_prev_height = m_SceneSettings.m_SceneHeight;
+
+    // Resolution Section
+    ImGui::AlignTextToFramePadding();
+    ImGui::Text("Scene Resolution:");
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(155.0f);
+    
+    ImGui::PushItemWidth(80.0f);
+    ImGui::InputInt("##scene_width", &m_SceneSettings.m_SceneWidth, 0, 0);
+    ImGui::PopItemWidth();
+    
+    ImGui::SameLine();
+    ImGui::Text("×");
+    ImGui::SameLine();
+    
+    ImGui::PushItemWidth(80.0f);
+    ImGui::InputInt("##scene_height", &m_SceneSettings.m_SceneHeight, 0, 0);
+    ImGui::PopItemWidth();
+    
+    ImGui::SameLine();
+    ImGui::PushItemWidth(150.0f);
+    if (ImGui::BeginCombo("##scene_resolution_presets", "Presets"))
+    {
+        if (ImGui::Selectable("1920×1080 (Full HD)")) 
+        {
+            m_SceneSettings.m_SceneWidth = 1920;
+            m_SceneSettings.m_SceneHeight = 1080;
+        }
+        if (ImGui::Selectable("1600×900 (HD+)")) 
+        {
+            m_SceneSettings.m_SceneWidth = 1600;
+            m_SceneSettings.m_SceneHeight = 900;
+        }
+        if (ImGui::Selectable("1280×720 (HD)")) 
+        {
+            m_SceneSettings.m_SceneWidth = 1280;
+            m_SceneSettings.m_SceneHeight = 720;
+        }
+        if (ImGui::Selectable("1024×768 (4:3)")) 
+        {
+            m_SceneSettings.m_SceneWidth = 1024;
+            m_SceneSettings.m_SceneHeight = 768;
+        }
+        if (ImGui::Selectable("800×600 (SVGA)")) 
+        {
+            m_SceneSettings.m_SceneWidth = 800;
+            m_SceneSettings.m_SceneHeight = 600;
+        }
+        ImGui::EndCombo();
+    }
+    ImGui::PopItemWidth();
+
+    ImGui::Spacing();
+
+    // Validation
+    if (m_SceneSettings.m_SceneWidth < 320)
+    {
+        m_SceneSettings.m_SceneWidth = 320;
+    }
+    if (m_SceneSettings.m_SceneHeight < 240)
+    {
+        m_SceneSettings.m_SceneHeight = 240;
+    }
+    if (m_SceneSettings.m_SceneWidth > 7680)
+    {
+        m_SceneSettings.m_SceneWidth = 7680;
+    }
+    if (m_SceneSettings.m_SceneHeight > 4320)
+    {
+        m_SceneSettings.m_SceneHeight = 4320;
+    }
+
+    // Check if resolution changed
+    bool b_resolution_changed = (s_prev_width != m_SceneSettings.m_SceneWidth || 
+                              s_prev_height != m_SceneSettings.m_SceneHeight);
+
+    if (b_resolution_changed)
+    {
+        // Update render textures with new resolution
+        UnloadRenderTexture(m_RaylibTexture);
+        UnloadRenderTexture(m_DisplayTexture);
+
+        m_RaylibTexture = LoadRenderTexture(m_SceneSettings.m_SceneWidth, m_SceneSettings.m_SceneHeight);
+        m_DisplayTexture = LoadRenderTexture(m_SceneSettings.m_SceneWidth, m_SceneSettings.m_SceneHeight);
+
+        SetTextureFilter(m_RaylibTexture.texture, TEXTURE_FILTER_BILINEAR);
+        SetTextureFilter(m_DisplayTexture.texture, TEXTURE_FILTER_BILINEAR);
+
+        // Update scene bounds for game map/manager
+        if (m_MapManager)
+        {
+            m_MapManager->SetSceneBounds
+			(
+                static_cast<float>(m_SceneSettings.m_SceneWidth), 
+                static_cast<float>(m_SceneSettings.m_SceneHeight)
+            );
+        }
+        else if (m_GameEngine.GetMapManager())
+        {
+            m_GameEngine.GetMapManager()->SetSceneBounds
+			(
+                static_cast<float>(m_SceneSettings.m_SceneWidth), 
+                static_cast<float>(m_SceneSettings.m_SceneHeight)
+            );
+        }
+
+        // Update previous values
+        s_prev_width = m_SceneSettings.m_SceneWidth;
+        s_prev_height = m_SceneSettings.m_SceneHeight;
+    }
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1.0f));
+    ImGui::TextWrapped("This sets the resolution of the scene viewport that your game will use during development. "
+                      "The export resolution can be set separately in the Export panel.");
+    ImGui::PopStyleColor();
+
+    // Sync button to copy scene resolution to export settings
+    ImGui::Spacing();
+    if (ImGui::Button("Copy to Export Settings", ImVec2(200.0f, 30.0f)))
+    {
+        m_ExportState.m_WindowWidth = m_SceneSettings.m_SceneWidth;
+        m_ExportState.m_WindowHeight = m_SceneSettings.m_SceneHeight;
     }
 
     ImGui::End();

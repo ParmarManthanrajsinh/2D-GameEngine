@@ -93,17 +93,17 @@ Copy-Item "Engine/*.h" "$DistPath/Engine/" -Force
 Copy-Item "Engine/*.cpp" "$DistPath/Engine/" -Force
 
 # Copy the distribution CMakeLists.txt
-Copy-Item "dist_CMakeLists.txt" "$DistPath/CMakeLists.txt" -Force
+Copy-Item "Distribution/dist_CMakeLists.txt" "$DistPath/CMakeLists.txt" -Force
 
 # Copy distribution documentation
 Copy-Item "Documentation/README_DISTRIBUTION.md" "$DistPath/Documentation/" -Force
 Copy-Item "Documentation/DISTRIBUTION_GUIDE.md" "$DistPath/Documentation/" -Force
 
 # Copy build helper script
-Copy-Item "build_gamelogic.bat" "$DistPath/" -Force
+Copy-Item "Distribution/build_gamelogic.bat" "$DistPath/" -Force
 
 # Copy default game configuration
-Copy-Item "game_config.ini" "$DistPath/" -Force
+Copy-Item "Distribution/game_config.ini" "$DistPath/" -Force
 
 Write-Host "Creating build configuration..." -ForegroundColor Yellow
 

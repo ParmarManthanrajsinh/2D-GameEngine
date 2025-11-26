@@ -125,7 +125,7 @@ add_custom_command(TARGET game POST_BUILD
 # Optional export packaging target
 add_custom_target(export_package
     COMMAND ${CMAKE_COMMAND} -E echo "Running export script..."
-    COMMAND powershell -ExecutionPolicy Bypass -File "${CMAKE_SOURCE_DIR}/distribute.ps1" -BuildConfig Release -OutputDir dist
+    COMMAND powershell -ExecutionPolicy Bypass -File "${CMAKE_SOURCE_DIR}/Distribution/distribute.ps1" -BuildConfig Release -OutputDir dist
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     COMMENT "Packaging distribution via distribute.ps1"
 )

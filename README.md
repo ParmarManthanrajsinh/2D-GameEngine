@@ -58,6 +58,12 @@ The editor will auto-reload within ~0.5 seconds, or click the **Restart** button
 
 ```
 2D-GameEngine/
+├── Distribution/    # Distribution and packaging files
+│   ├── build_gamelogic.bat    # Quick build script for GameLogic.dll
+│   ├── create_distribution.bat # Main distribution creation script
+│   ├── dist_CMakeLists.txt    # CMake config for distributed environment
+│   ├── distribute.ps1         # PowerShell packaging script
+│   └── game_config.ini        # Default game configuration template
 ├── Engine/          # Core engine (GameEngine, GameMap, MapManager)
 ├── Editor/          # ImGui editor and UI
 ├── Game/            # Program entry and DLL loader
@@ -151,7 +157,7 @@ Want to share your engine with others? See [Distribution Guide](Documentation/DI
 
 **Quick distribution:**
 ```cmd
-create_distribution.bat
+Distribution\create_distribution.bat
 ```
 
 This creates a complete package in the `dist/` folder with everything needed for others to develop games.

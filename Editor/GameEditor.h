@@ -49,6 +49,7 @@ private:
     void DrawSceneWindow();
     void DrawMapSelectionUI();
     void DrawExportPanel();
+    void DrawSceneSettingsPanel();
 
     // New icon texture members
     Texture2D m_PlayIcon;
@@ -78,6 +79,13 @@ private:
     MapManager* m_MapManager = nullptr;
     std::string m_SelectedMapId;
 
+    // Scene resolution settings
+    struct m_tSceneSettings
+    {
+        int m_SceneWidth = 1280;
+        int m_SceneHeight = 720;
+    } m_SceneSettings;
+    
     // Export UI state
     struct m_tExportState 
     {

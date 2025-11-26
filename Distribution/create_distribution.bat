@@ -72,19 +72,19 @@ echo Creating distribution using PowerShell script...
 echo Parameters: OutputDir="%~1" BuildConfig="%~3" NoPause="%~2"
 if "%~1"=="" (
     if "%~3"=="" (
-        echo Running: powershell.exe -ExecutionPolicy Bypass -File ".\distribute.ps1"
-        powershell.exe -ExecutionPolicy Bypass -File ".\distribute.ps1"
+        echo Running: powershell.exe -ExecutionPolicy Bypass -File ".\Distribution\distribute.ps1"
+        powershell.exe -ExecutionPolicy Bypass -File ".\Distribution\distribute.ps1"
     ) else (
-        echo Running: powershell.exe -ExecutionPolicy Bypass -File ".\distribute.ps1" -BuildConfig "%~3"
-        powershell.exe -ExecutionPolicy Bypass -File ".\distribute.ps1" -BuildConfig "%~3"
+        echo Running: powershell.exe -ExecutionPolicy Bypass -File ".\Distribution\distribute.ps1" -BuildConfig "%~3"
+        powershell.exe -ExecutionPolicy Bypass -File ".\Distribution\distribute.ps1" -BuildConfig "%~3"
     )
 ) else (
     if "%~3"=="" (
-        echo Running: powershell.exe -ExecutionPolicy Bypass -File ".\distribute.ps1" -OutputDir "%~1"
-        powershell.exe -ExecutionPolicy Bypass -File ".\distribute.ps1" -OutputDir "%~1"
+        echo Running: powershell.exe -ExecutionPolicy Bypass -File ".\Distribution\distribute.ps1" -OutputDir "%~1"
+        powershell.exe -ExecutionPolicy Bypass -File ".\Distribution\distribute.ps1" -OutputDir "%~1"
     ) else (
-        echo Running: powershell.exe -ExecutionPolicy Bypass -File ".\distribute.ps1" -OutputDir "%~1" -BuildConfig "%~3"
-        powershell.exe -ExecutionPolicy Bypass -File ".\distribute.ps1" -OutputDir "%~1" -BuildConfig "%~3"
+        echo Running: powershell.exe -ExecutionPolicy Bypass -File ".\Distribution\distribute.ps1" -OutputDir "%~1" -BuildConfig "%~3"
+        powershell.exe -ExecutionPolicy Bypass -File ".\Distribution\distribute.ps1" -OutputDir "%~1" -BuildConfig "%~3"
     )
 )
 echo PowerShell script finished with exit code: %ERRORLEVEL%
