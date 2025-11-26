@@ -78,8 +78,16 @@ void GameEditor::Init(int width, int height, std::string_view title)
 	SetTargetFPS(60);
 	m_Viewport = ImGui::GetMainViewport();
 
-	m_RaylibTexture = LoadRenderTexture(m_SceneSettings.m_SceneWidth, m_SceneSettings.m_SceneHeight);
-	m_DisplayTexture = LoadRenderTexture(m_SceneSettings.m_SceneWidth, m_SceneSettings.m_SceneHeight);
+	m_RaylibTexture = LoadRenderTexture
+	(
+		m_SceneSettings.m_SceneWidth,
+		m_SceneSettings.m_SceneHeight
+	);
+	m_DisplayTexture = LoadRenderTexture
+	(
+		m_SceneSettings.m_SceneWidth, 
+		m_SceneSettings.m_SceneHeight
+	);
 
 	SetTextureFilter
 	(
