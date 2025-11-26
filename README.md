@@ -12,6 +12,16 @@ A simple Raylib-based game engine with **hot-reloading** support. Edit your game
 - 🗺️ **Map System** - Easy scene/level switching with MapManager
 - 📦 **Distribution System** - Package your engine for others to use
 
+## 🖼️ Screenshots
+
+### Game Editor with Live Development
+![RayWaves Game Editor](Documentation/output1.png)
+*The visual editor showing a platformer level with fire particle effects and real-time map switching capabilities*
+
+### Export System for Standalone Games
+![Export Configuration](Documentation/output2.png)
+*Built-in export system to create standalone game executables with customizable settings*
+
 ## 📋 Requirements
 
 **Windows Only**
