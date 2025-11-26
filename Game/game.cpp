@@ -48,7 +48,7 @@ int main()
 
     // Load configuration
     GameConfig& config = GameConfig::GetInstance();
-    config.m_bLoadFromFile("Distribution/config.ini");
+    config.m_bLoadFromFile("config.ini");
     
     GameEngine engine;
     engine.LaunchWindow(config.GetWindowConfig());

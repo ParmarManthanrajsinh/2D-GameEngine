@@ -16,10 +16,10 @@ class GameConfig
 {
 public:
     static GameConfig& GetInstance();
-    bool m_bLoadFromFile(const std::string& config_path = "Distribution/game_config.ini");
+    bool m_bLoadFromFile(const std::string& config_path = "config.ini");
     bool m_bSaveToFile
     (
-        const std::string& config_path = "Distribution/game_config.ini"
+        const std::string& config_path = "config.ini"
     ) const;
     
     t_WindowConfig& GetWindowConfig() { return m_WindowConfig; }
