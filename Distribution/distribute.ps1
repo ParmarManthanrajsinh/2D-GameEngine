@@ -61,8 +61,8 @@ New-Item -ItemType Directory -Path "$DistPath/raylib/bin" -Force | Out-Null
 
 Write-Host "Copying executable and dependencies..." -ForegroundColor Yellow
 
-# Copy game runtime as app.exe
-Copy-Item "$BuildPath/game.exe" "$DistPath/app.exe" -Force
+# Copy game runtime as game.exe
+Copy-Item "$BuildPath/game.exe" "$DistPath/game.exe" -Force
 
 # Optionally include the editor (rename to editor.exe)
 if (Test-Path "$BuildPath/main.exe") {
@@ -103,17 +103,17 @@ Copy-Item "Documentation/DISTRIBUTION_GUIDE.md" "$DistPath/Documentation/" -Forc
 Copy-Item "Distribution/build_gamelogic.bat" "$DistPath/" -Force
 
 # Copy default game configuration
-Copy-Item "Distribution/game_config.ini" "$DistPath/" -Force
+Copy-Item "Distribution/config.ini" "$DistPath/" -Force
 
 Write-Host "Creating build configuration..." -ForegroundColor Yellow
 
 Write-Host "Distribution created successfully in '$DistPath'" -ForegroundColor Green
 Write-Host ""
 Write-Host "Distribution contents:" -ForegroundColor Cyan
-Write-Host "- app.exe (main game engine/editor)" -ForegroundColor White
+Write-Host "- game.exe (main game engine/editor)" -ForegroundColor White
 Write-Host "- GameLogic.dll (hot-reloadable game logic)" -ForegroundColor White
 Write-Host "- raylib.dll (required at runtime)" -ForegroundColor White
-Write-Host "- game_config.ini (window and game settings)" -ForegroundColor White
+Write-Host "- config.ini (window and game settings)" -ForegroundColor White
 Write-Host "- raylib/ (raylib development files)" -ForegroundColor White
 Write-Host "  - include/ (raylib headers)" -ForegroundColor White
 Write-Host "  - lib/ (raylib.lib)" -ForegroundColor White

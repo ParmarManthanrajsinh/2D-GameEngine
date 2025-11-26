@@ -972,7 +972,7 @@ void GameEditor::DrawExportPanel()
 					// Check if we're in a distribution (has app.exe but not full build system)
 					bool b_IsDistribution = fs::exists
 					(
-						current_path / "app.exe"
+						current_path / "game.exe"
 					) && !fs::exists
 					(
 						current_path / "Game" / "game.cpp"
@@ -988,7 +988,7 @@ void GameEditor::DrawExportPanel()
 						);
                     
 						// In distribution, just copy the existing runtime files
-						fs::path app_exe = current_path / "app.exe";
+						fs::path app_exe = current_path / "game.exe";
 						fs::path game_logic_dll = 
 							current_path / "GameLogic.dll";
 
@@ -1073,7 +1073,7 @@ void GameEditor::DrawExportPanel()
                             "target_fps=" + std::to_string(m_ExportState.m_TargetFPS) + "\n"
                             "title=" + m_ExportState.m_GameName + "\n";
                         
-                        fs::path config_path = export_dir / "game_config.ini";
+                        fs::path config_path = export_dir / "config.ini";
                         std::ofstream config_file(config_path.string());
                         if (config_file.is_open()) 
 						{
@@ -1254,56 +1254,6 @@ void GameEditor::DrawExportPanel()
 					m_ExportState.m_ExportLogMutex, 
 					"Building game runtime from source..."
 				);
-                std::stringstream cmd;
-                fs::path export_script = 
-					current_path / "simple_export.ps1";
-
-                cmd << "powershell -ExecutionPolicy Bypass -File \"" 
-					<< export_script.string() 
-					<< "\" -BuildConfig Release" 
-					<< " -OutputDir \"" << m_ExportState.m_ExportPath << "\""
-					<< " -GameName \"" << m_ExportState.m_GameName << "\""
-					<< " -WindowWidth " << m_ExportState.m_WindowWidth
-					<< " -WindowHeight " << m_ExportState.m_WindowHeight
-					<< " -Fullscreen $" << (m_ExportState.m_bFullscreen ? "true" : "false")
-					<< " -Resizable $" << (m_ExportState.m_bResizable ? "true" : "false") 
-					<< " -VSync $" << (m_ExportState.m_bVSync ? "true" : "false")
-					<< " -target_fps " << m_ExportState.m_TargetFPS;
-
-                FILE* pipe = _popen(cmd.str().c_str(), "r");
-                if (!pipe) 
-				{
-                    s_fAppendLogLine
-					(
-						m_ExportState.m_ExportLogs, 
-						m_ExportState.m_ExportLogMutex, 
-						"Failed to start export process"
-					);
-                    m_ExportState.m_bIsExporting = false;
-                    return;
-                }
-
-                char buffer[1024];
-                while (fgets(buffer, sizeof(buffer), pipe) != nullptr)
-                {
-                    s_fAppendLogLine
-					(
-						m_ExportState.m_ExportLogs, 
-						m_ExportState.m_ExportLogMutex,
-						std::string(buffer)
-					);
-                }
-
-                int rc = _pclose(pipe);
-                s_fAppendLogLine
-				(
-					m_ExportState.m_ExportLogs, 
-					m_ExportState.m_ExportLogMutex, 
-					std::string
-					(
-						"Export process exited with code "
-					) + std::to_string(rc)
-				);
 
                 // Add final log message about process completion
                 s_fAppendLogLine
@@ -1323,7 +1273,7 @@ void GameEditor::DrawExportPanel()
 					m_ExportState.m_ExportLogs, 
 					m_ExportState.m_ExportLogMutex
 				);
-                m_ExportState.m_bExportSuccess = b_Ok && (rc == 0);
+                m_ExportState.m_bExportSuccess = b_Ok;
                 
                 if (!b_Ok) 
 				{
@@ -1332,18 +1282,6 @@ void GameEditor::DrawExportPanel()
 						m_ExportState.m_ExportLogs, 
 						m_ExportState.m_ExportLogMutex, 
 						"Export validation failed - check export folder contents"
-					);
-                }
-                if (rc != 0) 
-				{
-                    s_fAppendLogLine
-					(
-						m_ExportState.m_ExportLogs, 
-						m_ExportState.m_ExportLogMutex, 
-						std::string
-						(
-							"Export script failed with exit code: "
-						) + std::to_string(rc)
 					);
                 }
                 
