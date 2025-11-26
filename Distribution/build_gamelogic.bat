@@ -1,5 +1,5 @@
 @echo off
-REM Quick build script for GameLogic.dll
+REM Quick build script for RayWaves GameLogic.dll
 REM This script helps users rebuild their game logic for hot-reloading
 
 echo Building GameLogic.dll...

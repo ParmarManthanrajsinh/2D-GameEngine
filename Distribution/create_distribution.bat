@@ -1,5 +1,5 @@
 @echo off
-echo Creating 2D Game Engine Distribution Package...
+echo Creating RayWaves Game Engine Distribution Package...
 echo.
 
 REM Check if VS tools are available, if not try to auto-setup

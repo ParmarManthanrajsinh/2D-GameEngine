@@ -1,4 +1,4 @@
-# Distribution Script for 2D Game Engine
+# Distribution Script for RayWaves Game Engine
 # This script creates a distribution package with the engine executable and development environment
 
 param(
@@ -110,7 +110,7 @@ Write-Host "Creating build configuration..." -ForegroundColor Yellow
 Write-Host "Distribution created successfully in '$DistPath'" -ForegroundColor Green
 Write-Host ""
 Write-Host "Distribution contents:" -ForegroundColor Cyan
-Write-Host "- game.exe (main game engine/editor)" -ForegroundColor White
+Write-Host "- game.exe (RayWaves game engine/editor)" -ForegroundColor White
 Write-Host "- GameLogic.dll (hot-reloadable game logic)" -ForegroundColor White
 Write-Host "- raylib.dll (required at runtime)" -ForegroundColor White
 Write-Host "- config.ini (window and game settings)" -ForegroundColor White

@@ -1,6 +1,6 @@
 # Distribution Files
 
-This folder contains all the files needed for creating distribution packages of the 2D Game Engine.
+This folder contains all the files needed for creating distribution packages of the RayWaves Game Engine.
 
 ## Files
 

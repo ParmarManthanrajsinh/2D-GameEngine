@@ -7,7 +7,7 @@ int main()
 {
     printf("Game Engine Starting...\n");
     GameEditor editor;
-    editor.Init(1280,720,"My Game");
+    editor.Init(1280,720,"RayWaves");
 
     // Load logic DLL and create the map (will show default map if load fails)
     editor.b_LoadGameLogic("GameLogic.dll");

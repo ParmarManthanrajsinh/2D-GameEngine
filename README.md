@@ -1,6 +1,8 @@
-# 2D Game Engine (Windows)
+# RayWaves Game Engine
 
-A simple Raylib-based game engine with **hot-reloading** support. Edit your game code and see changes instantly without restarting!
+*Where code changes flow like waves* 🌊
+
+A simple Raylib-based game engine with **hot-reloading** support. Edit your game code and see changes flow through instantly without restarting!
 
 ## ✨ Features
 
@@ -62,7 +64,7 @@ The editor will auto-reload within ~0.5 seconds, or click the **Restart** button
 ## 📁 Project Structure
 
 ```
-2D-GameEngine/
+RayWaves/
 ├── Distribution/    # Distribution and packaging files
 │   ├── build_gamelogic.bat    # Quick build script for GameLogic.dll
 │   ├── create_distribution.bat # Main distribution creation script
