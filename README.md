@@ -112,7 +112,8 @@ The engine includes a **MapManager** for easy scene/level management:
 #include "../Engine/GameMap.h"
 #include <raylib.h>
 
-class YourMap : public GameMap {
+class YourMap : public GameMap
+{
 private:
     Vector2 m_PlayerPos;
     const float MOVE_SPEED = 300.0f;
@@ -131,18 +132,21 @@ public:
 
 YourMap::YourMap() : m_PlayerPos{400.0f, 300.0f} {}
 
-void YourMap::Initialize() {
+void YourMap::Initialize()
+{
     // Initialize your map here
 }
 
-void YourMap::Update(float delta_time) {
+void YourMap::Update(float delta_time)
+{
     if (IsKeyDown(KEY_RIGHT)) m_PlayerPos.x += MOVE_SPEED * delta_time;
     if (IsKeyDown(KEY_LEFT)) m_PlayerPos.x -= MOVE_SPEED * delta_time;
     if (IsKeyDown(KEY_UP)) m_PlayerPos.y -= MOVE_SPEED * delta_time;
     if (IsKeyDown(KEY_DOWN)) m_PlayerPos.y += MOVE_SPEED * delta_time;
 }
 
-void YourMap::Draw() {
+void YourMap::Draw()
+{
     DrawCircleV(m_PlayerPos, 25.0f, RED);
 }
 ```
@@ -159,9 +163,11 @@ void YourMap::Draw() {
 // Global static instance to ensure consistency across editor and runtime
 static MapManager* s_GameMapManager = nullptr;
 
-extern "C" __declspec(dllexport) GameMap* CreateGameMap() {
+extern "C" __declspec(dllexport) GameMap* CreateGameMap()
+{
     // If we already have a manager, reuse it to maintain map registrations
-    if (s_GameMapManager == nullptr) {
+    if (s_GameMapManager == nullptr)
+    {
         s_GameMapManager = new MapManager();
 
         // Register your game maps - this happens only once
@@ -172,7 +178,8 @@ extern "C" __declspec(dllexport) GameMap* CreateGameMap() {
 
     // Automatically load the first registered map
     auto available_maps = s_GameMapManager->GetAvailableMaps();
-    if (!available_maps.empty()) {
+    if (!available_maps.empty())
+    {
         s_GameMapManager->b_GotoMap(available_maps.at(0));
     }
 
@@ -184,14 +191,17 @@ extern "C" __declspec(dllexport) GameMap* CreateGameMap() {
 
 ```cpp
 // From within a map (e.g., in your Update() method)
-void YourMap::Update(float delta_time) {
+void YourMap::Update(float delta_time)
+{
     // Switch to another map when player reaches finish zone
-    if (CheckCollisionRecs(playerRect, finishZone)) {
+    if (CheckCollisionRecs(player_rect, finish_zone))
+    {
         RequestGotoMap("Level2");  // Safe transition via callback
     }
     
     // Reload current map (e.g., when player dies)
-    if (IsKeyPressed(KEY_R)) {
+    if (IsKeyPressed(KEY_R))
+    {
         RequestGotoMap(GetMapName(), true);  // force_reload = true
     }
 }
@@ -200,17 +210,19 @@ void YourMap::Update(float delta_time) {
 manager->b_GotoMap("Level1");
 
 // Check current map
-if (manager->b_IsCurrentMap("Level2")) {
+if (manager->b_IsCurrentMap("Level2"))
+{
     // Level 2 specific logic
 }
 
 // Get current map ID
-std::string currentMap = manager->GetCurrentMapId();
+std::string current_map = manager->GetCurrentMapId();
 
 // Get all available maps
-auto availableMaps = manager->GetAvailableMaps();
-for (const auto& mapName : availableMaps) {
-    std::cout << "Available map: " << mapName << std::endl;
+auto available_maps = manager->GetAvailableMaps();
+for (const auto& map_name : available_maps)
+{
+    std::cout << "Available map: " << map_name << std::endl;
 }
 ```
 
