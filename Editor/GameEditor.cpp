@@ -634,6 +634,12 @@ void GameEditor::DrawSceneWindow()
 		ImGui::TextColored(ImVec4(0, 1, 0, 1), "Recompile"); 
 		ImGui::EndTooltip();
 	}
+
+	if (b_Disabled)
+	{
+		ImGui::PopStyleVar();
+	}
+
 	ImGui::PopStyleVar(3);
 
 	rlImGuiImageRenderTextureFit
