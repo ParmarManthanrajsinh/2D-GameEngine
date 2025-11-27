@@ -38,7 +38,7 @@ inline void SetEngineTheme(const std::string& path = "Assets/EngineContent/Robot
     ImVec4 text_disabled = ImVec4(0.40f, 0.40f, 0.40f, 1.00f);
 
     // Hover/active/select overlays - Updated gray hover
-    ImVec4 hover = ImVec4(0.22f, 0.22f, 0.22f, 1.00f);  // Solid gray that matches black theme
+    ImVec4 hover = ImVec4(0.85f, 0.20f, 0.30f, 1.00f);
     ImVec4 active = ImVec4(0.95f, 0.20f, 0.30f, 0.70f);
     ImVec4 select = ImVec4(0.95f, 0.20f, 0.30f, 0.40f);
 
