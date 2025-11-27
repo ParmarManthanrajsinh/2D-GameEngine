@@ -196,6 +196,7 @@ void GameEditor::LoadIconTextures()
 	UnloadImage(restart_img);
 	UnloadImage(restore_img);
 	UnloadImage(compile_img);
+	UnloadImage(clean_img);
 
 	m_bIconsLoaded = true;
 }
