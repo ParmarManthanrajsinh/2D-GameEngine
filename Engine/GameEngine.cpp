@@ -82,13 +82,13 @@ void GameEngine::ToggleFullscreen()
 
 void GameEngine::SetWindowMode(bool fullscreen)
 {
-	bool isCurrentlyFullscreen = IsWindowFullscreen();
-	if (fullscreen && !isCurrentlyFullscreen)
+	bool b_IsCurrentlyFullscreen = IsWindowFullscreen();
+	if (fullscreen && !b_IsCurrentlyFullscreen)
 	{
 		::ToggleFullscreen();
 		std::cout << "Switched to fullscreen mode" << std::endl;
 	}
-	else if (!fullscreen && isCurrentlyFullscreen)
+	else if (!fullscreen && b_IsCurrentlyFullscreen)
 	{
 		::ToggleFullscreen();
 		std::cout << "Switched to windowed mode" << std::endl;

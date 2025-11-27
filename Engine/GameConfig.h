@@ -24,6 +24,7 @@ public:
     
     t_WindowConfig& GetWindowConfig() { return m_WindowConfig; }
     const t_WindowConfig& GetWindowConfig() const { return m_WindowConfig; }
+    std::string GenerateConfigString() const;
     
 private:
     t_WindowConfig m_WindowConfig;

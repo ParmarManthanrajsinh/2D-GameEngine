@@ -1070,22 +1070,12 @@ void GameEditor::DrawExportPanel()
 							m_ExportState.m_ExportLogMutex, 
 							"Creating game configuration..."
 						);
-                        std::string config_content = 
-                            "# Game Configuration File\n"
-                            "# Window Settings\n"
-                            "width=" + std::to_string(m_ExportState.m_WindowWidth) + "\n"
-                            "height=" + std::to_string(m_ExportState.m_WindowHeight) + "\n"
-                            "b_Fullscreen=" + (m_ExportState.m_bFullscreen ? "true" : "false") + "\n"
-                            "b_Resizable=" + (m_ExportState.m_bResizable ? "true" : "false") + "\n"
-                            "b_Vsync=" + (m_ExportState.m_bVSync ? "true" : "false") + "\n"
-                            "target_fps=" + std::to_string(m_ExportState.m_TargetFPS) + "\n"
-                            "title=" + m_ExportState.m_GameName + "\n";
                         
                         fs::path config_path = export_dir / "config.ini";
                         std::ofstream config_file(config_path.string());
                         if (config_file.is_open()) 
 						{
-                            config_file << config_content;
+                            config_file << GameConfig::GetInstance().GenerateConfigString();
                             config_file.close();
                         }
                         
