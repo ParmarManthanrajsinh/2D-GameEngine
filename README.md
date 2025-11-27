@@ -1,8 +1,15 @@
-# RayWaves Game Engine
 
 *Where code changes flow like waves* 🌊
 
 A simple Raylib-based game engine with **hot-reloading** support. Edit your game code and see changes flow through instantly without restarting!
+
+<br>
+<br>
+<div align="center">
+  <img src="Assets/EngineContent/logo.png" alt="RayWaves Game Engine Logo" width="300"/>
+</div>
+<br>
+<br>
 
 ## ✨ Features
 
