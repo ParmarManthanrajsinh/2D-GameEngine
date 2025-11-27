@@ -300,6 +300,7 @@ void GameEditor::Close() const
 	{
 		UnloadTexture(m_PlayIcon);
 		UnloadTexture(m_PauseIcon);
+		UnloadTexture(m_RestartIcon);
 		UnloadTexture(m_RestoreIcon);
 		UnloadTexture(m_CompileIcon);
 		UnloadTexture(m_CleanIcon);
