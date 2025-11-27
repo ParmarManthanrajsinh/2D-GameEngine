@@ -194,7 +194,7 @@ extern "C" __declspec(dllexport) GameMap* CreateGameMap()
 void YourMap::Update(float delta_time)
 {
     // Switch to another map when player reaches finish zone
-    if (CheckCollisionRecs(playerRect, finishZone))
+    if (CheckCollisionRecs(player_rect, finish_zone))
     {
         RequestGotoMap("Level2");  // Safe transition via callback
     }
