@@ -510,7 +510,6 @@ void GameEditor::DrawSceneWindow()
 	)
 	{
 		b_IsPlaying = false;
-
 		// Attempt hot reload of GameLogic.dll, fallback to reset if it fails
 		if (!b_ReloadGameLogic())
 		{
@@ -603,6 +602,11 @@ void GameEditor::DrawSceneWindow()
 		if (!b_Disabled)
 		{
 			b_IsCompiling = true;
+			b_IsPlaying = false;
+			if (!b_ReloadGameLogic())
+			{
+				m_GameEngine.ResetMap();
+			}
 			std::thread
 			(
 				[this]()

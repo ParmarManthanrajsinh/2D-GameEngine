@@ -5,7 +5,7 @@
 
 inline void SetEngineTheme
 (
-    std::string_view = "Assets/EngineContent/Roboto-Regular.ttf"
+    std::string_view path = "Assets/EngineContent/Roboto-Regular.ttf"
 )
 {
     ImGuiIO& io = ImGui::GetIO();
@@ -17,8 +17,8 @@ inline void SetEngineTheme
     font_config.PixelSnapH = true;
     font_config.RasterizerMultiply = 1.15f;
 
-    io.Fonts->AddFontFromFileTTF(path.c_str(), 20.0f, &font_config);
-    io.Fonts->AddFontFromFileTTF(path.c_str(), 26.0f, &font_config);
+    io.Fonts->AddFontFromFileTTF(path.data(), 20.0f, &font_config);
+    io.Fonts->AddFontFromFileTTF(path.data(), 26.0f, &font_config);
 
     rlImGuiReloadFonts();
 
@@ -75,13 +75,13 @@ inline void SetEngineTheme
 
     // Headers
     style.Colors[ImGuiCol_Header] = bg_3;
-    style.Colors[ImGuiCol_HeaderHovered] = hover;  // Updated to use gray hover
+    style.Colors[ImGuiCol_HeaderHovered] = hover;
     style.Colors[ImGuiCol_HeaderActive] = red_primary;
 
     // Scrollbars
     style.Colors[ImGuiCol_ScrollbarBg] = bg_1;
     style.Colors[ImGuiCol_ScrollbarGrab] = bg_3;
-    style.Colors[ImGuiCol_ScrollbarGrabHovered] = hover;  // Updated to use gray hover
+    style.Colors[ImGuiCol_ScrollbarGrabHovered] = hover;  
     style.Colors[ImGuiCol_ScrollbarGrabActive] = red_primary;
 
     // Highlights
