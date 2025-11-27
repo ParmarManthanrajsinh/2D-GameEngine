@@ -132,11 +132,6 @@ inline void SetEngineTheme
     style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.50f, 0.10f, 0.10f, 0.80f); // lighter red on hover
     style.Colors[ImGuiCol_ResizeGripActive] = red_primary; // bright red when active
 
-    // Separator lines - use dark red/black
-    style.Colors[ImGuiCol_Separator] = ImVec4(0.20f, 0.05f, 0.05f, 0.60f); // dark red separator
-    style.Colors[ImGuiCol_SeparatorHovered] = ImVec4(0.40f, 0.10f, 0.10f, 0.80f); // red on hover
-    style.Colors[ImGuiCol_SeparatorActive] = red_secondary; // active red
-
     // Docking elements - ensure no blue bleeding through
     style.Colors[ImGuiCol_DockingPreview] = ImVec4(0.60f, 0.15f, 0.20f, 0.50f); // red docking preview
     style.Colors[ImGuiCol_DockingEmptyBg] = bg_0; // black empty docking background
