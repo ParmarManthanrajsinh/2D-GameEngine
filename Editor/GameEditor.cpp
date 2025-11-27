@@ -7,7 +7,7 @@
 #include <string>
 using Clock = std::chrono::steady_clock;
 
-// Forward declarations for export helpers
+// Export Utility functions
 static void s_fAppendLogLine
 (
 	std::vector<std::string>& logs, 
@@ -1547,8 +1547,14 @@ void GameEditor::DrawSceneSettingsPanel()
         UnloadRenderTexture(m_RaylibTexture);
         UnloadRenderTexture(m_DisplayTexture);
 
-        m_RaylibTexture = LoadRenderTexture(m_SceneSettings.m_SceneWidth, m_SceneSettings.m_SceneHeight);
-        m_DisplayTexture = LoadRenderTexture(m_SceneSettings.m_SceneWidth, m_SceneSettings.m_SceneHeight);
+        m_RaylibTexture = LoadRenderTexture
+		(
+			m_SceneSettings.m_SceneWidth, m_SceneSettings.m_SceneHeight
+		);
+        m_DisplayTexture = LoadRenderTexture
+		(
+			m_SceneSettings.m_SceneWidth, m_SceneSettings.m_SceneHeight
+		);
 
         SetTextureFilter(m_RaylibTexture.texture, TEXTURE_FILTER_BILINEAR);
         SetTextureFilter(m_DisplayTexture.texture, TEXTURE_FILTER_BILINEAR);
@@ -1629,12 +1635,12 @@ void GameEditor::LoadMap(std::unique_ptr<GameMap>& game_map)
     }
 }
 
-bool GameEditor::b_LoadGameLogic(const char* dll_path)
+bool GameEditor::b_LoadGameLogic(std::string_view dll_path)
 {
-	m_GameLogicPath = dll_path ? dll_path : "";
+	m_GameLogicPath = dll_path.data() ? dll_path.data() : "";
 
 	// 1) Load new DLL
-	DllHandle new_dll = LoadDll(dll_path);
+	DllHandle new_dll = LoadDll(dll_path.data());
 	if (!new_dll.handle)
 	{
 		std::cerr << "Failed to load GameLogic DLL: "
@@ -1789,8 +1795,10 @@ static bool s_bfValidateExportFolder
 		);
 		if (!b_Exists) b_Ok = false;
 	};
-	// For validation, we need to check for "MyGame.exe" since we don't have access to the actual game name here
-	// This is a limitation - we'll just check for any .exe file in the export directory
+	// For validation, we need to check for "MyGame.exe" since we don't   have access to the actual game name here
+	
+	// This is a limitation - 
+	// we'll just check for any .exe file in the export directory
 	bool b_FoundGameExe = false;
 	std::error_code ec;
 	if (fs::exists(out_dir, ec) && !ec) 

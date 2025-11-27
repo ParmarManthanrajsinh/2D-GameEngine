@@ -31,7 +31,7 @@ public:
     void LoadMap(std::unique_ptr<GameMap>& game_map);
 
     // Load the game logic DLL and create/set a new GameMap from it
-    bool b_LoadGameLogic(const char* dllPath);
+    bool b_LoadGameLogic(std::string_view dllPath);
 
     // Unload and reload the DLL, then recreate the GameMap
     bool b_ReloadGameLogic();
@@ -78,8 +78,7 @@ private:
     // Map selection UI
     MapManager* m_MapManager = nullptr;
     std::string m_SelectedMapId;
-
-    // Scene resolution settings
+    
     struct m_tSceneSettings
     {
         int m_SceneWidth = 1280;
