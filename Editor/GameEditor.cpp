@@ -930,15 +930,19 @@ void GameEditor::DrawExportPanel()
         const char* selected_path = 
 		tinyfd_saveFileDialog
 		(
-			"Select Export Folder", 
+			"Select Export Folder",
 			fs::current_path().string().c_str(), 
 			0, 
 			NULL, 
 			NULL
-		);  
+		);
+
 
 		if (!selected_path)
-			return;
+		{
+			std::string parent_path = fs::current_path().string();
+			m_ExportState.m_ExportPath = parent_path;
+		}
 
         if (selected_path)
         {  
