@@ -476,6 +476,7 @@ void GameEditor::DrawSceneWindow()
 	// Status indicator
 	ImGui::SameLine();
 	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 12);
+
 	// Center text vertically in toolbar
 	float text_y_offset = 
 	(
@@ -510,7 +511,8 @@ void GameEditor::DrawSceneWindow()
 	)
 	{
 		b_IsPlaying = false;
-		// Attempt hot reload of GameLogic.dll, fallback to reset if it fails
+		// Attempt hot reload of GameLogic.dll, 
+		// fallback to reset if it fails
 		if (!b_ReloadGameLogic())
 		{
 			m_GameEngine.ResetMap();
@@ -535,6 +537,13 @@ void GameEditor::DrawSceneWindow()
 		}
 	}
 
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::BeginTooltip();
+		ImGui::TextColored(ImVec4(1, 0, 0, 1), "Delete Build Folder");
+		ImGui::EndTooltip();
+	}
+
 	ImGui::SameLine();
 
 	// Compile Button & Status
@@ -542,7 +551,10 @@ void GameEditor::DrawSceneWindow()
 	float status_sz = 0.0f;
 	if (b_IsCompiling)
 	{
-		status_sz = 20.0f + ImGui::GetStyle().ItemSpacing.x + ImGui::CalcTextSize("Compiling...").x + ImGui::GetStyle().ItemSpacing.x;
+		status_sz = 20.0f + 
+			ImGui::GetStyle().ItemSpacing.x +			   
+			ImGui::CalcTextSize("Compiling...").x + 
+			ImGui::GetStyle().ItemSpacing.x;
 	}
 
 	float avail = ImGui::GetContentRegionAvail().x;
@@ -603,10 +615,8 @@ void GameEditor::DrawSceneWindow()
 		{
 			b_IsCompiling = true;
 			b_IsPlaying = false;
-			if (!b_ReloadGameLogic())
-			{
-				m_GameEngine.ResetMap();
-			}
+			if (!b_ReloadGameLogic()) m_GameEngine.ResetMap(); // Restore
+
 			std::thread
 			(
 				[this]()
@@ -620,24 +630,17 @@ void GameEditor::DrawSceneWindow()
 
 	if (ImGui::IsItemHovered())
 	{
-		ImGui::SetTooltip("Recompile Game Logic DLL");
+		ImGui::BeginTooltip(); 
+		ImGui::TextColored(ImVec4(0, 1, 0, 1), "Recompile"); 
+		ImGui::EndTooltip();
 	}
-
-	if (b_Disabled)
-	{
-		ImGui::PopStyleVar();
-	}
-
 	ImGui::PopStyleVar(3);
 
-	if (m_bUseOpaquePass)
-	{
-		rlImGuiImageRenderTextureFit(&m_DisplayTexture, true);
-	}
-	else
-	{
-		rlImGuiImageRenderTextureFit(&m_RaylibTexture, true);
-	}
+	rlImGuiImageRenderTextureFit
+	(
+		m_bUseOpaquePass ? 
+		&m_DisplayTexture : &m_RaylibTexture, true
+	);
 
 	ImGui::End();
 }
