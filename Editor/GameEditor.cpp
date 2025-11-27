@@ -652,8 +652,8 @@ void GameEditor::DrawExportPanel()
     ImGui::Text("Export standalone game");
     ImGui::Separator();
     
-    // === GAME CONFIGURATION ===
-    ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]); // Use default font for headers
+    // Game Configuration
+    ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
     ImGui::Text("Game Configuration");
     ImGui::PopFont();
     ImGui::Separator();
@@ -693,7 +693,6 @@ void GameEditor::DrawExportPanel()
     ImGui::Spacing();
     ImGui::Spacing();
 
-    // === DISPLAY SETTINGS ===
     ImGui::Text("Display Settings");
     ImGui::Separator();
     ImGui::Spacing();
@@ -764,7 +763,6 @@ void GameEditor::DrawExportPanel()
 
     ImGui::Spacing();
 
-    // === PERFORMANCE SETTINGS ===
     ImGui::Text("Performance Settings");
     ImGui::Separator();
     ImGui::Spacing();
@@ -930,7 +928,7 @@ void GameEditor::DrawExportPanel()
     ImGui::Separator();
     ImGui::Spacing();
 
-    // === EXPORT ACTION ===
+    // Export Logic
     if (!m_ExportState.m_bIsExporting)
     {
         // Center the export button and make it prominent
@@ -1297,7 +1295,10 @@ void GameEditor::DrawExportPanel()
         
         // Progress indicator
         ImGui::SetCursorPosX((window_width - 200.0f) * 0.5f);
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 0.7f, 1.0f, 1.0f));
+        ImGui::PushStyleColor
+		(
+			ImGuiCol_Text, ImVec4(0.3f, 0.7f, 1.0f, 1.0f)
+		);
         ImGui::Text("Export in progress...");
         ImGui::PopStyleColor();
         
@@ -1358,7 +1359,10 @@ void GameEditor::DrawExportPanel()
 				window_width - ImGui::CalcTextSize("Export Failed").x
 			) * 0.5f
 		);
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
+        ImGui::PushStyleColor
+		(
+			ImGuiCol_Text, ImVec4(0.8f, 0.2f, 0.2f, 1.0f)
+		);
         ImGui::Text("Export Failed");
         ImGui::PopStyleColor();
     }
@@ -1531,8 +1535,11 @@ void GameEditor::DrawSceneSettingsPanel()
     }
 
     // Check if resolution changed
-    bool b_resolution_changed = (s_prev_width != m_SceneSettings.m_SceneWidth || 
-                              s_prev_height != m_SceneSettings.m_SceneHeight);
+    bool b_resolution_changed = 
+	(
+		s_prev_width != m_SceneSettings.m_SceneWidth || 
+        s_prev_height != m_SceneSettings.m_SceneHeight
+	);
 
     if (b_resolution_changed)
     {
