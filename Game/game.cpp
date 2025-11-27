@@ -8,10 +8,10 @@ using CreateGameMapFunc = GameMap* (*)();
 
 static std::unique_ptr<GameMap> s_fLoadGameLogic
 (
-    const char* dll_path, DllHandle& out_handle
+    std::string_view dll_path, DllHandle& out_handle
 )
 {
-    out_handle = LoadDll(dll_path);
+    out_handle = LoadDll(dll_path.data());
     if (!out_handle.handle)
     {
         std::cerr << "Failed to load GameLogic DLL: " << dll_path << "\n";

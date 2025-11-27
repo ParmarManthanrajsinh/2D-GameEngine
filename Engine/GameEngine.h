@@ -25,7 +25,7 @@ public:
     GameEngine();
     ~GameEngine();
 
-	void LaunchWindow(int width, int height, const char* title);
+	void LaunchWindow(int width, int height, std::string_view title);
 	void LaunchWindow(const t_WindowConfig& config);
 	void ToggleFullscreen();
 	void SetWindowMode(bool fullscreen);

@@ -1639,7 +1639,6 @@ bool GameEditor::b_LoadGameLogic(std::string_view dll_path)
 {
 	m_GameLogicPath = dll_path.data() ? dll_path.data() : "";
 
-	// 1) Load new DLL
 	DllHandle new_dll = LoadDll(dll_path.data());
 	if (!new_dll.handle)
 	{

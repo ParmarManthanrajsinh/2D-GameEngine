@@ -13,7 +13,7 @@ GameEngine::~GameEngine()
 {
 }
 
-void GameEngine::LaunchWindow(int width, int height, const char* title)
+void GameEngine::LaunchWindow(int width, int height, std::string_view title)
 {
 	m_WindowWidth = width;
 	m_WindowHeight = height;
@@ -28,7 +28,7 @@ void GameEngine::LaunchWindow(int width, int height, const char* title)
 		<< ")"
 		<< std::endl;
 
-	InitWindow(width, height, title);
+	InitWindow(width, height, title.data());
 }
 
 
