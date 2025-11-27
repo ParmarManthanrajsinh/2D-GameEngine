@@ -65,6 +65,20 @@ void GameEditor::Init(int width, int height, std::string_view title)
 {
 	m_GameEngine.LaunchWindow(width, height, title.data());
 	SetWindowState(FLAG_WINDOW_RESIZABLE);
+	
+	// Set window icon
+	Image icon = LoadImage("Assets/EngineContent/icon.png");
+	if (icon.data != nullptr)
+	{
+		SetWindowIcon(icon);
+		UnloadImage(icon);
+		printf("Window icon loaded successfully from Assets / icon.png\n");
+	} 
+	else
+	{
+		printf("Failed to load icon from Assets/icon.png\n");
+	}
+	
 	rlImGuiSetup(true);
 
 	ImGuiIO& io = ImGui::GetIO();
