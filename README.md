@@ -216,13 +216,13 @@ if (manager->b_IsCurrentMap("Level2"))
 }
 
 // Get current map ID
-std::string currentMap = manager->GetCurrentMapId();
+std::string current_map = manager->GetCurrentMapId();
 
 // Get all available maps
-auto availableMaps = manager->GetAvailableMaps();
-for (const auto& mapName : availableMaps)
+auto available_maps = manager->GetAvailableMaps();
+for (const auto& map_name : available_maps)
 {
-    std::cout << "Available map: " << mapName << std::endl;
+    std::cout << "Available map: " << map_name << std::endl;
 }
 ```
 
