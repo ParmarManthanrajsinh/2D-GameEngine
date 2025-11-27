@@ -122,4 +122,35 @@ inline void SetEngineTheme(const std::string& path = "Assets/EngineContent/Robot
 
     // Menu bar
     style.Colors[ImGuiCol_MenuBarBg] = bg_1;
+
+    // === RESIZING ELEMENTS & BLOCKING FEATURES ===
+    // Resize grips - use dark red instead of blue
+    style.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.30f, 0.05f, 0.05f, 0.70f); // dark red, semi-transparent
+    style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.50f, 0.10f, 0.10f, 0.80f); // lighter red on hover
+    style.Colors[ImGuiCol_ResizeGripActive] = red_primary; // bright red when active
+
+    // Separator lines - use dark red/black
+    style.Colors[ImGuiCol_Separator] = ImVec4(0.20f, 0.05f, 0.05f, 0.60f); // dark red separator
+    style.Colors[ImGuiCol_SeparatorHovered] = ImVec4(0.40f, 0.10f, 0.10f, 0.80f); // red on hover
+    style.Colors[ImGuiCol_SeparatorActive] = red_secondary; // active red
+
+    // Docking elements - ensure no blue bleeding through
+    style.Colors[ImGuiCol_DockingPreview] = ImVec4(0.60f, 0.15f, 0.20f, 0.50f); // red docking preview
+    style.Colors[ImGuiCol_DockingEmptyBg] = bg_0; // black empty docking background
+
+    // Window background when docked/blocked
+    style.Colors[ImGuiCol_WindowBg] = bg_1; // ensure consistent dark background
+
+    // Plot colors (if using ImPlot) - replace any blue elements
+    style.Colors[ImGuiCol_PlotLines] = red_primary;
+    style.Colors[ImGuiCol_PlotLinesHovered] = red_highlight;
+    style.Colors[ImGuiCol_PlotHistogram] = red_secondary;
+    style.Colors[ImGuiCol_PlotHistogramHovered] = red_highlight;
+
+    // Table elements - ensure consistent theming
+    style.Colors[ImGuiCol_TableHeaderBg] = bg_3;
+    style.Colors[ImGuiCol_TableBorderStrong] = ImVec4(0.20f, 0.05f, 0.05f, 1.00f); // dark red borders
+    style.Colors[ImGuiCol_TableBorderLight] = ImVec4(0.15f, 0.05f, 0.05f, 0.50f); // lighter red borders
+    style.Colors[ImGuiCol_TableRowBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f); // transparent
+    style.Colors[ImGuiCol_TableRowBgAlt] = ImVec4(0.05f, 0.02f, 0.02f, 0.15f); // subtle dark red alt row
 }
