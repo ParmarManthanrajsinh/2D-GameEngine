@@ -122,7 +122,4 @@ inline void SetEngineTheme(const std::string& path = "Assets/EngineContent/Robot
 
     // Menu bar
     style.Colors[ImGuiCol_MenuBarBg] = bg_1;
-
-	// Borders - bright red for visibility
-    style.Colors[ImGuiCol_Border] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
 }
