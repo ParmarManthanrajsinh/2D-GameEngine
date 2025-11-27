@@ -28,12 +28,12 @@ bool GameConfig::m_bLoadFromFile(const std::string& config_path)
             continue;
         
         // Find the equals sign
-        size_t equal_pos = line.find('=');
-        if (equal_pos == std::string::npos) 
+        auto equal_pos = line.find('=');
+        if (equal_pos == std::string::npos)
             continue;
-        
-        std::string key = line.substr(0, equal_pos);
-        std::string value = line.substr(equal_pos + 1);
+
+        std::string key(line.begin(), line.begin() + equal_pos);
+        std::string value(line.begin() + equal_pos + 1, line.end());
         
         // Trim whitespace
         key.erase(0, key.find_first_not_of(" \t"));
