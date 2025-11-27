@@ -59,6 +59,7 @@ add_executable(main
     ${RLIMGUI_SRC} 
     ${IMGUI_SRC} 
     ${TINYFILEDIALOGS}
+    Editor/app.rc
 )
 
 # Add include directories for the main executable
@@ -99,6 +100,7 @@ add_custom_command(TARGET GameLogic POST_BUILD
 add_executable(game
     Game/game.cpp
     Game/DllLoader.cpp
+    Game/app.rc
 )
 
 # Includes for game runtime
