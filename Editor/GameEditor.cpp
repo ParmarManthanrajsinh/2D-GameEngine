@@ -1949,6 +1949,10 @@ void GameEditor::DrawMapSelectionUI()
 
 		// Quick access buttons for each map
 		ImGui::Text("Quick Access:");
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
 		for (int i = 0; i < available_maps.size(); i++)
 		{
 			const auto& MAP_ID = available_maps[i];
@@ -2021,7 +2025,6 @@ void GameEditor::DrawMapSelectionUI()
 
 		ImGui::Spacing();
 		ImGui::Separator();
-		ImGui::Spacing();
 	}
 
 	ImGui::End();
