@@ -1,32 +1,68 @@
 # RayWaves Engine - Developer Guide
 
-Development patterns and best practices for RayWaves.
+*Where code changes flow like waves* 🌊
+
+Development patterns and best practices for the RayWaves Game Engine.
 
 ## Development Workflow
 
+### Source Development
 1. **Run the editor**: `out/build/x64-debug/main.exe`
 2. **Edit game code**: Modify files in `GameLogic/`
 3. **Rebuild**: `cmake --build out/build/x64-debug --config Debug --target GameLogic`
 4. **See changes instantly**: Editor auto-reloads your code
 
+### Distribution Development (End Users)
+1. **Open VS Code** in engine folder
+2. **Open terminal** (`Ctrl + backtick`)
+3. **Launch engine**: `./app.exe`
+4. **Edit GameLogic files** and save
+5. **Run build script**: `./build_gamelogic.bat`
+6. **See changes flow** automatically!
+
 ## Project Structure
 
 ```
 RayWaves/
-├── Engine/          # Core engine classes (GameMap, MapManager, GameConfig)
-├── Editor/          # ImGui editor and UI
+├── Distribution/    # Distribution and packaging files
+│   ├── build_gamelogic.bat    # Quick build script for GameLogic.dll
+│   ├── create_distribution.bat # Main distribution creation script
+│   ├── dist_CMakeLists.txt    # CMake config for distributed environment
+│   ├── distribute.ps1         # PowerShell packaging script
+│   └── config.ini             # Default game configuration
+├── Engine/          # Core engine (GameEngine, GameMap, MapManager, GameConfig)
+├── Editor/          # ImGui editor and UI components
+│   ├── imgui/               # ImGui library
+│   ├── rlImGui/            # Raylib-ImGui integration
+│   └── tinyfiledialogs/    # File dialog library
 ├── Game/            # Program entry points and DLL loader
-├── GameLogic/       # Your game code (builds as GameLogic.dll)
-├── Assets/          # Game assets and resources
-└── Distribution/    # Distribution and packaging
+│   ├── main.cpp            # Editor entry point
+│   ├── game.cpp            # Runtime-only entry point
+│   └── DllLoader.cpp       # Hot-reload DLL management
+├── GameLogic/       # Your game code (built as GameLogic.dll)
+│   ├── RootManager.cpp     # DLL entry point and map registration
+│   ├── Level1.cpp/h        # Example game level
+│   ├── Level2.cpp/h        # Another example level
+│   └── FireParticle.h      # Example particle system
+├── Assets/          # Game assets
+│   └── EngineContent/      # Built-in engine assets (icons, etc.)
+└── Documentation/   # Complete documentation and guides
 ```
 
 ## Hot-Reload System
 
+**How it works:**
 - **GameLogic.dll** contains your game code
-- Engine creates shadow copy to avoid Windows file locking
-- File watcher detects changes and triggers automatic reload
-- Game state resets on reload (intentional for testing)
+- Windows locks DLLs when loaded, so our loader creates a shadow copy
+- The original file stays unlocked for rebuilding
+- Editor watches for file changes and triggers automatic reload
+- Game state resets on reload (intentional for consistent testing)
+
+**Why this works:**
+- Engine automatically detects DLL changes within ~0.5 seconds
+- No need to restart the editor or lose your current state
+- Write pure Raylib code - no complex abstractions needed
+- Perfect for rapid iteration and testing
 
 ## Map Development
 

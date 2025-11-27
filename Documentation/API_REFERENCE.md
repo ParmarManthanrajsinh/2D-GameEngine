@@ -1,5 +1,7 @@
 # RayWaves Engine - API Reference
 
+*Where code changes flow like waves* 🌊
+
 Essential classes and methods for RayWaves game development.
 
 ## Quick Start
@@ -8,32 +10,65 @@ Essential classes and methods for RayWaves game development.
 ```cpp
 #include "../Engine/GameMap.h"
 
-class MyLevel : public GameMap {
+class YourMap : public GameMap {
 private:
     Vector2 m_PlayerPos{400.0f, 300.0f};
+    const float MOVE_SPEED = 300.0f;
     
 public:
-    MyLevel() : GameMap("MyLevel") {}
+    YourMap() {}
+    ~YourMap() override = default;
+
+    void Initialize() override {
+        // Initialize your map here
+    }
     
     void Update(float delta_time) override {
-        if (IsKeyDown(KEY_RIGHT)) m_PlayerPos.x += 200.0f * delta_time;
+        if (IsKeyDown(KEY_RIGHT)) m_PlayerPos.x += MOVE_SPEED * delta_time;
+        if (IsKeyDown(KEY_LEFT)) m_PlayerPos.x -= MOVE_SPEED * delta_time;
+        if (IsKeyDown(KEY_UP)) m_PlayerPos.y -= MOVE_SPEED * delta_time;
+        if (IsKeyDown(KEY_DOWN)) m_PlayerPos.y += MOVE_SPEED * delta_time;
+        
+        // Level transition example
         if (IsKeyPressed(KEY_ENTER)) RequestGotoMap("NextLevel");
     }
     
     void Draw() override {
         DrawCircleV(m_PlayerPos, 25.0f, RED);
+        DrawText("Use arrow keys to move", 10, 10, 20, BLACK);
     }
 };
 ```
 
-### 2. Register Maps
+### 2. Register Maps in RootManager
 ```cpp
 // GameLogic/RootManager.cpp
+#include "../Engine/MapManager.h"
+#include "Level1.h"
+#include "Level2.h"
+#include "YourMap.h" // Your custom map
+
+// Global static instance to ensure consistency across editor and runtime
+static MapManager* s_GameMapManager = nullptr;
+
 extern "C" __declspec(dllexport) GameMap* CreateGameMap() {
-    MapManager* manager = new MapManager();
-    manager->RegisterMap<MyLevel>("MyLevel");
-    manager->b_GotoMap("MyLevel");
-    return manager;
+    // If we already have a manager, reuse it to maintain map registrations
+    if (s_GameMapManager == nullptr) {
+        s_GameMapManager = new MapManager();
+
+        // Register your game maps - this happens only once
+        s_GameMapManager->RegisterMap<Level1>("Level1");
+        s_GameMapManager->RegisterMap<Level2>("Level2");
+        s_GameMapManager->RegisterMap<YourMap>("YourMap"); // Add your custom maps
+    }
+
+    // Automatically load the first registered map
+    auto available_maps = s_GameMapManager->GetAvailableMaps();
+    if (!available_maps.empty()) {
+        s_GameMapManager->b_GotoMap(available_maps.at(0));
+    }
+
+    return s_GameMapManager;
 }
 ```
 
