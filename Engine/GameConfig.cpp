@@ -24,11 +24,13 @@ bool GameConfig::m_bLoadFromFile(const std::string& config_path)
     while (std::getline(file, line)) 
     {
         // Skip empty lines and comments
-        if (line.empty() || line[0] == '#' || line[0] == ';') continue;
+        if (line.empty() || line[0] == '#' || line[0] == ';') 
+            continue;
         
         // Find the equals sign
         size_t equal_pos = line.find('=');
-        if (equal_pos == std::string::npos) continue;
+        if (equal_pos == std::string::npos) 
+            continue;
         
         std::string key = line.substr(0, equal_pos);
         std::string value = line.substr(equal_pos + 1);
@@ -80,7 +82,7 @@ bool GameConfig::m_bSaveToFile(const std::string& config_path) const
     std::ofstream file(config_path);
     if (!file.is_open()) 
     {
-        std::cerr << "Failed to create config file: " 
+        std::cout << "Failed to create config file: " 
                   << config_path << "\n";
         return false;
     }
