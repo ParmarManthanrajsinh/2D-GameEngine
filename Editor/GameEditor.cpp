@@ -471,12 +471,7 @@ void GameEditor::DrawSceneWindow()
 		}
 	}
 
-	if (ImGui::IsItemHovered())
-	{
-		ImGui::BeginTooltip();
-		ImGui::TextColored(ImVec4(0, 1, 0, 1), "Play");
-		ImGui::EndTooltip();
-	}
+	if (ImGui::IsItemHovered()) ImGui::SetTooltip("Play");
 
 	// Restart button with PNG icon
 	ImGui::SameLine();
@@ -494,12 +489,7 @@ void GameEditor::DrawSceneWindow()
 		m_MapManager->b_ReloadCurrentMap();
 	}
 
-	if (ImGui::IsItemHovered())
-	{
-		ImGui::BeginTooltip();
-		ImGui::TextColored(ImVec4(0, 1, 0, 1), "Restart");
-		ImGui::EndTooltip();
-	}
+	if (ImGui::IsItemHovered()) ImGui::SetTooltip("Restart");
 
 	// Status indicator
 	ImGui::SameLine();
@@ -547,12 +537,7 @@ void GameEditor::DrawSceneWindow()
 		}
 	}
 
-	if (ImGui::IsItemHovered())
-	{
-		ImGui::BeginTooltip();
-		ImGui::TextColored(ImVec4(0, 1, 0, 1), "Reset Game");
-		ImGui::EndTooltip();
-	}
+	if (ImGui::IsItemHovered()) ImGui::SetTooltip("Reset Game");
 
 	ImGui::SameLine();
 	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 12);
