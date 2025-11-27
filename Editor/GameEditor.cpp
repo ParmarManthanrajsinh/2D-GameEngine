@@ -471,6 +471,13 @@ void GameEditor::DrawSceneWindow()
 		}
 	}
 
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::BeginTooltip();
+		ImGui::TextColored(ImVec4(0, 1, 0, 1), "Play");
+		ImGui::EndTooltip();
+	}
+
 	// Restart button with PNG icon
 	ImGui::SameLine();
 	if
@@ -485,6 +492,13 @@ void GameEditor::DrawSceneWindow()
 	{
 		b_IsPlaying = false;
 		m_MapManager->b_ReloadCurrentMap();
+	}
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::BeginTooltip();
+		ImGui::TextColored(ImVec4(0, 1, 0, 1), "Restart");
+		ImGui::EndTooltip();
 	}
 
 	// Status indicator
@@ -533,6 +547,13 @@ void GameEditor::DrawSceneWindow()
 		}
 	}
 
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::BeginTooltip();
+		ImGui::TextColored(ImVec4(0, 1, 0, 1), "Reset Game");
+		ImGui::EndTooltip();
+	}
+
 	ImGui::SameLine();
 	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 12);
 	if
@@ -553,9 +574,7 @@ void GameEditor::DrawSceneWindow()
 
 	if (ImGui::IsItemHovered())
 	{
-		ImGui::BeginTooltip();
-		ImGui::TextColored(ImVec4(1, 0, 0, 1), "Delete Build Folder");
-		ImGui::EndTooltip();
+		ImGui::SetTooltip("Delete Build Folder");
 	}
 
 	ImGui::SameLine();
