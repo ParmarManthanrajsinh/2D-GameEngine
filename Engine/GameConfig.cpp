@@ -121,3 +121,17 @@ std::string GameConfig::GenerateConfigString() const
 
     return ss.str();
 }
+
+void GameConfig::ApplyExportSettings
+(
+    int width, int height, bool fullscreen, bool resizable,
+    bool vsync, int target_fps
+)
+{
+    m_WindowConfig.width = width;
+    m_WindowConfig.height = height;
+    m_WindowConfig.b_Fullscreen = fullscreen;
+    m_WindowConfig.b_Resizable = resizable;
+    m_WindowConfig.b_Vsync = vsync;
+    m_WindowConfig.target_fps = target_fps;
+}

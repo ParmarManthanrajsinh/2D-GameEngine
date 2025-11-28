@@ -25,7 +25,13 @@ public:
     t_WindowConfig& GetWindowConfig() { return m_WindowConfig; }
     const t_WindowConfig& GetWindowConfig() const { return m_WindowConfig; }
     std::string GenerateConfigString() const;
-    
+    void ApplyExportSettings
+    (
+        int width, int height,
+        bool fullscreen, bool resizable,
+        bool vsync, int target_fps
+    );
+
 private:
     t_WindowConfig m_WindowConfig;
     GameConfig() = default;

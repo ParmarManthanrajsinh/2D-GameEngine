@@ -1112,11 +1112,21 @@ void GameEditor::DrawExportPanel()
                         
                         fs::path config_path = export_dir / "config.ini";
                         std::ofstream config_file(config_path.string());
-                        if (config_file.is_open()) 
+						if (config_file.is_open())
 						{
-                            config_file << GameConfig::GetInstance().GenerateConfigString();
-                            config_file.close();
-                        }
+							GameConfig::GetInstance().ApplyExportSettings
+							(
+								m_ExportState.m_WindowWidth,
+								m_ExportState.m_WindowHeight,
+								m_ExportState.m_bFullscreen,
+								m_ExportState.m_bResizable,
+								m_ExportState.m_bVSync,
+								m_ExportState.m_TargetFPS
+							);
+
+							config_file << GameConfig::GetInstance().GenerateConfigString();
+							config_file.close();
+						}
                         
                         s_fAppendLogLine
 						(
