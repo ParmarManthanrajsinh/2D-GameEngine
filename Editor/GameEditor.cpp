@@ -884,7 +884,6 @@ void GameEditor::DrawExportPanel()
 		m_ExportState.m_TargetFPS = 1000;
 	}
 
-    // === EXPORT SETTINGS ===
     ImGui::Text("Export Settings");
     ImGui::Separator();
     ImGui::Spacing();
@@ -1016,10 +1015,12 @@ void GameEditor::DrawExportPanel()
 					fs::path current_path = fs::current_path();
                 
 					// Check if we're in a distribution (has app.exe but not full build system)
-					bool b_IsDistribution = fs::exists
+					bool b_IsDistribution = 
+					fs::exists
 					(
 						current_path / "game.exe"
-					) && !fs::exists
+					) && 
+					!fs::exists
 					(
 						current_path / "Game" / "game.cpp"
 					);
