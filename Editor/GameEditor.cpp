@@ -937,7 +937,6 @@ void GameEditor::DrawExportPanel()
 			NULL
 		);
 
-
 		if (!selected_path)
 		{
 			std::string parent_path = fs::current_path().string();
@@ -1499,8 +1498,8 @@ void GameEditor::DrawSceneSettingsPanel()
     ImGui::Spacing();
 
     // Store previous values to detect changes
-    static int s_prev_width = m_SceneSettings.m_SceneWidth;
-    static int s_prev_height = m_SceneSettings.m_SceneHeight;
+    static int s_PrevWidth = m_SceneSettings.m_SceneWidth;
+    static int s_PrevHeight = m_SceneSettings.m_SceneHeight;
 
     // Resolution Section
     ImGui::AlignTextToFramePadding();
@@ -1574,13 +1573,13 @@ void GameEditor::DrawSceneSettingsPanel()
     }
 
     // Check if resolution changed
-    bool b_resolution_changed = 
+    bool b_ResolutionChanged = 
 	(
-		s_prev_width != m_SceneSettings.m_SceneWidth || 
-        s_prev_height != m_SceneSettings.m_SceneHeight
+		s_PrevWidth != m_SceneSettings.m_SceneWidth || 
+        s_PrevHeight != m_SceneSettings.m_SceneHeight
 	);
 
-    if (b_resolution_changed)
+    if (b_ResolutionChanged)
     {
         // Update render textures with new resolution
         UnloadRenderTexture(m_RaylibTexture);
@@ -1617,8 +1616,8 @@ void GameEditor::DrawSceneSettingsPanel()
         }
 
         // Update previous values
-        s_prev_width = m_SceneSettings.m_SceneWidth;
-        s_prev_height = m_SceneSettings.m_SceneHeight;
+        s_PrevWidth = m_SceneSettings.m_SceneWidth;
+        s_PrevHeight = m_SceneSettings.m_SceneHeight;
     }
 
     ImGui::Spacing();
@@ -1626,8 +1625,12 @@ void GameEditor::DrawSceneSettingsPanel()
     ImGui::Spacing();
 
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1.0f));
-    ImGui::TextWrapped("This sets the resolution of the scene viewport that your game will use during development. "
-                      "The export resolution can be set separately in the Export panel.");
+    ImGui::TextWrapped
+	(
+		"This sets the resolution of the scene viewport that your game will use during development. "
+
+        "The export resolution can be set separately in the Export panel."
+	);
     ImGui::PopStyleColor();
 
     // Sync button to copy scene resolution to export settings
