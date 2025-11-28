@@ -364,7 +364,10 @@ void GameEditor::DrawToolbarBackground()
 	);
 }
 
-static void s_fDrawSpinner(float radius, float thickness, const ImU32& color)
+static void s_fDrawSpinner
+(
+	float radius, float thickness, const ImU32& color
+)
 {
 	// Group all float variables together for cache locality
 	alignas(16) struct 
@@ -1084,7 +1087,8 @@ void GameEditor::DrawExportPanel()
                         fs::create_directories(export_dir);
                         
                         // Use custom game name for the executable
-                        std::string game_exe_name = m_ExportState.m_GameName + ".exe";
+                        std::string game_exe_name = 
+							m_ExportState.m_GameName + ".exe";
                         s_fAppendLogLine
 						(
 							m_ExportState.m_ExportLogs,
@@ -1970,7 +1974,13 @@ void GameEditor::DrawMapSelectionUI()
 					);
 				}
 
-				if(ImGui::Selectable(available_maps[i].c_str(), b_IsSelected))
+				if
+				(
+					ImGui::Selectable
+					(
+						available_maps[i].c_str(), b_IsSelected
+					)
+				)
 				{
 					s_SelectedIndex = i;
 					m_SelectedMapId = available_maps[i];

@@ -15,7 +15,7 @@ void GameMap::Initialize()
     // Initialization code for the game map
 }
 
-void GameMap::Update(float DeltaTime)
+void GameMap::Update(float delta_time)
 {
     // Update logic for the game map
 }
