@@ -936,18 +936,10 @@ void GameEditor::DrawExportPanel()
 			NULL
 		);
 
-		if (!selected_path)
-		{
-			std::string parent_path = fs::current_path().string();
-			m_ExportState.m_ExportPath = parent_path;
-		}
+		fs::path parent_path = selected_path ? 
+		fs::path(selected_path).parent_path() : fs::current_path();
+		m_ExportState.m_ExportPath = parent_path.string();
 
-        if (selected_path)
-        {  
-            std::string parent_path = 
-				fs::path(selected_path).parent_path().string();  
-            m_ExportState.m_ExportPath = parent_path;  
-        }
     }
 
     ImGui::Spacing();

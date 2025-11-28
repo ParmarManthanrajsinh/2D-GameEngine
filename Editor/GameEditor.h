@@ -31,7 +31,7 @@ public:
     void LoadMap(std::unique_ptr<GameMap>& game_map);
 
     // Load the game logic DLL and create/set a new GameMap from it
-    bool b_LoadGameLogic(std::string_view dllPath);
+    bool b_LoadGameLogic(std::string_view dll_path);
 
     // Unload and reload the DLL, then recreate the GameMap
     bool b_ReloadGameLogic();
