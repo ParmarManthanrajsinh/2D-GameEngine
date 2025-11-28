@@ -12,6 +12,7 @@
 #include <atomic>
 #include <mutex>
 #include <vector>
+#include <array>
 
 #include "DllLoader.h"
 #include "GameEditorLayout.h"

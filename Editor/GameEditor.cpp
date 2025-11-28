@@ -696,30 +696,32 @@ void GameEditor::DrawExportPanel()
     ImGui::SameLine();
     ImGui::SetCursorPosX(120.0f);
     
-    char game_name_buffer[256];
-    strncpy_s
+    //char game_name_buffer[256];
+	std::array<char, 256> game_name_buffer{};
+	std::snprintf
 	(
-		game_name_buffer, 
-		m_ExportState.m_GameName.c_str(), 
-		sizeof(game_name_buffer) - 1
+		game_name_buffer.data(),
+		game_name_buffer.size(),
+		"%s",
+		m_ExportState.m_GameName.c_str()
 	);
-    game_name_buffer[sizeof(game_name_buffer) - 1] = '\0';
+	game_name_buffer[game_name_buffer.size() - 1] = '\0';
 
     ImGui::PushItemWidth(250.0f);
     if 
 	(
 		ImGui::InputText
 		(
-			"##game_name", game_name_buffer, sizeof(game_name_buffer)
+			"##game_name", game_name_buffer.data(), game_name_buffer.size()
 		)
 	)
     {
-        m_ExportState.m_GameName = game_name_buffer;
+        m_ExportState.m_GameName = game_name_buffer.data();
     }
     ImGui::PopItemWidth();
     
     ImGui::SameLine();
-    ImGui::TextDisabled("%s.exe", game_name_buffer);
+    ImGui::TextDisabled("%s.exe", game_name_buffer.data());
 
     ImGui::Spacing();
     ImGui::Spacing();
@@ -894,18 +896,20 @@ void GameEditor::DrawExportPanel()
     ImGui::SameLine();
     ImGui::SetCursorPosX(120.0f);
 
-    char export_path_buffer[512];
+    /*char export_path_buffer[512];*/
+	std::array<char, 512> export_path_buffer{};
     std::string current_path = 
 		m_ExportState.m_ExportPath.empty() ? 
 		"export" : m_ExportState.m_ExportPath;
 
-    strncpy_s
+	strncpy_s
 	(
-		export_path_buffer, 
-		current_path.c_str(), 
-		sizeof(export_path_buffer) - 1
+		export_path_buffer.data(),        // destination
+		export_path_buffer.size(),        // buffer size
+		current_path.c_str(),             // source
+		_TRUNCATE                         // auto null-terminate
 	);
-    export_path_buffer[sizeof(export_path_buffer) - 1] = '\0';
+    export_path_buffer[export_path_buffer.size() - 1] = '\0';
 
     ImGui::PushItemWidth(300.0f);
     if 
@@ -913,13 +917,13 @@ void GameEditor::DrawExportPanel()
 		ImGui::InputText
 		(
 			"##export_path", 
-			export_path_buffer, 
-			sizeof(export_path_buffer), 
+			export_path_buffer.data(),
+			export_path_buffer.size(),
 			ImGuiInputTextFlags_ReadOnly
 		)
 	)
     {
-        m_ExportState.m_ExportPath = export_path_buffer;
+        m_ExportState.m_ExportPath = export_path_buffer.data();
     }
     ImGui::PopItemWidth();
 
@@ -932,8 +936,8 @@ void GameEditor::DrawExportPanel()
 			"Select Export Folder",
 			fs::current_path().string().c_str(), 
 			0, 
-			NULL, 
-			NULL
+			nullptr, 
+			nullptr
 		);
 
 		fs::path parent_path = selected_path ? 
@@ -1237,14 +1241,14 @@ void GameEditor::DrawExportPanel()
                 FILE* check_pipe = _popen(check_cmd.str().c_str(), "r");
                 if (check_pipe) 
 				{
-                    char buffer[1024];
+					std::array<char, 1024> buffer{};
                     bool b_FoundRunningProcess = false;
                     while 
 					(
-						fgets(buffer, sizeof(buffer), check_pipe) != nullptr
+						fgets(buffer.data(), sizeof(buffer), check_pipe) != nullptr
 					) 
 					{
-                        std::string output(buffer);
+                        std::string output(buffer.data());
                         if (output.find("main.exe") != std::string::npos) 
 						{
                             b_FoundRunningProcess = true;
@@ -1372,7 +1376,10 @@ void GameEditor::DrawExportPanel()
 				window_width - ImGui::CalcTextSize("Export Complete!").x
 			) * 0.5f
 		);
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
+        ImGui::PushStyleColor
+		(
+			ImGuiCol_Text, ImVec4(0.2f, 0.8f, 0.2f, 1.0f)
+		);
         ImGui::Text("Export Complete!");
         ImGui::PopStyleColor();
     }
@@ -1425,38 +1432,38 @@ void GameEditor::DrawExportPanel()
         }
         else
         {
-            for (const auto& line : m_ExportState.m_ExportLogs)
+            for (const auto& LINE : m_ExportState.m_ExportLogs)
             {
                 // Color code log messages ( Default white )
                 ImVec4 text_color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f); 
                 
-                if (line.find("ERROR:") != std::string::npos)
+                if (LINE.find("ERROR:") != std::string::npos)
                 {	
 					// Red
                     text_color = ImVec4(1.0f, 0.3f, 0.3f, 1.0f); 
                 }
-                else if (line.find("WARNING:") != std::string::npos)
+                else if (LINE.find("WARNING:") != std::string::npos)
                 {
 					// Yellow
                     text_color = ImVec4(1.0f, 0.8f, 0.3f, 1.0f); 
                 }
-                else if (line.find("completed") != std::string::npos || 
-                         line.find("SUCCESS") != std::string::npos   ||
-                         line.find("Copied") != std::string::npos)
+                else if (LINE.find("completed") != std::string::npos || 
+                         LINE.find("SUCCESS") != std::string::npos   ||
+                         LINE.find("Copied") != std::string::npos)
                 {
 					// Green
                     text_color = ImVec4(0.3f, 1.0f, 0.3f, 1.0f); 
                 }
-                else if (line.find("Building") != std::string::npos ||
-                         line.find("Creating") != std::string::npos ||
-                         line.find("Starting") != std::string::npos)
+                else if (LINE.find("Building") != std::string::npos ||
+                         LINE.find("Creating") != std::string::npos ||
+                         LINE.find("Starting") != std::string::npos)
                 {
 					// Blue
                     text_color = ImVec4(0.3f, 0.8f, 1.0f, 1.0f); 
                 }
                 
                 ImGui::PushStyleColor(ImGuiCol_Text, text_color);
-                ImGui::TextUnformatted(line.c_str());
+                ImGui::TextUnformatted(LINE.c_str());
                 ImGui::PopStyleColor();
             }
             
@@ -1890,13 +1897,9 @@ static bool s_bfValidateExportFolder
 void GameEditor::DrawMapSelectionUI()
 {
 	// Only show map selection when game is paused and we have a MapManager
-	if (!m_MapManager)
-	{
-		return;
-	}
+	if (!m_MapManager) return;
 
 	ImGui::Begin("Map Selection", nullptr, ImGuiWindowFlags_NoCollapse);
-
 	ImGui::Text("Current Map: %s", m_MapManager->GetCurrentMapId().c_str());
 	ImGui::Separator();
 	ImGui::Spacing();
