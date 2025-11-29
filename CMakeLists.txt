@@ -41,6 +41,8 @@ target_include_directories(Engine PUBLIC
     ${CMAKE_SOURCE_DIR}/Engine
 )
 target_link_libraries(Engine PUBLIC raylib)
+target_link_libraries(Engine PRIVATE Dwmapi.lib)
+
 
 # Create GameLogic shared library (DLL)
 file(GLOB GAMELOGIC_SRC_CPP CONFIGURE_DEPENDS "GameLogic/*.cpp")

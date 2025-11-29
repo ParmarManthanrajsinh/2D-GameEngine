@@ -2,6 +2,15 @@
 #include "MapManager.h"
 #include "GameConfig.h"
 
+#define CloseWindow WinAPICloseWindow
+#define ShowCursor  WinAPIShowCursor
+#include <windows.h>
+#include <dwmapi.h>
+#undef CloseWindow
+#undef ShowCursor
+#pragma comment(lib, "Dwmapi.lib")
+
+
 GameEngine::GameEngine()
 {
 	m_WindowWidth = 1280;
@@ -29,6 +38,19 @@ void GameEngine::LaunchWindow(int width, int height, std::string_view title)
 		<< std::endl;
 
 	InitWindow(width, height, title.data());
+
+	HWND hwnd = GetActiveWindow();
+	BOOL value = TRUE;
+
+	if (!hwnd) 
+	{
+		return;
+	}
+
+	// Windows 10 (attribute 19)
+	DwmSetWindowAttribute(hwnd, 19, &value, sizeof(value));
+	// Windows 11 (attribute 20)
+	DwmSetWindowAttribute(hwnd, 20, &value, sizeof(value));
 }
 
 
