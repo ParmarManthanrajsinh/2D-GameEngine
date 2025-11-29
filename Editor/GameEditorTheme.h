@@ -119,9 +119,9 @@ inline void SetEngineTheme
     style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.70f); // modal dim in black
 
     // Window title bars - smooth state transitions
-    style.Colors[ImGuiCol_TitleBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);        // Pure black title bar
-    style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);  // Pure black when active
-    style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.0f, 0.0f, 0.0f, 1.00f); // Pure black when collapsed
+    style.Colors[ImGuiCol_TitleBg] = bg_1;
+    style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
+    style.Colors[ImGuiCol_TitleBgCollapsed] = bg_0;
 
     // Menu bar
     style.Colors[ImGuiCol_MenuBarBg] = bg_1;
@@ -151,9 +151,4 @@ inline void SetEngineTheme
     style.Colors[ImGuiCol_TableBorderLight] = ImVec4(0.15f, 0.05f, 0.05f, 0.50f); // lighter red borders
     style.Colors[ImGuiCol_TableRowBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f); // transparent
     style.Colors[ImGuiCol_TableRowBgAlt] = ImVec4(0.05f, 0.02f, 0.02f, 0.15f); // subtle dark red alt row
-    
-    // Close/Minimize/Maximize buttons - make them black with red accents
-    style.Colors[ImGuiCol_Button] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);           // Black buttons
-    style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);    // Dark gray on hover
-    style.Colors[ImGuiCol_ButtonActive] = red_primary;                        // Red when active
 }
