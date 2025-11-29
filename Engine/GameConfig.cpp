@@ -110,21 +110,24 @@ std::string GameConfig::GenerateConfigString() const
     std::ostringstream ss;
 
     ss << "# Game Configuration File\n"
-        << "# Window Settings\n"
-        << "width=" << m_WindowConfig.width << "\n"
-        << "height=" << m_WindowConfig.height << "\n"
-        << "b_Fullscreen=" << (m_WindowConfig.b_Fullscreen ? "true" : "false") << "\n"
-        << "b_Resizable=" << (m_WindowConfig.b_Resizable ? "true" : "false") << "\n"
-        << "b_Vsync=" << (m_WindowConfig.b_Vsync ? "true" : "false") << "\n"
-        << "target_fps=" << m_WindowConfig.target_fps << "\n"
-        << "title=" << m_WindowConfig.title << "\n";
+       << "# Window Settings\n"
+       << "width=" << m_WindowConfig.width << "\n"
+       << "height=" << m_WindowConfig.height << "\n"
+       << "b_Fullscreen=" 
+       << (m_WindowConfig.b_Fullscreen ? "true" : "false") << "\n"
+       << "b_Resizable=" 
+       << (m_WindowConfig.b_Resizable ? "true" : "false") << "\n"
+       << "b_Vsync=" << (m_WindowConfig.b_Vsync ? "true" : "false") << "\n"
+       << "target_fps=" << m_WindowConfig.target_fps << "\n"
+       << "title=" << m_WindowConfig.title << "\n";
 
     return ss.str();
 }
 
 void GameConfig::ApplyExportSettings
 (
-    int width, int height, bool fullscreen, bool resizable,
+    int width, int height, 
+    bool fullscreen, bool resizable,
     bool vsync, int target_fps
 )
 {

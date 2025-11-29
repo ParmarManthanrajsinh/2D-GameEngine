@@ -10,17 +10,13 @@
 #undef ShowCursor
 #pragma comment(lib, "Dwmapi.lib")
 
-
 GameEngine::GameEngine()
 {
 	m_WindowWidth = 1280;
 	m_WindowHeight = 720;
 	m_WindowTitle = "Game Window";
 }
-
-GameEngine::~GameEngine()
-{
-}
+GameEngine::~GameEngine() = default;
 
 void GameEngine::LaunchWindow(int width, int height, std::string_view title)
 {
@@ -42,13 +38,11 @@ void GameEngine::LaunchWindow(int width, int height, std::string_view title)
 	HWND hwnd = GetActiveWindow();
 	BOOL value = TRUE;
 
-	if (!hwnd) 
-	{
-		return;
-	}
+	if (!hwnd) return;
 
 	// Windows 10 (attribute 19)
 	DwmSetWindowAttribute(hwnd, 19, &value, sizeof(value));
+
 	// Windows 11 (attribute 20)
 	DwmSetWindowAttribute(hwnd, 20, &value, sizeof(value));
 }
