@@ -62,6 +62,6 @@ void GameMap::RequestGotoMap(std::string_view map_id, bool force_reload)
     }
     else
     {
-		std::cerr << "Transition callback not set!" << std::endl;
+		std::cout << "Transition callback not set!" << std::endl;
     }
 }
