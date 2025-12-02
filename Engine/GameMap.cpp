@@ -46,6 +46,17 @@ Vector2 GameMap::GetSceneBounds() const
 	return Vector2(m_SceneWidth, m_SceneHeight);
 }
 
+void GameMap::SetTargetFPS(int fps)
+{
+    ::SetTargetFPS(fps);
+	m_TargetFPS = fps;
+}
+
+int GameMap::GetTargetFPS() const
+{
+    return m_TargetFPS;
+}
+
 void GameMap::SetTransitionCallback
 (
     std::function<void(std::string_view, bool)> cb

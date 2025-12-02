@@ -11,6 +11,7 @@ protected:
     std::string m_MapName;
     float m_SceneWidth = 0.0f;   
     float m_SceneHeight = 0.0f;  
+	float m_TargetFPS = 60.0f;
 
     // Transition callback to request a map change via the manager
     std::function<void(std::string_view, bool)> m_TransitionCallback;
@@ -28,6 +29,8 @@ public:
     std::string GetMapName() const;
     void SetSceneBounds(float width, float height);
 	Vector2 GetSceneBounds() const;
+	void SetTargetFPS(int fps);
+	int GetTargetFPS() const;
 
     // Hook for MapManager: injects a function that executes a map transition.
     // Maps call RequestGotoMap to trigger transitions safely (no global/static).

@@ -1514,6 +1514,7 @@ void GameEditor::DrawSceneSettingsPanel()
     // Store previous values to detect changes
     static int s_PrevWidth = m_SceneSettings.m_SceneWidth;
     static int s_PrevHeight = m_SceneSettings.m_SceneHeight;
+	static int s_PrevTargetFPS = m_SceneSettings.m_TargetFPS;
 
     // Resolution Section
     ImGui::AlignTextToFramePadding();
@@ -1587,7 +1588,7 @@ void GameEditor::DrawSceneSettingsPanel()
     }
 
     // Check if resolution changed
-    bool b_ResolutionChanged = 
+    b_ResolutionChanged = 
 	(
 		s_PrevWidth != m_SceneSettings.m_SceneWidth || 
         s_PrevHeight != m_SceneSettings.m_SceneHeight
@@ -1633,6 +1634,52 @@ void GameEditor::DrawSceneSettingsPanel()
         s_PrevWidth = m_SceneSettings.m_SceneWidth;
         s_PrevHeight = m_SceneSettings.m_SceneHeight;
     }
+
+	ImGui::Spacing();
+
+	// FPS Settings
+	ImGui::AlignTextToFramePadding();
+	ImGui::Text("Target FPS:");
+	ImGui::SameLine();
+	ImGui::SetCursorPosX(120.0f);
+
+	ImGui::SameLine();
+	ImGui::PushItemWidth(100.0f);
+	ImGui::InputInt("##target_fps", &m_SceneSettings.m_TargetFPS, 0, 0);
+	ImGui::PopItemWidth();
+
+	ImGui::SameLine();
+	ImGui::PushItemWidth(150.0f);
+	if (ImGui::BeginCombo("##fps_presets", "Presets"))
+	{
+		if (ImGui::Selectable("30 FPS")) m_SceneSettings.m_TargetFPS = 30;
+		if (ImGui::Selectable("60 FPS")) m_SceneSettings.m_TargetFPS = 60;
+		if (ImGui::Selectable("120 FPS")) m_SceneSettings.m_TargetFPS = 120;
+		if (ImGui::Selectable("144 FPS")) m_SceneSettings.m_TargetFPS = 144;
+		if (ImGui::Selectable("240 FPS")) m_SceneSettings.m_TargetFPS = 240;
+		if (ImGui::Selectable("Unlimited")) m_SceneSettings.m_TargetFPS = 0;
+		ImGui::EndCombo();
+	}
+	ImGui::PopItemWidth();
+
+	// Check if FPS changed
+	b_FPSChanged =
+	(
+		s_PrevTargetFPS != m_SceneSettings.m_TargetFPS
+	);
+
+	if (b_FPSChanged)
+	{
+		if (m_MapManager)
+		{
+			m_MapManager->SetTargetFPS(m_SceneSettings.m_TargetFPS);
+		}
+		else if (m_GameEngine.GetMapManager())
+		{
+			m_GameEngine.GetMapManager()->SetTargetFPS(m_SceneSettings.m_TargetFPS);
+		}
+		s_PrevTargetFPS = m_SceneSettings.m_TargetFPS;
+	}
 
     ImGui::Spacing();
     ImGui::Separator();

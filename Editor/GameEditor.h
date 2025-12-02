@@ -79,11 +79,15 @@ private:
     // Map selection UI
     MapManager* m_MapManager = nullptr;
     std::string m_SelectedMapId;
+
+    bool b_ResolutionChanged = false;
+    bool b_FPSChanged = false;
     
     struct m_tSceneSettings
     {
         int m_SceneWidth = 1280;
         int m_SceneHeight = 720;
+		int m_TargetFPS = 60;
     } m_SceneSettings;
     
     // Export UI state
