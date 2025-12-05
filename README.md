@@ -32,7 +32,7 @@ A simple Raylib-based game engine with **hot-reloading** support. Edit your game
 ## 🎮 Download
 
 Download RayWaves game engine:
-[RayWaves Game Engine Demo](https://parmarmanthanrajsinh.itch.io/raywaves)
+[RayWaves Game Engine](https://parmarmanthanrajsinh.itch.io/raywaves)
 
 ## 📋 Requirements
 
