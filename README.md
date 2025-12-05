@@ -22,12 +22,17 @@ A simple Raylib-based game engine with **hot-reloading** support. Edit your game
 ## 🖼️ Screenshots
 
 ### Game Editor with Live Development
-![RayWaves Game Editor](Documentation/output1.png)
+![RayWaves Game Engine](Documentation/output1.png)
 *The visual editor showing a platformer level with fire particle effects and real-time map switching capabilities*
 
 ### Export System for Standalone Games
 ![Export Configuration](Documentation/output2.png)
 *Built-in export system to create standalone game executables with customizable settings*
+
+## 🎮 Download
+
+Download RayWaves game engine:
+[RayWaves Game Engine Demo](https://parmarmanthanrajsinh.itch.io/raywaves)
 
 ## 📋 Requirements
 
