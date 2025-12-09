@@ -106,10 +106,10 @@ private:
         // Window configuration options
         int m_WindowWidth = 1280;
         int m_WindowHeight = 720;
+        int m_TargetFPS = 60;
         bool m_bFullscreen = false;
         bool m_bResizable = true;
         bool m_bVSync = true;
-        int m_TargetFPS = 60;
 
         std::vector<std::string> m_ExportLogs;
         std::mutex m_ExportLogMutex;

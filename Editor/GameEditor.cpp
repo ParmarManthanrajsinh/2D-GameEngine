@@ -338,7 +338,6 @@ void GameEditor::DrawToolbarBackground()
 	ImVec2 toolbar_pos = ImGui::GetCursorScreenPos();
 	ImVec2 toolbar_size = ImVec2
 	(
-		// Updated from 32.0f to 40.0f
 		ImGui::GetContentRegionAvail().x, 40.0f
 	); 
 
@@ -355,10 +354,10 @@ void GameEditor::DrawToolbarBackground()
 			toolbar_pos.x + toolbar_size.x,
 			toolbar_pos.y + toolbar_size.y
 		),
-		toolbar_color_top,     // top-left
-		toolbar_color_top,     // top-right
-		toolbar_color_bottom,  // bottom-right
-		toolbar_color_bottom   // bottom-left
+		toolbar_color_top,
+		toolbar_color_top,
+		toolbar_color_bottom,
+		toolbar_color_bottom
 	);
 }
 
@@ -404,7 +403,7 @@ static void s_fDrawSpinner
 	vars.centre_y = CENTER.y;
 
 	// Pre-allocate path memory
-	for (int i = 0; i < c_NUM_SEGMENTS; i++)
+	for (int i = 0; i < c_NUM_SEGMENTS; ++i)
 	{
 		const float A = vars.a_min + (static_cast<float>(i) * vars.inv_num_segments) * vars.angle_range;
 
@@ -944,7 +943,6 @@ void GameEditor::DrawExportPanel()
 		fs::path parent_path = selected_path ? 
 		fs::path(selected_path).parent_path() : fs::current_path();
 		m_ExportState.m_ExportPath = parent_path.string();
-
     }
 
     ImGui::Spacing();
@@ -1033,9 +1031,7 @@ void GameEditor::DrawExportPanel()
                     
 						// In distribution, just copy the existing runtime files
 						fs::path app_exe = current_path / "game.exe";
-						fs::path game_logic_dll = 
-							current_path / "GameLogic.dll";
-
+						fs::path game_logic_dll = current_path / "GameLogic.dll";
 						fs::path raylib_dll = current_path / "raylib.dll";
                     
                     if (!fs::exists(app_exe)) 
@@ -1459,7 +1455,7 @@ void GameEditor::DrawExportPanel()
 					// Yellow
                     text_color = ImVec4(1.0f, 0.8f, 0.3f, 1.0f); 
                 }
-                else if (LINE.find("completed") != std::string::npos || 
+                else if (LINE.find("Completed") != std::string::npos || 
                          LINE.find("SUCCESS") != std::string::npos   ||
                          LINE.find("Copied") != std::string::npos)
                 {
@@ -1956,7 +1952,10 @@ static bool s_bfValidateExportFolder
 void GameEditor::DrawMapSelectionUI()
 {
 	// Only show map selection when game is paused and we have a MapManager
-	if (!m_MapManager) return;
+	if (!m_MapManager) 
+	{
+		return;
+	}
 
 	ImGui::Begin("Map Selection", nullptr, ImGuiWindowFlags_NoCollapse);
 	ImGui::Text("Current Map: %s", m_MapManager->GetCurrentMapId().c_str());
@@ -1964,7 +1963,7 @@ void GameEditor::DrawMapSelectionUI()
 	ImGui::Spacing();
 
 	// Get available maps
-	auto available_maps = m_MapManager->GetAvailableMaps();
+	std::vector<std::string> available_maps = m_MapManager->GetAvailableMaps();
 
 	if (available_maps.empty())
 	{
@@ -2005,7 +2004,7 @@ void GameEditor::DrawMapSelectionUI()
 			)
 		)
 		{
-			for (int i = 0; i < available_maps.size(); i++)
+			for (int i = 0; i < available_maps.size(); ++i)
 			{
 				bool b_IsSelected = (s_SelectedIndex == i);
 				bool b_IsCurrent = (available_maps[i] == curr_map_id);
@@ -2070,7 +2069,7 @@ void GameEditor::DrawMapSelectionUI()
 		ImGui::Separator();
 		ImGui::Spacing();
 
-		for (int i = 0; i < available_maps.size(); i++)
+		for (int i = 0; i < available_maps.size(); ++i)
 		{
 			const auto& MAP_ID = available_maps[i];
 			bool b_IsCurrent = (MAP_ID == curr_map_id);

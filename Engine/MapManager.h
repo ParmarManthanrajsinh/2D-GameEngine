@@ -6,6 +6,8 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <sstream>
+#include <string_view>
 
 /**
  * @brief Developer-friendly MapManager for easy game map management
