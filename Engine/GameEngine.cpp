@@ -8,6 +8,7 @@
 #include <dwmapi.h>
 #undef CloseWindow
 #undef ShowCursor
+
 #pragma comment(lib, "Dwmapi.lib")
 
 GameEngine::GameEngine()
@@ -38,7 +39,10 @@ void GameEngine::LaunchWindow(int width, int height, std::string_view title)
 	HWND hwnd = GetActiveWindow();
 	BOOL value = TRUE;
 
-	if (!hwnd) return;
+	if (!hwnd) 
+	{
+		return;
+	}
 
 	// Windows 10 (attribute 19)
 	DwmSetWindowAttribute(hwnd, 19, &value, sizeof(value));

@@ -13,6 +13,10 @@
 #include <mutex>
 #include <vector>
 #include <array>
+#include <cstdio>
+#include <sstream>
+#include <fstream>
+#include <string>
 
 #include "DllLoader.h"
 #include "GameEditorLayout.h"
@@ -46,6 +50,7 @@ private:
 
     RenderTexture2D m_RaylibTexture;
     RenderTexture2D m_DisplayTexture;
+    Texture2D m_SourceTexture;
 
     void DrawSceneWindow();
     void DrawMapSelectionUI();

@@ -1,10 +1,7 @@
 #include "../Engine/MapManager.h"
 #include "../Game/DllLoader.h"
 #include "GameEditor.h"
-#include <cstdio>
-#include <sstream>
-#include <fstream>
-#include <string>
+
 using Clock = std::chrono::steady_clock;
 
 // Export Utility functions
@@ -26,6 +23,7 @@ GameEditor::GameEditor()
 	: m_Viewport(nullptr),
 	  m_RaylibTexture({ 0 }),
 	  m_DisplayTexture({ 0 }),
+	  m_SourceTexture({ 0 , 0 }),
 	  b_IsPlaying(false),
 	  b_IsCompiling(false),
 	  m_PlayIcon({ 0 }),
@@ -271,7 +269,7 @@ void GameEditor::Run()
 		m_GameEngine.DrawMap();
 		EndTextureMode();
 
-		Texture2D source_tex = m_RaylibTexture.texture;
+		m_SourceTexture = m_RaylibTexture.texture;
 
 		// Opaque pass to strip alpha before presenting via ImGui
 		if (m_bUseOpaquePass)
@@ -283,13 +281,13 @@ void GameEditor::Run()
 			{
 				0, 
 				0, 
-				static_cast<float>(source_tex.width), 
-				-static_cast<float>(source_tex.height) 
+				static_cast<float>(m_SourceTexture.width),
+				-static_cast<float>(m_SourceTexture.height)
 			};
-			DrawTextureRec(source_tex, src, { 0.0f, 0.0f }, WHITE);
+			DrawTextureRec(m_SourceTexture, src, { 0.0f, 0.0f }, WHITE);
 			EndShaderMode();
 			EndTextureMode();
-			source_tex = m_DisplayTexture.texture;
+			m_SourceTexture = m_DisplayTexture.texture;
 		}
 
 		rlImGuiBegin();
