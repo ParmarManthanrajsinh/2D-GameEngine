@@ -2,9 +2,7 @@
 
 #include "GameMap.h"
 #include "GameConfig.h"
-#include <iostream>
 #include <memory>
-#include <raylib.h>
 class MapManager;
 
 class GameEngine

@@ -1,6 +1,5 @@
 #include "GameEngine.h"
 #include "MapManager.h"
-#include "GameConfig.h"
 
 #define CloseWindow WinAPICloseWindow
 #define ShowCursor  WinAPIShowCursor
