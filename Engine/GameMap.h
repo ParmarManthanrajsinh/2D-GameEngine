@@ -11,7 +11,7 @@ protected:
     std::string m_MapName;
     float m_SceneWidth = 0.0f;   
     float m_SceneHeight = 0.0f;  
-	float m_TargetFPS = 60.0f;
+	int m_TargetFPS = 60;
 
     // Transition callback to request a map change via the manager
     std::function<void(std::string_view, bool)> m_TransitionCallback;
