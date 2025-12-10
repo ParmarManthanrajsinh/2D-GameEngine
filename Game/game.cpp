@@ -1,9 +1,6 @@
 #include "GameEngine.h"
 #include "DllLoader.h"
 #include "GameConfig.h"
-#include <raylib.h>
-#include <memory>
-#include <iostream>
 using CreateGameMapFunc = GameMap* (*)();
 
 static std::unique_ptr<GameMap> s_fLoadGameLogic
