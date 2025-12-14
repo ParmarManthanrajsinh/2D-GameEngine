@@ -712,7 +712,9 @@ void GameEditor::DrawExportPanel()
 	(
 		ImGui::InputText
 		(
-			"##game_name", game_name_buffer.data(), game_name_buffer.size()
+			"##game_name", 
+			game_name_buffer.data(), 
+			game_name_buffer.size()
 		)
 	)
     {
@@ -1183,7 +1185,8 @@ void GameEditor::DrawExportPanel()
                                     (
                                         m_ExportState.m_ExportLogs,
                                         m_ExportState.m_ExportLogMutex, 
-                                        "Copied asset folder: " + entry.path().filename().string()
+                                        "Copied asset folder: " + 
+										entry.path().filename().string()
                                     );
                                 }
                                 else if (entry.is_regular_file())
@@ -1196,7 +1199,8 @@ void GameEditor::DrawExportPanel()
                                     (
                                         m_ExportState.m_ExportLogs,
                                         m_ExportState.m_ExportLogMutex, 
-                                        "Copied asset file: " + entry.path().filename().string()
+                                        "Copied asset file: " + 
+										entry.path().filename().string()
                                     );
                                 }
                             }

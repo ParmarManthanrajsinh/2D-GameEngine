@@ -1,14 +1,10 @@
 #include "GameMap.h"
 
 GameMap::GameMap()
-	: m_MapName("DefaultMap")
-{
-}
+	: m_MapName("DefaultMap") {}
 
 GameMap::GameMap(const std::string& map_name)
-	: m_MapName(map_name)
-{
-}
+	: m_MapName(map_name) {}
 
 void GameMap::Initialize()
 {
