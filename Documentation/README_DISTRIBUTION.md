@@ -61,37 +61,32 @@ No more waiting for full rebuilds or losing your game state!
 
 ### Game Maps/Levels
 Your game is organized into "maps" (levels or scenes). Each map is a C++ class that handles:
-- **Init()**: Set up your level
+- **Initialize()**: Set up your level (called when level starts or restarts)
 - **Update()**: Game logic that runs every frame  
 - **Draw()**: What appears on screen
-- **Reset()**: What happens when restarting
 
 ### Example: Basic Level Structure
 ```cpp
 class MyLevel : public GameMap {
 public:
-    void Init() override {
+    MyLevel() : GameMap("My Level") {}
+
+    void Initialize() override {
         // Set up your level here
         player_x = 100;
         player_y = 100;
     }
     
-    void Update(float deltaTime) override {
+    void Update(float delta_time) override {
         // Game logic goes here
-        if (IsKeyDown(KEY_RIGHT)) player_x += 200 * deltaTime;
-        if (IsKeyDown(KEY_LEFT))  player_x -= 200 * deltaTime;
+        if (IsKeyDown(KEY_RIGHT)) player_x += 200 * delta_time;
+        if (IsKeyDown(KEY_LEFT))  player_x -= 200 * delta_time;
     }
     
     void Draw() override {
         // Drawing code here
-        DrawRectangle(player_x, player_y, 32, 32, RED);
+        DrawRectangle((int)player_x, (int)player_y, 32, 32, RED);
         DrawText("Use arrow keys to move", 10, 10, 20, BLACK);
-    }
-    
-    void Reset() override {
-        // Reset level state
-        player_x = 100;
-        player_y = 100;
     }
 
 private:
@@ -103,7 +98,52 @@ private:
 You can create multiple levels and switch between them in the editor:
 - Create new `.cpp/.h` files in `GameLogic/`
 - Implement the `GameMap` interface
-- The engine automatically detects and lists them
+- Register them in `RootManager.cpp`
+
+### Registering Maps
+After creating a new level, you need to register it so the engine knows about it. Open `GameLogic/RootManager.cpp` and follow these steps:
+
+1. **Include your level header** at the top of the file:
+   ```cpp
+   #include "../Engine/MapManager.h"
+   #include "Level1.h"
+   #include "Level2.h"
+   #include "MyNewLevel.h"  // Add your new level here
+   ```
+
+2. **Register your map** inside the `CreateGameMap()` function:
+   ```cpp
+   extern "C" __declspec(dllexport) GameMap* CreateGameMap()
+   {
+       if (s_GameMapManager == nullptr)
+       {
+           s_GameMapManager = new MapManager();
+
+           // Register your game maps
+           s_GameMapManager->RegisterMap<Level1>("Level1");
+           s_GameMapManager->RegisterMap<Level2>("Level2");
+           s_GameMapManager->RegisterMap<MyNewLevel>("MyNewLevel");  // Add this line
+       }
+
+       // Automatically load the first registered map
+       auto available_maps = s_GameMapManager->GetAvailableMaps();
+       if (!available_maps.empty())
+       {
+           s_GameMapManager->b_GotoMap(available_maps.at(0));
+       }
+
+       return s_GameMapManager;
+   }
+   ```
+
+3. **Rebuild your game logic** using `build_gamelogic.bat`
+
+4. **Your new level** will now appear in the Map Selector dropdown in the editor!
+
+**Important Notes:**
+- The string name (e.g., `"MyNewLevel"`) is what appears in the editor dropdown
+- Maps are loaded in the order they're registered
+- The first registered map loads automatically when the game starts
 
 ### Built-in Features You Can Use
 - **Particle Systems**: `FireParticle` for effects
@@ -222,25 +262,6 @@ The exported game includes everything needed to run on other computers!
 2. **Create complex interactions** between multiple objects
 3. **Build complete game systems** (menus, multiple levels)
 4. **Export and distribute** your finished games
-
-## 🎯 Pro Tips for Success
-
-### Development Best Practices
-- **Save frequently** and test changes immediately
-- **Use descriptive variable names** for easier debugging
-- **Start simple** and add complexity gradually
-- **Comment your code** so you remember what it does
-
-### Hot Reload Workflow
-- **Keep the engine running** while developing
-- **Use the pause button** when making major changes
-- **Test frequently** with the play/pause controls
-- **Save all files** before rebuilding
-
-### Asset Organization
-- **Use subfolders** in Assets/ to stay organized
-- **Keep file names simple** and without spaces
-- **Test asset loading** immediately after adding new files
 
 ## 🆘 Need More Help?
 
