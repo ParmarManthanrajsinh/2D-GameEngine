@@ -49,7 +49,36 @@ GameEditor::~GameEditor()
 	*/
 	m_MapManager = nullptr; 
 	m_GameEngine.SetMap(nullptr);
-	m_GameEngine.SetMapManager(nullptr); 
+	m_GameEngine.SetMapManager(nullptr);
+
+	if (m_RaylibTexture.id != 0) 
+	{
+		UnloadRenderTexture(m_RaylibTexture);
+		m_RaylibTexture.id = 0;
+	}
+
+	if (m_DisplayTexture.id != 0) 
+	{
+		UnloadRenderTexture(m_DisplayTexture);
+		m_DisplayTexture.id = 0;
+	}
+
+	if (m_OpaqueShader.id != 0) 
+	{
+		UnloadShader(m_OpaqueShader);
+		m_OpaqueShader.id = 0;
+	}
+
+	if (m_bIconsLoaded)
+	{
+		if (m_PlayIcon.id    != 0)	UnloadTexture(m_PlayIcon);
+		if (m_PauseIcon.id   != 0)	UnloadTexture(m_PauseIcon);
+		if (m_RestartIcon.id != 0)	UnloadTexture(m_RestartIcon);
+		if (m_RestoreIcon.id != 0)	UnloadTexture(m_RestoreIcon);
+		if (m_CompileIcon.id != 0)	UnloadTexture(m_CompileIcon);
+		if (m_CleanIcon.id   != 0)	UnloadTexture(m_CleanIcon);
+		m_bIconsLoaded = false;
+	}
 
 	if (m_GameLogicDll.handle)
 	{
@@ -234,25 +263,15 @@ void GameEditor::Run()
 			// cache path once per check
 			const fs::path PATH(m_GameLogicPath);
 
-			auto now_write = 
-				fs::last_write_time(PATH, ec);
+			auto now_write = fs::last_write_time(PATH, ec);
 
-			if (!ec)
+			if (!ec && now_write != m_LastLogicWriteTime)
 			{
 				if (m_LastLogicWriteTime != fs::file_time_type{})
 				{
-					if (now_write != m_LastLogicWriteTime)
-					{
-						b_ReloadGameLogic();
-
-						// update after reload
-						m_LastLogicWriteTime = now_write;  
-					}
+					b_ReloadGameLogic();
 				}
-				else
-				{
-					m_LastLogicWriteTime = now_write;
-				}
+				m_LastLogicWriteTime = now_write;
 			}
 		}
 

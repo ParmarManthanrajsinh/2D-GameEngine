@@ -22,12 +22,16 @@ bool GameConfig::m_bLoadFromFile(const std::string& config_path)
     {
         // Skip empty lines and comments
         if (line.empty() || line[0] == '#' || line[0] == ';') 
+        {
             continue;
+        }
         
         // Find the equals sign
         auto equal_pos = line.find('=');
         if (equal_pos == std::string::npos)
+        {
             continue;
+        }
 
         std::string key(line.begin(), line.begin() + equal_pos);
         std::string value(line.begin() + equal_pos + 1, line.end());
