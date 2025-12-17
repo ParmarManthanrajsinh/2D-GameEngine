@@ -116,6 +116,14 @@ void GameEditor::Init(int width, int height, std::string_view title)
 	SetEngineTheme();
 	LoadEditorDefaultIni();
 
+	if (GameConfig::GetInstance().m_bLoadFromFile("config.ini"))
+	{
+		const auto& config = GameConfig::GetInstance().GetWindowConfig();
+		m_SceneSettings.m_SceneWidth = config.scene_width;
+		m_SceneSettings.m_SceneHeight = config.scene_height;
+		m_SceneSettings.m_TargetFPS = config.scene_fps;
+	}
+
 	SetTargetFPS(60);
 	m_Viewport = ImGui::GetMainViewport();
 
@@ -327,6 +335,12 @@ void GameEditor::Run()
 
 void GameEditor::Close() const
 {
+	auto& config = GameConfig::GetInstance().GetWindowConfig();
+	config.scene_width = m_SceneSettings.m_SceneWidth;
+	config.scene_height = m_SceneSettings.m_SceneHeight;
+	config.scene_fps = m_SceneSettings.m_TargetFPS;
+	GameConfig::GetInstance().m_bSaveToFile("config.ini");
+
 	if (m_bIconsLoaded)
 	{
 		UnloadTexture(m_PlayIcon);

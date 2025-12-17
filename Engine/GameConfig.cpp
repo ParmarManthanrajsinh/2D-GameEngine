@@ -71,6 +71,18 @@ bool GameConfig::m_bLoadFromFile(const std::string& config_path)
         {
             m_WindowConfig.title = value;
         }
+        else if (key == "scene_width")
+        {
+            m_WindowConfig.scene_width = std::stoi(value);
+        }
+        else if (key == "scene_height")
+        {
+            m_WindowConfig.scene_height = std::stoi(value);
+        }
+        else if (key == "scene_fps")
+        {
+            m_WindowConfig.scene_fps = std::stoi(value);
+        }
     }
     
     file.close();
@@ -100,6 +112,9 @@ bool GameConfig::m_bSaveToFile(const std::string& config_path) const
          << (m_WindowConfig.b_Vsync ? "true" : "false") << "\n";
     file << "target_fps=" << m_WindowConfig.target_fps << "\n";
     file << "title=" << m_WindowConfig.title << "\n";
+    file << "scene_width=" << m_WindowConfig.scene_width << "\n";
+    file << "scene_height=" << m_WindowConfig.scene_height << "\n";
+    file << "scene_fps=" << m_WindowConfig.scene_fps << "\n";
     
     file.close();
     std::cout << "Saved configuration to: " << config_path << "\n";
@@ -120,7 +135,10 @@ std::string GameConfig::GenerateConfigString() const
        << (m_WindowConfig.b_Resizable ? "true" : "false") << "\n"
        << "b_Vsync=" << (m_WindowConfig.b_Vsync ? "true" : "false") << "\n"
        << "target_fps=" << m_WindowConfig.target_fps << "\n"
-       << "title=" << m_WindowConfig.title << "\n";
+       << "title=" << m_WindowConfig.title << "\n"
+       << "scene_width=" << m_WindowConfig.scene_width << "\n"
+       << "scene_height=" << m_WindowConfig.scene_height << "\n"
+       << "scene_fps=" << m_WindowConfig.scene_fps << "\n";
 
     return ss.str();
 }

@@ -14,6 +14,11 @@ struct t_WindowConfig
     bool b_Vsync = true;
     int target_fps = 60;
     std::string title = "My Game";
+
+    // Editor Scene Settings
+    int scene_width = 1280;
+    int scene_height = 720;
+    int scene_fps = 60;
 };
 
 class GameConfig 
