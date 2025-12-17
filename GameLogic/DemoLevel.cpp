@@ -12,6 +12,19 @@ DemoLevel::DemoLevel()
 {
 }
 
+DemoLevel::~DemoLevel()
+{
+    UnloadTexture(m_TilesetTex);
+    UnloadTexture(m_SlimeTexture);
+    UnloadSound(m_SlimeDeathSound);
+    
+    for (auto& Tex : m_BackgroundLayers)
+    {
+        UnloadTexture(Tex);
+    }
+    m_BackgroundLayers.clear();
+}
+
 void DemoLevel::Initialize()
 {
     m_Player.Initialize("Assets/player.png");

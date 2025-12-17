@@ -39,7 +39,7 @@ private:
 
 public:
     DemoLevel();
-    ~DemoLevel() override = default;
+    ~DemoLevel() override;
     void Initialize() override;
     void Update(float DeltaTime) override;
     void Draw() override;

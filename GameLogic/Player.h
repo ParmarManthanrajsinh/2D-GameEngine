@@ -8,6 +8,7 @@ class Player
 {
 public:
     Player();
+    ~Player();
     
     void Initialize(const char* TexturePath);
     void LoadSounds();

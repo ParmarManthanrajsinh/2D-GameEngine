@@ -13,6 +13,13 @@ Player::Player()
 {
 }
 
+Player::~Player()
+{
+    UnloadTexture(m_Texture);
+    UnloadSound(m_JumpSound);
+    UnloadSound(m_AttackSound);
+}
+
 void Player::Initialize(const char* TexturePath)
 {
     m_Texture = LoadTexture(TexturePath);

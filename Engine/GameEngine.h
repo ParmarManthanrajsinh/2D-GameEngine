@@ -3,6 +3,7 @@
 #include "GameMap.h"
 #include "GameConfig.h"
 #include <memory>
+#include <string>
 class MapManager;
 
 class GameEngine
